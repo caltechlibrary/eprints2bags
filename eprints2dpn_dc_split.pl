@@ -48,8 +48,8 @@ use Data::Dumper;
 use strict;
 
 # CONFIGURATION - change to EPrints repository name being processed
-my $repo_name = "caltechthesis";
-my $base_url  = "https://thesis.library.caltech.edu/";  # include trailing /
+my $repo_name = "caltechauthors";
+my $base_url  = "https://authors.library.caltech.edu/";  # include trailing /
  
 # my $debug = 1;
 my $debug = 0;
@@ -120,7 +120,7 @@ while(<IN>)	# loop through input one line at a time
 
 close(IN);
  
-print "NUmber of input lines  processed: $line\n\n";
+print "Number of input lines  processed: $line\n\n";
 
 print "Number of output records created: $records_created\n";
 

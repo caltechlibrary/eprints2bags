@@ -18,8 +18,8 @@
 # CONFIGURATION: change $repo_name variable to name of EPrints repository
 #   being processed before running, e.g. "caltechthesis"
 #
-#               Also change the $base_url variable, e.g.
-#               "https://thesis.library.caltech.edu/"
+#               Also change the $curl user variable, to
+#               an admin user for the current repo.
 #
 ###########################################################################
 # 
@@ -145,7 +145,8 @@ my $debug = 0;
 
 # CONFIGURATION: change to repository name of EPrints repo being processed,
 #   e.g., "caltechthesis"
-my $repo_name = "caltechthesis";
+my $repo_name = "caltechauthors";
+my $curl_user = "admin:admin\@authors";
  
 my $line = 1;
 my $input = '';
@@ -217,7 +218,7 @@ while(<IN>)	# loop through input one line at a time
 		{
 			if (substr($input,4,10) eq "<eprintid>" )
 			{
-				$eprint_number = substr($input,14);
+				$eprint_number = substr($input,14);	
 				chomp($eprint_number);   # remove trailing newline
 				$eprint_number =~ s/<\/eprintid>//;  # remove trailing end tag
 				if ( $debug) 
@@ -298,7 +299,7 @@ my $dirname = $_[1];
 		my $output_file_name = substr($fetch_url, $pos);
 	
 		# use curl to get the document into a variable for output	
-		my $document = `curl -u admin:admin\@thesis $fetch_url 2>&1`;
+		my $document = `curl -u $curl_user $fetch_url 2>&1`;
 
 	        open(DOC_OUT, ">", $target_dir . "/" . $output_file_name) or die "***cannot open " . $output_file_name. " for writing.\n\n";
 
