@@ -202,10 +202,13 @@ while(<IN>)	# loop through input one line at a time
 
 				# fetch all the document files for this record and write
 				# them to the same directory
-				fetch_docs (\@document_urls, $eprint_number);
-				$documents_written += $num_docs;
-				$num_docs = 0;
-				@document_urls = '';
+				if ($num_docs > 0) 
+				{
+					fetch_docs (\@document_urls, $eprint_number);
+					$documents_written += $num_docs;
+					$num_docs = 0;
+					@document_urls = '';
+				}
  
 			}
 		}
