@@ -1,0 +1,428 @@
+<?xml version='1.0' encoding='utf-8'?>
+<eprints xmlns='http://eprints.org/ep2/data/2.0'>
+  <eprint id='https://authors.library.caltech.edu/id/eprint/4'>
+    <eprintid>4</eprintid>
+    <rev_number>3</rev_number>
+    <documents>
+      <document id='https://authors.library.caltech.edu/id/document/693'>
+        <docid>693</docid>
+        <rev_number>1</rev_number>
+        <files>
+          <file id='https://authors.library.caltech.edu/id/file/3'>
+            <fileid>3</fileid>
+            <datasetid>document</datasetid>
+            <objectid>693</objectid>
+            <filename>WUT013.pdf</filename>
+            <mime_type>application/pdf</mime_type>
+            <filesize>2725896</filesize>
+            <mtime>2012-12-26 08:38:52</mtime>
+            <url>https://authors.library.caltech.edu/4/1/WUT013.pdf</url>
+          </file>
+        </files>
+        <eprintid>4</eprintid>
+        <pos>1</pos>
+        <mime_type>application/pdf</mime_type>
+        <format>application/pdf</format>
+        <language>en</language>
+        <security>public</security>
+        <license>other</license>
+        <main>WUT013.pdf</main>
+      </document>
+    </documents>
+    <eprint_status>archive</eprint_status>
+    <userid>3</userid>
+    <dir>disk0/00/00/00/04</dir>
+    <datestamp>2004-08-27</datestamp>
+    <lastmod>2012-12-26 08:38:52</lastmod>
+    <status_changed>2008-07-05 02:52:02</status_changed>
+    <type>article</type>
+    <metadata_visibility>show</metadata_visibility>
+    <item_issues_count>0</item_issues_count>
+    <creators>
+      <item>
+        <name>
+          <family>Wu</family>
+          <given>T. Yao-Tsu</given>
+        </name>
+        <id>Wu-T-Y-T</id>
+      </item>
+      <item>
+        <name>
+          <family>Whitney</family>
+          <given>Arthur K.</given>
+        </name>
+        <id>Whitney-A-K</id>
+      </item>
+      <item>
+        <name>
+          <family>Brennen</family>
+          <given>Christopher</given>
+        </name>
+        <id>Brennen-C-E</id>
+      </item>
+    </creators>
+    <title>Cavity-flow wall effects and correction rules</title>
+    <ispublished>pub</ispublished>
+    <subjects>
+      <item>cls</item>
+    </subjects>
+    <full_text_status>public</full_text_status>
+    <note>&quot;Reprinted with the permission of Cambridge University Press.&quot; 
+
+Received 18 December 1970. 
+
+The authors have pleasure in expressing their appreciation and gratitude to Professor Francis Clauser for invaluable encouragement and to the Division of Engineering and Applied Science of the California Institute of Technology for supporting entirely the experimental investigation using the High-speed Water Tunnel facility of the Hydrodynamics Laboratory.
+
+The early part of the main theoretical study was carried out under the support of the Naval Ship System Command General Hydrodynamics Research Program and Hydrofoil Advanced Development Program, administered by the Naval Ship Research and Development Center, and the latter part under the support of the Office of Naval Research.</note>
+    <abstract>This paper is intended to evaluate the wall effects in the pure-drag case of plane cavity flow past an arbitrary body held in a closed tunnel, and to establish an accurate correction rule. The three theoretical models in common use, namely, the open-wake, Riabouchinsky and re-entrant-jet models, are employed to provide solutions in the form of some functional equations. From these theoretical solutions several different rules for the correction of wall effects are derived for symmetric wedges. These simple correction rules are found to be accurate, as compared with their corresponding exact numerical solutions, for all wedge angles and for small to moderate &apos;tunnel-spacing ratio&apos; (the ratio of body frontal width to tunnel spacing). According to these correction rules, conversion of a drag coefficient, measured experimentally in a closed tunnel, to the corresponding unbounded flow case requires only the data of the conventional cavitation number and the tunnel-spacing ratio if based on the open-wake model, though using the Riabouchinsky model it requires an additional measurement of the minimum pressure along the tunnel wall.
+
+The numerical results for symmetric wedges show that the wall effects invariably result in a lower drag coefficient than in an unbounded flow at the same cavitation number, and that this percentage drag reduction increases with decreasing wedge angle and/or with decreasing tunnel spacing relative to the body frontal width. This indicates that the wall effects are generally more significant for thinner bodies in cavity flows, and they become exceedingly small for sufficiently blunt bodies. Physical explanations for these remarkable  features of cavity-flow wall effects are sought; they are supported by the present experimental investigation of the pressure distribution on the wetted body surface as the flow parameters are varied. It is also found that the theoretical drag coefficient based on the Riabouchinsky model is smaller than that predicted by the open-wake model, all the flow parameters being equal, except when the flow approaches the choked state (with the cavity becoming infinitely long in a closed tunnel), which is the limiting case common to all theoretical models. This difference between the two flow models becomes especially pronounced for smaller wedge angles, shorter cavities, and with tunnel walls farther apart.
+
+In order to gauge the degree of accuracy of these theoretical models in  approximating the real flows, and to ascertain the validity of the correction rules, a series of definitive experiments was carefully designed to complement the theory, and then carried out in a high-speed water tunnel. The measurements on a series of fully cavitating wedges at zero incidence suggest that, of the theoretical models, that due to Riabouchinsky is superior throughout the range tested. The accuracy of the correction rule based on that model has also been firmly established. Although the experimental investigation has been limited to symmetric wedges only, this correction rule (equations (85), (86) of the text) is expected to possess a general validity, at least for symmetric bodies without too large curvatures, since the geometry of the body profile is only implicitly involved in the correction formula. This experimental study is perhaps one of a very few with the particular objective of scrutinizing various theoretical cavity-flow models.</abstract>
+    <date>1971-09-29</date>
+    <date_type>published</date_type>
+    <publication>Journal of Fluid Mechanics</publication>
+    <volume>49</volume>
+    <number>2</number>
+    <pagerange>223-256</pagerange>
+    <id_number>CaltechAUTHORS:WUTjfm71</id_number>
+    <refereed>TRUE</refereed>
+    <issn>0022-1120</issn>
+    <official_url>http://resolver.caltech.edu/CaltechAUTHORS:WUTjfm71</official_url>
+    <rights>No commercial reproduction, distribution, display or performance rights in this work are provided.</rights>
+    <collection>CaltechAUTHORS</collection>
+  </eprint>
+  <eprint id='https://authors.library.caltech.edu/id/eprint/6'>
+    <eprintid>6</eprintid>
+    <rev_number>4</rev_number>
+    <documents>
+      <document id='https://authors.library.caltech.edu/id/document/694'>
+        <docid>694</docid>
+        <rev_number>1</rev_number>
+        <files>
+          <file id='https://authors.library.caltech.edu/id/file/8'>
+            <fileid>8</fileid>
+            <datasetid>document</datasetid>
+            <objectid>694</objectid>
+            <filename>NGS031.pdf</filename>
+            <mime_type>application/pdf</mime_type>
+            <filesize>2620228</filesize>
+            <mtime>2012-12-26 08:38:52</mtime>
+            <url>https://authors.library.caltech.edu/6/1/NGS031.pdf</url>
+          </file>
+        </files>
+        <eprintid>6</eprintid>
+        <pos>1</pos>
+        <mime_type>application/pdf</mime_type>
+        <format>application/pdf</format>
+        <language>en</language>
+        <security>public</security>
+        <license>other</license>
+        <main>NGS031.pdf</main>
+      </document>
+    </documents>
+    <eprint_status>archive</eprint_status>
+    <userid>2</userid>
+    <dir>disk0/00/00/00/06</dir>
+    <datestamp>2004-06-14</datestamp>
+    <lastmod>2017-04-04 20:56:34</lastmod>
+    <status_changed>2008-07-05 02:52:03</status_changed>
+    <type>article</type>
+    <metadata_visibility>show</metadata_visibility>
+    <item_issues_count>0</item_issues_count>
+    <creators>
+      <item>
+        <name>
+          <family>Ng</family>
+          <given>S. L.</given>
+        </name>
+        <id>Ng-Sheung-Lip</id>
+      </item>
+      <item>
+        <name>
+          <family>Brennen</family>
+          <given>C.</given>
+        </name>
+        <id>Brennen-C-E</id>
+      </item>
+    </creators>
+    <title>Experiments on the dynamic behavior of cavitating pumps</title>
+    <ispublished>pub</ispublished>
+    <subjects>
+      <item>cls</item>
+    </subjects>
+    <full_text_status>public</full_text_status>
+    <abstract>This paper describes experiments performed to measure the dynamic transfer matrices for cavitating (and noncavitating) pumps. These transfer matrices describe the relationship between small linear oscillatory perturbations in the pressures and mass flow rates at inlet and discharge from the hydraulic machine. The matrices were deduced from direct measurements of these fluctuating quantities for different modes of excitation of the machine. Results for a cavitating inducer are presented as functions of frequency and mean operating state. Though some of the trends in the data are consistent with existing theoretical models of inducer dynamics, others are not, indicating a need for further theoretical investigation of the dynamic characteristics of such flows. The results exhibit increasingly complex dynamics with increasing cavitation; it appears that the hydraulic machine deviates from an essentially passive response without cavitation to an increasingly active response as the cavitation number is reduced.</abstract>
+    <date>1978-06</date>
+    <date_type>published</date_type>
+    <publication>Journal of Fluids Engineering</publication>
+    <volume>100</volume>
+    <number>2</number>
+    <publisher>American Society of Mechanical Engineers</publisher>
+    <pagerange>166-176</pagerange>
+    <id_number>CaltechAUTHORS:NGSjfe78</id_number>
+    <refereed>TRUE</refereed>
+    <issn>0098-2202</issn>
+    <official_url>http://resolver.caltech.edu/CaltechAUTHORS:NGSjfe78</official_url>
+    <rights>No commercial reproduction, distribution, display or performance rights in this work are provided.
+</rights>
+    <collection>CaltechAUTHORS</collection>
+  </eprint>
+  <eprint id='https://authors.library.caltech.edu/id/eprint/9'>
+    <eprintid>9</eprintid>
+    <rev_number>20</rev_number>
+    <documents>
+      <document id='https://authors.library.caltech.edu/id/document/16066'>
+        <docid>16066</docid>
+        <rev_number>3</rev_number>
+        <files>
+          <file id='https://authors.library.caltech.edu/id/file/38'>
+            <fileid>38</fileid>
+            <datasetid>document</datasetid>
+            <objectid>16066</objectid>
+            <filename>1_Tsien_H_1950.pdf</filename>
+            <mime_type>application/pdf</mime_type>
+            <filesize>580041</filesize>
+            <mtime>2012-12-26 08:38:52</mtime>
+            <url>https://authors.library.caltech.edu/9/3/1_Tsien_H_1950.pdf</url>
+          </file>
+        </files>
+        <eprintid>9</eprintid>
+        <pos>3</pos>
+        <mime_type>application/pdf</mime_type>
+        <format>application/pdf</format>
+        <language>en</language>
+        <security>public</security>
+        <license>other</license>
+        <main>1_Tsien_H_1950.pdf</main>
+        <content>reprint</content>
+      </document>
+      <document id='https://authors.library.caltech.edu/id/document/27770'>
+        <docid>27770</docid>
+        <rev_number>3</rev_number>
+        <files>
+          <file id='https://authors.library.caltech.edu/id/file/1068990'>
+            <fileid>1068990</fileid>
+            <datasetid>document</datasetid>
+            <objectid>27770</objectid>
+            <filename>1_Tsien_H_1950.tif</filename>
+            <mime_type>image/tiff</mime_type>
+            <filesize>4618520</filesize>
+            <mtime>2016-08-16 22:38:47</mtime>
+            <url>https://authors.library.caltech.edu/9/4/1_Tsien_H_1950.tif</url>
+          </file>
+        </files>
+        <eprintid>9</eprintid>
+        <pos>4</pos>
+        <format>image/tiff</format>
+        <language>en</language>
+        <security>internal</security>
+        <license>other</license>
+        <main>1_Tsien_H_1950.tif</main>
+        <content>archival</content>
+      </document>
+    </documents>
+    <eprint_status>archive</eprint_status>
+    <userid>6</userid>
+    <dir>disk0/00/00/00/09</dir>
+    <datestamp>2009-08-10 17:05:53</datestamp>
+    <lastmod>2012-12-26 08:38:52</lastmod>
+    <status_changed>2009-08-10 17:05:53</status_changed>
+    <type>article</type>
+    <metadata_visibility>show</metadata_visibility>
+    <item_issues_count>0</item_issues_count>
+    <creators>
+      <item>
+        <name>
+          <family>Tsien</family>
+          <given>Hsue-Shen</given>
+        </name>
+        <id>Tsien-H-S</id>
+      </item>
+    </creators>
+    <title>Research in rocket and jet propulsion</title>
+    <ispublished>pub</ispublished>
+    <full_text_status>public</full_text_status>
+    <note>Guggenheim Jet Propulsion Center Publication, 1.</note>
+    <abstract>When considering the problems of basic research in rocket and jet propulsion, it is profitable to keep in mind the salient features of rocket- and jet-propulsion engineering.  These are: short duration of operation of the power-plant and extreme intensity of reaction in the motor.</abstract>
+    <date>1950-03</date>
+    <date_type>published</date_type>
+    <publication>Aero Digest</publication>
+    <publisher>Aeronautical Digest Publishing Corporation</publisher>
+    <pagerange>120-125</pagerange>
+    <event_title>Combined Annnual Conventions of the American Rocket Society and the American Society of Engineers</event_title>
+    <event_location>New York</event_location>
+    <event_dates>1 December 1949</event_dates>
+    <event_type>conference</event_type>
+    <id_number>CaltechAUTHORS:JPC001</id_number>
+    <refereed>TRUE</refereed>
+    <issn>0096-4344</issn>
+    <official_url>http://resolver.caltech.edu/CaltechAUTHORS:JPC001</official_url>
+    <referencetext>
+      <item>&apos;:to A. I,. r~OWEuL. &quot;A Guide to Ah:oraft
+Powerplan t Selection,&quot; Aerona1.tioal
+Enginoering Revi6w, Vol. 6, &apos;No.4, pp.
+22-25 (1947)
+S. T. ALFREY. &quot;Non-E:omogeneous Stresses
+In Visco-elaetlc Media,&quot; QU/Krterl&apos;V oj
+AppHoa Meol£a1~io8, Vol. 2, pp. 11S-119
+(1944)
+~. H. S. TSIIllN. &quot;A Generalization of AI·
+frey&apos;s theorem for Visco-elastic Media!&apos;,
+Q1tarterZV of ./lppliea Mecha~w.t (1960)
+~; .T. NIXURADSE. &quot;Gesetzrnlissigkelten d~r
+turbulenten Strtlmung in glatten Roh.
+ren,&quot; Vel&apos; Deut801l. Ing. Forsohung13beft,
+No. 356 (1982)
+5. H. RElICHARDT. &quot;Die WUrmeUbertt&apos;agung
+in tUl&apos;bulonten Relsbungschlchten&quot;,
+Z.a.M.M. Vol. 20. pro 297-328 (1940)
+G. r,&apos;. KRlllTH and M. SUMMERFlJilI,D. &quot;Hea,t
+&apos;l&apos;mnsfor to .Watel&apos; at High Flux DensWes
+with and without Surface Bolling,&quot;
+ASMEl T,ransactlons.
+Alao I &quot;Investigations of F!eat Transfel&apos;
+at High Heat-FlUX: Densities: Experl&apos;
+mental Study with Water of Friction
+Drop and Forced Convection with and,
+without Surface BOiling In Tubes,&quot;
+Progress R6port N. 4-68, Jet Propul·
+sion Laboratory. CIT (1948)
+7. F. KruilI&apos;l&apos;H and M. SVMMIilRFIELD. &quot;Heat
+Transfer fl.&apos;om an Electrically Heated
+Tub&amp; to AnUina at High Heat Flux,&quot;
+Save in &apos;50 - Go by Air
+Proure88 Report No. 4-88, Jet propulsion
+Laboratory, CIT (1919)
+8, P. DuwEiz and H. Z_ WflElElLlllfl. &quot;ExperImental
+Study of Cooling by Injec.
+tion of a FluId through a Po,ous Materla.
+l,&quot; .1, of AIl1-0. Solenoes, vol. 15,
+pp. ~OD-521 (lS4S)
+D. A. C. SR;URLOOK. &quot;Flame Stabilization
+and Propagation In High-Velocity Gas
+Streams,&quot; ,lflltcur Report No. 19, Mass.
+Institute of Technology (1948)
+10. G. HAMEL: &quot;Ubel&apos; elne mit dem Prob·
+lem del&apos; Rakete zusammellhi1.ngende
+Aufgabe del&apos; Verlatlonsrechnung,&quot;
+Z_a.M.M. Vol. 7, pp_ 451-452 (1927)
+11. Z. H. SClII~DEL: Application of I~amjl1t
+to High Altitude S0H1~di7&apos;U Veldclfl8/&apos;
+M. S. &apos;I&apos;hesls, Dept. Aeronautical Engineering,
+Mass. lnst. of Technology
+(1947),</item>
+    </referencetext>
+    <rights>No commercial reproduction, distribution, display or performance rights in this work are provided.</rights>
+    <other_numbering_system>
+      <item>
+        <name>Guggenheim Jet Propulsion Center Publication</name>
+        <id>001</id>
+      </item>
+    </other_numbering_system>
+    <collection>CaltechAUTHORS</collection>
+    <reviewer>Kristin Buxton</reviewer>
+    <local_group>
+      <item>Guggenheim Jet Propulsion Center</item>
+    </local_group>
+  </eprint>
+  <eprint id='https://authors.library.caltech.edu/id/eprint/11'>
+    <eprintid>11</eprintid>
+    <rev_number>4</rev_number>
+    <documents>
+      <document id='https://authors.library.caltech.edu/id/document/695'>
+        <docid>695</docid>
+        <rev_number>2</rev_number>
+        <files>
+          <file id='https://authors.library.caltech.edu/id/file/45'>
+            <fileid>45</fileid>
+            <datasetid>document</datasetid>
+            <objectid>695</objectid>
+            <filename>WAN207.pdf</filename>
+            <mime_type>application/pdf</mime_type>
+            <filesize>896704</filesize>
+            <mtime>2012-12-26 08:38:53</mtime>
+            <url>https://authors.library.caltech.edu/11/1/WAN207.pdf</url>
+          </file>
+        </files>
+        <eprintid>11</eprintid>
+        <pos>1</pos>
+        <mime_type>application/pdf</mime_type>
+        <format>application/pdf</format>
+        <language>en</language>
+        <security>public</security>
+        <license>other</license>
+        <main>WAN207.pdf</main>
+        <relation>
+          <item>
+            <type>http://eprints.org/relation/hasVolatileVersion</type>
+            <uri>https://authors.library.caltech.edu/id/document/42635</uri>
+          </item>
+          <item>
+            <type>http://eprints.org/relation/haspreviewThumbnailVersion</type>
+            <uri>https://authors.library.caltech.edu/id/document/42635</uri>
+          </item>
+          <item>
+            <type>http://eprints.org/relation/hasVersion</type>
+            <uri>https://authors.library.caltech.edu/id/document/42635</uri>
+          </item>
+        </relation>
+      </document>
+    </documents>
+    <eprint_status>archive</eprint_status>
+    <userid>2</userid>
+    <dir>disk0/00/00/00/11</dir>
+    <datestamp>2004-08-13</datestamp>
+    <lastmod>2012-12-26 08:38:53</lastmod>
+    <status_changed>2008-07-05 02:52:03</status_changed>
+    <type>article</type>
+    <metadata_visibility>show</metadata_visibility>
+    <item_issues_count>0</item_issues_count>
+    <creators>
+      <item>
+        <name>
+          <family>Waniewski</family>
+          <given>T. A.</given>
+        </name>
+        <id>Waniewski-T-A</id>
+      </item>
+      <item>
+        <name>
+          <family>Brennen</family>
+          <given>C. E.</given>
+        </name>
+        <id>Brennen-C-E</id>
+      </item>
+      <item>
+        <name>
+          <family>Raichlen</family>
+          <given>F.</given>
+        </name>
+        <id>Raichlen-F</id>
+      </item>
+    </creators>
+    <title>Bow Wave Dynamics</title>
+    <ispublished>pub</ispublished>
+    <subjects>
+      <item>cls</item>
+    </subjects>
+    <full_text_status>public</full_text_status>
+    <note>Manuscript received at SNAME headquarters August 5, 1999; revised manuscript received August 14, 2001.</note>
+    <abstract>Experimental studies of air entrainment by breaking waves are essential for advancing the understanding of these flows and creating valid models. The present study used experimental simulations of a ship bow wave to examine its dynamics and air entrainment processes. The simulated waves were created by a deflecting plate mounted at an angle
+in a supercritical free-surface flow in a flume. Measurements of the bow wave geometry at two scales and also for a bow wave created by a wedge in a towing tank are presented. Contact line and bow wave profile measurements from the different experiments are compared and demonstrate the similarity of the flume simulations to the towing tank
+experiments. The bow wave profile data from the towing tank experiments were used to investigate the scaling of the wave with the flow and the dependence on geometric parameters. In addition, surface disturbances observed on the plunging wave are documented herein because of the role they play in air entrainment. The air entrainment itself is explored in Waniewski et al (2001).</abstract>
+    <date>2002-03-00</date>
+    <date_type>published</date_type>
+    <publication>Journal of Ship Research</publication>
+    <volume>46</volume>
+    <number>1</number>
+    <pagerange>1-15</pagerange>
+    <id_number>CaltechAUTHORS:WANjsr02</id_number>
+    <refereed>TRUE</refereed>
+    <issn>0022-4502</issn>
+    <official_url>http://resolver.caltech.edu/CaltechAUTHORS:WANjsr02</official_url>
+    <rights>No commercial reproduction, distribution, display or performance rights in this work are provided.</rights>
+    <alt_url>http://www.ingenta.com/isis/searching/Expand/ingenta?&amp;pub=infobike://sname/jsr/2002/00000046/00000001/art00001</alt_url>
+    <collection>CaltechAUTHORS</collection>
+  </eprint>
+</eprints>

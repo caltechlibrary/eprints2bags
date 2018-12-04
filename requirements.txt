@@ -1,0 +1,5 @@
+requests>=2.19.1
+bagit>=1.7.0
+plac>=1.0.0
+setuptools>=40.4.2
+lxml>=4.2.5
