@@ -12,7 +12,7 @@ Michael Hucka <mhucka@caltech.edu> -- Caltech Library
 
 This work is based on code originally written in Perl by Besty Coles
 (betsycoles@gmail.com).  The original code can be found in the 'historical'
-subdirectory in the repo at https://github.com/caltechlibrary/eprints2dpn/
+subdirectory in the repo at https://github.com/caltechlibrary/eprints2bag/
 
 Copyright
 ---------
