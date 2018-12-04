@@ -14,15 +14,11 @@ open-source software released under a 3-clause BSD license.  Please see the
 file "LICENSE" for more information.
 '''
 
-import io
 import os
 from   os import path
 from   PIL import Image
-import re
 import sys
-import subprocess
-import warnings
-import webbrowser
+import tarfile
 
 
 # Main functions.
