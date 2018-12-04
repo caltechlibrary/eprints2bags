@@ -11,7 +11,7 @@ Historical note
 ---------------
 
 Much of the original algorithms and ideas for this code came from the
-eprints2dpn (https://github.com/caltechlibrary/eprints2dpn) collection of
+eprints2bag (https://github.com/caltechlibrary/eprints2bag) collection of
 Perl scripts written by Betsy Coles in early 2018.
 
 Authors
@@ -39,10 +39,11 @@ import requests
 import shutil
 import tarfile
 
-import eprints2dpn
-from   eprints2dpn.network import network_available, download_files
-from   eprints2dpn.files import readable, writable, make_dir, make_tarball
-from   eprints2dpn.eprints import *
+import eprints2bag
+from   eprints2bag.constants import ON_WINDOWS
+from   eprints2bag.network import network_available, download_files
+from   eprints2bag.files import readable, writable, make_dir, make_tarball
+from   eprints2bag.eprints import *
 
 
 # Main program.
@@ -63,7 +64,7 @@ from   eprints2dpn.eprints import *
 def main(base_name = 'B', dc_file = 'D', epxml_file = 'E', fetch_list = 'F',
          output_dir = 'O', user = 'U', pswd = 'P', debug = False,
          no_bags = False):
-    '''eprints2dpn bags up Eprints content for deposition to DPN.
+    '''eprints2bag bags up CODA Eprints content as BagIt bags.
 
 The eprints records to be written will be limited to the list of eprint
 numbers found in the file given by the option -f.  If no -f option is given,
@@ -230,7 +231,7 @@ if ON_WINDOWS:
 
 # Main entry point.
 # ......................................................................
-# The following allows users to invoke this using "python3 -m handprint".
+# The following allows users to invoke this using "python3 -m eprints2bag".
 
 if __name__ == '__main__':
     plac.call(main)
