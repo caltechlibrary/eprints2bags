@@ -1,11 +1,32 @@
-#!/usr/bin/env python3
-# =============================================================================
-# @file    eprints2dpn.py
-# @brief   Create DPN-ready gzip'ed tarballs of BagIt bags from Eprints content
-# @author  Michael Hucka <mhucka@caltech.edu>
-# @license Please see the file named LICENSE in the project directory
-# @website https://github.com/caltechlibrary/eprints2dpn
-# =============================================================================
+'''
+eprints2bag: download records from CODA bag them up
+
+Materials in EPrints must be extracted before they can be moved to a
+preservation system such as DPN or another long-term storage or dark archive.
+_Eprints2bag_ encapsulates the processes needed to gather the materials and
+bundle them up in BagIt bags.  You indicate which records from CODA you want
+(based on record numbers), and it will download the content and bag it up.
+
+Historical note
+---------------
+
+Much of the original algorithms and ideas for this code came from the
+eprints2dpn (https://github.com/caltechlibrary/eprints2dpn) collection of
+Perl scripts written by Betsy Coles in early 2018.
+
+Authors
+-------
+
+Michael Hucka <mhucka@caltech.edu> -- Caltech Library
+Betsy Coles <betsycoles@gmail.com> -- Caltech Library
+
+Copyright
+---------
+
+Copyright (c) 2018 by the California Institute of Technology.  This code is
+open-source software released under a 3-clause BSD license.  Please see the
+file "LICENSE" for more information.
+'''
 
 import bagit
 from   collections import defaultdict
@@ -17,6 +38,11 @@ import plac
 import requests
 import shutil
 import tarfile
+
+import eprints2dpn
+from   eprints2dpn.network import network_available, download_files
+from   eprints2dpn.files import readable, writable, make_dir, make_tarball
+from   eprints2dpn.eprints import *
 
 
 # Main program.
@@ -194,163 +220,12 @@ with a restructured directory corresponding to the BagIt format.
             print('*** Note: the following requested records were not found:')
             print('*** ' + ', '.join(missing) + '.')
 
-
-# Helper functions.
-# ......................................................................
 
-def readable(dest):
-    '''Returns True if the given 'dest' is accessible and readable.'''
-    return os.access(dest, os.F_OK | os.R_OK)
+# If this is windows, we want the command-line args to use slash intead
+# of hyphen.
 
-
-def writable(dest):
-    '''Returns True if the destination is writable.'''
-    return os.access(dest, os.F_OK | os.W_OK)
-
-
-def make_dir(dir_path):
-    try:
-        os.mkdir(dir_path)
-    except OSError as err:
-        if err.errno == errno.EEXIST:
-            print('Reusing existing directory {}'.format(dir_path))
-        else:
-            raise
-
-
-def make_tarball(source_dir, tarball_path):
-    current_dir = os.getcwd()
-    try:
-        # cd to get a tarball with only the source_dir and not the full path.
-        os.chdir(path.dirname(source_dir))
-        with tarfile.open(tarball_path, "w:gz") as tar_file:
-            for root, dirs, files in os.walk(path.basename(source_dir)):
-                for file in files:
-                    tar_file.add(path.join(root, file))
-    finally:
-        os.chdir(current_dir)
-
-
-def eprint_dc_dict(dc_text):
-    '''Take a block of text representing Dublin Core, and return a dict.'''
-    # Each item is a string representing DC info, with embedded newlines.  We
-    # split on the newlines, then split again on the ':' and enter the pairs
-    # from the ':' split into a dictionary.
-    record = defaultdict(list)
-    for pair in [line.split(':', 1) for line in dc_text.split('\n')]:
-        if len(pair) == 2:
-            record[pair[0].strip()].append(pair[1].strip())
-    return record
-
-
-def eprint_xml(number, epxml):
-    node = epxml.find(xpath_for_record(number))
-    if node is None:
-        exit('Cannot find {} in XML file'.format(number))
-    else:
-        return node
-
-
-def eprint_number(record):
-    # There is no explicit eprints identifier in the DC format (why not?), so
-    # we have to get it from the URL stored as one of the 'relation' values.
-    # This will be a string like 'https://authors.library.caltech.edu/4/'.
-    if 'relation' not in record:
-        print('Record without a "relation" value: {}'.format(record['title']))
-        return ''
-    for value in record['relation']:
-        if value.startswith('https://authors.library.caltech.edu'):
-            # Remove trailing slash and grab the number at the end.
-            return value.strip('/').split('/')[-1]
-
-
-def eprint_documents(xml):
-    files = []
-    for document in xml.findall('.//{http://eprints.org/ep2/data/2.0}documents'):
-        for url in document.findall('.//{http://eprints.org/ep2/data/2.0}url'):
-            files.append(url.text)
-    return files
-
-
-def write_record(number, dc, xml, base_name, dir_path):
-    # Write out a text file containing the DC content.
-    dc_file_name = base_name + '-' + str(number) + '-DC.txt'
-    with open(path.join(dir_path, dc_file_name), 'w') as file:
-        file.write(dc)
-
-    # Write out another file containing the XML content.
-    xml_file_name = base_name + '-' + str(number) + '.xml'
-    with open(path.join(dir_path, xml_file_name), 'w') as file:
-        file.write("<?xml version='1.0' encoding='utf-8'?>\n")
-        file.write("<eprints xmlns='http://eprints.org/ep2/data/2.0'>\n")
-        file.write('  ' + etree.tostring(xml, encoding='UTF-8').decode().rstrip() + '\n')
-        file.write("</eprints>")
-
-
-def xpath_for_record(number):
-    ns = '{http://eprints.org/ep2/data/2.0}'
-    prefix = 'https://authors.library.caltech.edu/id/eprint'
-    return './/{}eprint[@id="{}/{}"]'.format(ns, prefix, number)
-
-
-def download_files(downloads_list, user, pswd, output_dir):
-    for item in downloads_list:
-        file = path.realpath(path.join(output_dir, path.basename(item)))
-        print('Downloading {}'.format(item))
-        error = download(item, user, pswd, file)
-        if error:
-            print('*** Failed to download {}'.format(item))
-            print('*** Reason: {}'.format(error))
-
-
-def download(url, user, password, local_destination):
-    '''Download the 'url' to the file 'local_destination'.  If an error
-    occurs, returns a string describing the reason for failure; otherwise,
-    returns False to indicate no error occurred.
-    '''
-    try:
-        req = requests.get(url, stream = True, auth = (user, password))
-    except requests.exceptions.ConnectionError as err:
-        if err.args and isinstance(err.args[0], urllib3.exceptions.MaxRetryError):
-            return 'Unable to resolve destination host'
-        else:
-            return str(err)
-    except requests.exceptions.InvalidSchema as err:
-        return 'Unsupported network protocol'
-    except Exception as err:
-        return str(err)
-
-    # Interpret the response.
-    code = req.status_code
-    if code == 202:
-        # Code 202 = Accepted, "received but not yet acted upon."
-        sleep(1)                        # Sleep a short time and try again.
-        return download(url, local_destination)
-    elif 200 <= code < 400:
-        # The following originally started out as the code here:
-        # https://stackoverflow.com/a/16696317/743730
-        with open(local_destination, 'wb') as f:
-            for chunk in req.iter_content(chunk_size = 1024):
-                if chunk:
-                    f.write(chunk)
-        req.close()
-        return False                    # No error.
-    elif code in [401, 402, 403, 407, 451, 511]:
-        return "Access is forbidden or requires authentication"
-    elif code in [404, 410]:
-        return "No content found at this location"
-    elif code in [405, 406, 409, 411, 412, 414, 417, 428, 431, 505, 510]:
-        return "Server returned code {} -- please report this".format(code)
-    elif code in [415, 416]:
-        return "Server rejected the request"
-    elif code == 429:
-        return "Server blocking further requests due to rate limits"
-    elif code == 503:
-        return "Server is unavailable -- try again later"
-    elif code in [500, 501, 502, 506, 507, 508]:
-        return "Internal server error"
-    else:
-        return "Unable to resolve URL"
+if ON_WINDOWS:
+    main.prefix_chars = '/'
 
 
 # Main entry point.
