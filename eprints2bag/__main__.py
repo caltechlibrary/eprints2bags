@@ -64,17 +64,17 @@ from   eprints2bag.eprints import *
 def main(base_name = 'B', dc_file = 'D', epxml_file = 'E', fetch_list = 'F',
          output_dir = 'O', user = 'U', pswd = 'P', debug = False,
          no_bags = False):
-    '''eprints2bag bags up CODA Eprints content as BagIt bags.
+    '''eprints2bag bags up CODA EPrints content as BagIt bags.
 
 The eprints records to be written will be limited to the list of eprint
 numbers found in the file given by the option -f.  If no -f option is given,
-all Eprints records found in the DC file will be used.  The value of -f can
+all EPrints records found in the DC file will be used.  The value of -f can
 also be one or more integers separated by commas (e.g., -f 54602,54604), or a
 range of numbers separated by a dash (e.g., -f 1-100, which is interpreted as
 the list of numbers 1, 2, ..., 100 inclusive).  In those cases, the records
 written will be limited to those numbered.  (Useful for testing.)
 
-A Dublin Core (DC) file from Eprints must be provided as option -d, and
+A Dublin Core (DC) file from EPrints must be provided as option -d, and
 an EP3 XML file has to be provided using option -e.  This program uses the
 DC file as its working basis; i.e., it iterates over the DC file and looks up
 associated information in the XML file, and not the other way around.
@@ -84,7 +84,7 @@ option -o.  If the directory does not exist, this program will create it.  If
 the directory does exist, it will be overwritten with the new content.  The
 result of running this program will be individual directories underneath the
 directory -o, with each subdirectory named according to "BASENAME-NUMBER"
-where BASENAME is given by the -b option and the NUMBER is the Eprints number
+where BASENAME is given by the -b option and the NUMBER is the EPrints number
 for a given entry).  The BASENAME is "caltechauthors" by default.  Each
 directory will contain has DC, EP3XML, and document file(s) found in the
 entry.
@@ -213,7 +213,7 @@ with a restructured directory corresponding to the BagIt format.
             import pdb; pdb.set_trace()
         print('{}\n{}'.format(str(err), traceback.format_exc()))
 
-    print('Done. Wrote {} Eprints records to {}/.'.format(count, output_dir))
+    print('Done. Wrote {} EPrints records to {}/.'.format(count, output_dir))
     if len(missing) > 0:
         if len(missing) > 500:
             print('*** Note: > 500 records requested with -f were not found')
