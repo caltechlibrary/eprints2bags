@@ -1,5 +1,5 @@
 '''
-exceptions.py: exceptions defined by eprints2bag
+exceptions.py: exceptions defined by eprints2bags
 
 Authors
 -------
@@ -43,5 +43,5 @@ class RateLimitExceeded(Exception):
     pass
 
 class InternalError(Exception):
-    '''Unrecoverable problem involving eprints2bag itself.'''
+    '''Unrecoverable problem involving eprints2bags itself.'''
     pass

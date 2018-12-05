@@ -1,5 +1,5 @@
 '''
-network.py: miscellaneous network utilities for eprints2bag.
+network.py: miscellaneous network utilities for eprints2bags.
 
 Authors
 -------
@@ -23,9 +23,9 @@ import ssl
 import urllib
 from   urllib import request
 
-import eprints2bag
-from   eprints2bag.debug import log
-from   eprints2bag.exceptions import *
+import eprints2bags
+from   eprints2bags.debug import log
+from   eprints2bags.exceptions import *
 
 
 # Main functions.

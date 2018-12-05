@@ -20,9 +20,9 @@ import os
 from   os import path
 import shutil
 
-import eprints2bag
-from   eprints2bag.exceptions import *
-from   eprints2bag.network import net
+import eprints2bags
+from   eprints2bags.exceptions import *
+from   eprints2bags.network import net
 
 
 # Constants.

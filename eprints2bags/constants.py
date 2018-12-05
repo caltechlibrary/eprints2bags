@@ -1,5 +1,5 @@
 '''
-constants: global constants for eprints2bag.
+constants: global constants for eprints2bags.
 
 Authors
 -------
