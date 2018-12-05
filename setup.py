@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # =============================================================================
 # @file    setup.py
-# @brief   Eprints2dpn setup file
+# @brief   eprints2bags setup file
 # @author  Michael Hucka <mhucka@caltech.edu>
 # @license Please see the file named LICENSE in the project directory
-# @website https://github.com/caltechlibrary/eprints2dpn
+# @website https://github.com/caltechlibrary/eprints2bags
 # =============================================================================
 
 import os
@@ -20,13 +20,13 @@ with open(path.join(here, 'requirements.txt')) as f:
 with open("README.md", "r", errors = 'ignore') as f:
     readme = f.read()
 
-# The following reads the variables without doing an "import eprints2dpn",
+# The following reads the variables without doing an "import eprints2bags",
 # because the latter will cause the python execution environment to fail if
 # any dependencies are not already installed -- negating most of the reason
 # we're using setup() in the first place.  This code avoids eval, for security.
 
 version = {}
-with open(path.join(here, 'eprints2dpn/__version__.py')) as f:
+with open(path.join(here, 'eprints2bags/__version__.py')) as f:
     text = f.read().rstrip().splitlines()
     vars = [line for line in text if line.startswith('__') and '=' in line]
     for v in vars:
@@ -44,8 +44,9 @@ setup(
     author           = version['__author__'],
     author_email     = version['__email__'],
     license          = version['__license__'],
-    keywords         = "DPN archives BagIt",
-    packages         = ['eprints2dpn'],
+    keywords         = "EPrints archives preservation BagIt",
+    packages         = ['eprints2bags'],
+    scripts          = ['bin/eprints2bags'],
     install_requires = reqs,
     platforms        = 'any',
     python_requires  = '>=3',
