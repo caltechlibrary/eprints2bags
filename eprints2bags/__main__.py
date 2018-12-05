@@ -1,9 +1,9 @@
 '''
-eprints2bag: download records from CODA bag them up
+eprints2bags: download records from CODA bag them up
 
 Materials in EPrints must be extracted before they can be moved to a
 preservation system such as DPN or another long-term storage or dark archive.
-The program _eprints2bag_ encapsulates the processes needed to gather the
+The program _eprints2bags_ encapsulates the processes needed to gather the
 materials and bundle them up in BagIt bags.
 
 Historical note
@@ -40,11 +40,11 @@ from   time import sleep
 from   timeit import default_timer as timer
 import traceback
 
-import eprints2bag
-from   eprints2bag.constants import ON_WINDOWS
-from   eprints2bag.network import network_available, download_files
-from   eprints2bag.files import readable, writable, make_dir, make_tarball
-from   eprints2bag.eprints import *
+import eprints2bags
+from   eprints2bags.constants import ON_WINDOWS
+from   eprints2bags.network import network_available, download_files
+from   eprints2bags.files import readable, writable, make_dir, make_tarball
+from   eprints2bags.eprints import *
 
 
 # Main program.
@@ -68,7 +68,7 @@ from   eprints2bag.eprints import *
 def main(api_url = 'A', base_name = 'B', delay = 100, fetch_list = 'F',
          missing_ok = False, output_dir = 'O', user = 'U', password = 'P',
          debug = False, no_bags = False, no_color = False, version = False):
-    '''eprints2bag bags up EPrints content as BagIt bags.
+    '''eprints2bags bags up EPrints content as BagIt bags.
 
 This program contacts an EPrints REST server whose network API is accessible
 at the URL given by the command-line option -a (or /a on Windows).  A typical
@@ -257,15 +257,15 @@ if ON_WINDOWS:
 # ......................................................................
 
 def print_version():
-    print('{} version {}'.format(eprints2bag.__title__, eprints2bag.__version__))
-    print('Author: {}'.format(eprints2bag.__author__))
-    print('URL: {}'.format(eprints2bag.__url__))
-    print('License: {}'.format(eprints2bag.__license__))
+    print('{} version {}'.format(eprints2bags.__title__, eprints2bags.__version__))
+    print('Author: {}'.format(eprints2bags.__author__))
+    print('URL: {}'.format(eprints2bags.__url__))
+    print('License: {}'.format(eprints2bags.__license__))
 
 
 # Main entry point.
 # ......................................................................
-# The following allows users to invoke this using "python3 -m eprints2bag".
+# The following allows users to invoke this using "python3 -m eprints2bags".
 
 if __name__ == '__main__':
     plac.call(main)
