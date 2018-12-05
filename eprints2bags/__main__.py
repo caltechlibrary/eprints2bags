@@ -1,15 +1,15 @@
 '''
-eprints2bags: download records from CODA bag them up
+eprints2bags: download records from an EPrints server and bag them up
 
 Materials in EPrints must be extracted before they can be moved to a
 preservation system such as DPN or another long-term storage or dark archive.
-The program _eprints2bags_ encapsulates the processes needed to gather the
+The program eprints2bags encapsulates the processes needed to gather the
 materials and bundle them up in BagIt bags.
 
 Historical note
 ---------------
 
-Much of the original algorithms and ideas for this code came from the
+The original idea and some starting algorithms for this code came from the
 eprints2dpn (https://github.com/caltechlibrary/eprints2dpn) collection of
 Perl scripts written by Betsy Coles in early 2018.
 
