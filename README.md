@@ -31,6 +31,18 @@ Materials in EPrints must be extracted before they can be moved to a preservatio
 ✺ Installation instructions
 ---------------------------
 
+The following is probably the simplest and most direct way to install this software on your computer, as well as update an existing copy if you have already installed eprints2bags and a new version has been released:
+```sh
+sudo python3 -m pip install git+https://github.com/caltechlibrary/eprints2bags.git --upgrade
+```
+
+Alternatively, you can instead clone this GitHub repository and then run `setup.py` manually.  First, create a directory somewhere on your computer where you want to store the files, and cd to it from a terminal shell.  Next, execute the following commands:
+```sh
+git clone https://github.com/caltechlibrary/eprints2bags.git
+cd eprints2bags
+sudo python3 -m pip install . --upgrade
+```
+
 ▶︎ Running eprints2bags
 ---------------------
 
