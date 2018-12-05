@@ -37,6 +37,8 @@ import plac
 import requests
 import shutil
 import tarfile
+from   time import sleep
+from   timeit import default_timer as timer
 import traceback
 
 import eprints2bag
@@ -50,79 +52,106 @@ from   eprints2bag.eprints import *
 # ......................................................................
 
 @plac.annotations(
-    base_name  = ('use base name "B" for subdirectory names',   'option', 'b'),
-    dc_file    = ('read DC terms from file "D"',                'option', 'd'),
-    epxml_file = ('read EP3 XML content from file "E"',         'option', 'e'),
-    fetch_list = ('read list of records to get from file "F"',  'option', 'f'),
-    output_dir = ('write output to directory "O"',              'option', 'o'),
-    pswd       = ('eprints user password',                      'option', 'p'),
-    user       = ('eprints user name',                          'option', 'u'),
-    debug      = ('turn on debugging',                          'flag',   'D'),
-    no_bags    = ('do not create bags; just leave the content', 'flag',   'N'),
+    api_url    = ('the URL for the REST API of your server',         'option', 'a'),
+    base_name  = ('use base name "B" for subdirectory names',        'option', 'b'),
+    delay      = ('wait time between fetches (default: 100 ms)',     'option', 'd'),
+    fetch_list = ('read file "F" for list of records to get',        'option', 'f'),
+    missing_ok = ('do not count missing records as an error',        'flag',   'm'),
+    output_dir = ('write output to directory "O"',                   'option', 'o'),
+    password   = ('EPrints server user password',                    'option', 'p'),
+    user       = ('EPrints server user login name',                  'option', 'u'),
+    no_bags    = ('do not create bags; just leave the content',      'flag',   'B'),
+    no_color   = ('do not color-code terminal output (default: do)', 'flag',   'C'),
+    debug      = ('turn on debugging',                               'flag',   'D'),
+    version    = ('print version info and exit',                     'flag',   'V'),
 )
 
-def main(base_name = 'B', dc_file = 'D', epxml_file = 'E', fetch_list = 'F',
-         output_dir = 'O', user = 'U', pswd = 'P', debug = False,
-         no_bags = False):
-    '''eprints2bag bags up CODA EPrints content as BagIt bags.
+def main(api_url = 'A', base_name = 'B', delay = 100, fetch_list = 'F',
+         missing_ok = False, output_dir = 'O', user = 'U', password = 'P',
+         debug = False, no_bags = False, no_color = False, version = False):
+    '''eprints2bag bags up EPrints content as BagIt bags.
 
-The eprints records to be written will be limited to the list of eprint
-numbers found in the file given by the option -f.  If no -f option is given,
-all EPrints records found in the DC file will be used.  The value of -f can
-also be one or more integers separated by commas (e.g., -f 54602,54604), or a
-range of numbers separated by a dash (e.g., -f 1-100, which is interpreted as
-the list of numbers 1, 2, ..., 100 inclusive).  In those cases, the records
-written will be limited to those numbered.  (Useful for testing.)
+This program contacts an EPrints server whose network API is accessible at
+the URL given by the command-line option -a (or /a on Windows).  A typical
+EPrints API URL has the form "https://server.institution.edu/rest".
 
-A Dublin Core (DC) file from EPrints must be provided as option -d, and
-an EP3 XML file has to be provided using option -e.  This program uses the
-DC file as its working basis; i.e., it iterates over the DC file and looks up
-associated information in the XML file, and not the other way around.
+The EPrints records to be written will be limited to the list of eprint
+numbers found in the file given by the option -f (or /f on Windows).  If no
+-f option is given, this program will download all the contents available at
+the given EPrints server.  The value of -f can also be one or more integers
+separated by commas (e.g., -f 54602,54604), or a range of numbers separated
+by a dash (e.g., -f 1-100, which is interpreted as the list of numbers 1, 2,
+..., 100 inclusive).  In those cases, the records written will be limited to
+those numbered.
+
+By default, if a record requested or implied by the arguments to -f is
+missing from the EPrints server, this will count as an error and stop
+execution of the program.  If the option -m (or /m on Windows) is given,
+missing records will be ignored.
 
 This program writes the output in the directory given by the command line
-option -o.  If the directory does not exist, this program will create it.  If
-the directory does exist, it will be overwritten with the new content.  The
-result of running this program will be individual directories underneath the
-directory -o, with each subdirectory named according to "BASENAME-NUMBER"
-where BASENAME is given by the -b option and the NUMBER is the EPrints number
-for a given entry).  The BASENAME is "caltechauthors" by default.  Each
-directory will contain has DC, EP3XML, and document file(s) found in the
-entry.
+option -o (or /o on Windows).  If the directory does not exist, this program
+will create it.  If the directory does exist, it will be overwritten with the
+new content.  The result of running this program will be individual
+directories underneath the directory given by the -o option, with each
+subdirectory named according to the EPrints record number (e.g.,
+/path/to/output/430, /path/to/output/431, ...).  If the -b option (/b on
+Windows) is given, the subdirectory names are changed to have the form
+"BASENAME-NUMBER" where BASENAME is the text string provided with the -b
+option and the NUMBER is the EPrints number for a given entry.
 
-Documents associated with each record will be fetched over the network.  The
-list of documents for each record is determined from XML file, in the
-<documents> element.  Downloading some documents requires using a user
-login and password.  These can be supplied using the command-line arguments
--u and -p, respectively.
+Each directory will contain an EP3XML XML file and additional document
+file(s) associated with the EPrints record in question.  Documents associated
+with each record will be fetched over the network.  The list of documents for
+each record is determined from XML file, in the <documents> element.
+
+Downloading some documents may require using a user login and password.
+These can be supplied using the command-line arguments -u and -p,
+respectively (/u and /p on Windows).
 
 The final step of this program is to create BagIt bags from the contents of
 the subdirectories created for each record, then tar up and gzip the bag
-directory.  This is done by default, after the documents are downloade for
-each record, unless the -N option is given.  Note that creating bags is a
-destructive operation: it replaces the individual directories of each record
-with a restructured directory corresponding to the BagIt format.
+directory.  This is done by default, after the documents are downloaded for
+each record, unless the -B option (/B on Windows) is given.  Note that
+creating bags is a destructive operation: it replaces the individual
+directories of each record with a restructured directory corresponding to the
+BagIt format.
+
+Beware that some file systems have limitations on the number of subdirectories
+that can be created, which directly impacts how many record subdirectories
+can be created by this program.  In particular, note that Linux ext2 and ext3
+file systems are limited to 31,998 subdirectories.  This means you cannot
+grab over 32,000 entries at a time from an EPrints server.
+
+It is also noteworthy that hitting a server for tens of thousands of records
+and documents in rapid succession is likely to draw suspicion from server
+administrators.  By default, this program inserts a small delay between
+record fetches (adjustable using the -d command-line option), which may be
+too short in some cases.  Setting the value to 0 is also possible, but don't
+complain if doing so gets you blocked or banned from an institution's servers.
 '''
     # Process arguments -------------------------------------------------------
 
-    if dc_file == 'D' or epxml_file == 'E':
-        exit('Must provide values for both the -d and -e options.')
+    prefix = '/' if ON_WINDOWS else '-'
+    hint = '(Hint: use {}h for help.)'.format(prefix)
+
+    if debug:
+        set_debug(True)
+    if version:
+        print_version()
+        exit()
+    if not network_available():
+        exit('No network.')
+
+    if api_url == 'A':
+        exit('Must provide a URL for the EPrints API. {}'.format(hint))
+    elif not api_url.startswith('http'):
+        exit('Argument to {}a must be a full URL.'.format(prefix))
 
     if base_name == 'B':
-        base_name = 'caltechauthors'
-
-    if not path.isabs(dc_file):
-        dc_file = path.realpath(path.join(os.getcwd(), dc_file))
-    if not path.exists(dc_file):
-        exit('File not found: {}'.format(dc_file))
-    if not readable(dc_file):
-        exit('File not readable: {}'.format(dc_file))
-
-    if not path.isabs(epxml_file):
-        epxml_file = path.realpath(path.join(os.getcwd(), epxml_file))
-    if not path.exists(epxml_file):
-        exit('File not found: {}'.format(epxml_file))
-    if not readable(epxml_file):
-        exit('File not readable: {}'.format(epxml_file))
+        name_prefix = ''
+    else:
+        name_prefix = base_name + '-'
 
     # Wanted is a list of strings, not of ints, to avoid repeated conversions.
     if ',' in fetch_list or fetch_list.isdigit():
@@ -153,24 +182,16 @@ with a restructured directory corresponding to the BagIt format.
 
     if user == 'U':
         user = None
-    if pswd == 'P':
-        pswd = None
+    if password == 'P':
+        password = None
 
     # Do the real work --------------------------------------------------------
 
     try:
-        print('Reading {} ...'.format(dc_file))
-        # Reading the entire file into memory is inefficient, but works for
-        # now.  When the day comes when there are too many entries for this
-        # approach, we can rewrite this then.
-        with open(dc_file, 'r', encoding = 'utf-8-sig') as file:
-            dc_content = file.read().split('\n\n')
-
-        if len(wanted) >= 31998 or (not wanted and len(dc_content) >= 31998):
+        if not wanted:
+            wanted = eprints_records_list(api_url, user, password)
+        if len(wanted) >= 31998:
             exit("Can't process more than 31,998 entries due to file system limitations.")
-
-        print('Reading {} ...'.format(epxml_file))
-        epxml_content = etree.parse(epxml_file).getroot()
 
         print('Output will be written under directory {}'.format(output_dir))
         if not path.exists(output_dir):
@@ -178,21 +199,22 @@ with a restructured directory corresponding to the BagIt format.
 
         count = 0
         missing = wanted.copy()
-        for dc_blob in dc_content:
-            record = eprint_dc_dict(dc_blob)
-            number = eprint_number(record)
-            # Skip if not in our wanted list and we're not writing everything.
-            if wanted and number not in wanted:
-                continue
+        for number in wanted:
+            try:
+                xml_element = eprints_xml(number, api_url, user, password)
+            except NoContent:
+                if missing_ok:
+                    continue
+                else:
+                    raise
             # Create the output subdirectory and write the DC and XML output.
-            record_dir = path.join(output_dir, base_name + '-' + str(number))
+            record_dir = path.join(output_dir, name_prefix + str(number))
             print('Creating {}'.format(record_dir))
             make_dir(record_dir)
-            xml_element = eprint_xml(number, epxml_content)
-            write_record(number, dc_blob, xml_element, base_name, record_dir)
+            write_record(number, xml_element, name_prefix, record_dir)
             # Download any documents referenced in the XML record.
-            associated_documents = eprint_documents(xml_element)
-            download_files(associated_documents, user, pswd, record_dir)
+            associated_documents = eprints_documents(xml_element)
+            download_files(associated_documents, user, password, record_dir)
             # Bag up, tar up, and gzip the directory by default.
             if not no_bags:
                 print('Making bag out of {}'.format(record_dir))
@@ -206,6 +228,8 @@ with a restructured directory corresponding to the BagIt format.
             count += 1
             if wanted and number in wanted:
                 missing.remove(number)
+            if delay:
+                sleep(delay/1000)
     except KeyboardInterrupt as err:
         exit('Quitting.')
     except Exception as err:
@@ -227,6 +251,16 @@ with a restructured directory corresponding to the BagIt format.
 
 if ON_WINDOWS:
     main.prefix_chars = '/'
+
+
+# Helper functions.
+# ......................................................................
+
+def print_version():
+    print('{} version {}'.format(eprints2bag.__title__, eprints2bag.__version__))
+    print('Author: {}'.format(eprints2bag.__author__))
+    print('URL: {}'.format(eprints2bag.__url__))
+    print('License: {}'.format(eprints2bag.__license__))
 
 
 # Main entry point.
