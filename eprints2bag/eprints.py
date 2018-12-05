@@ -1,5 +1,5 @@
 '''
-eprints.py: Eprints-specific utilities
+eprints.py: EPrints-specific utilities
 
 Authors
 -------
@@ -19,6 +19,15 @@ import lxml.etree as etree
 import os
 from   os import path
 import shutil
+
+
+# Constants.
+# .............................................................................
+
+_EPRINTS_XMLNS = 'http://eprints.org/ep2/data/2.0'
+'''
+XML namespace used in EPrints XML output.
+'''
 
 
 # Main functions.
@@ -59,8 +68,8 @@ def eprint_number(record):
 
 def eprint_documents(xml):
     files = []
-    for document in xml.findall('.//{http://eprints.org/ep2/data/2.0}documents'):
-        for url in document.findall('.//{http://eprints.org/ep2/data/2.0}url'):
+    for document in xml.findall('.//{{}}documents'.format(_EPRINTS_XMLNS)):
+        for url in document.findall('.//{{}}url'.format(_EPRINTS_XMLNS)):
             files.append(url.text)
     return files
 
@@ -75,12 +84,11 @@ def write_record(number, dc, xml, base_name, dir_path):
     xml_file_name = base_name + '-' + str(number) + '.xml'
     with open(path.join(dir_path, xml_file_name), 'w') as file:
         file.write("<?xml version='1.0' encoding='utf-8'?>\n")
-        file.write("<eprints xmlns='http://eprints.org/ep2/data/2.0'>\n")
+        file.write("<eprints xmlns=''>\n".foramt(_EPRINTS_XMLNS))
         file.write('  ' + etree.tostring(xml, encoding='UTF-8').decode().rstrip() + '\n')
         file.write("</eprints>")
 
 
 def xpath_for_record(number):
-    ns = '{http://eprints.org/ep2/data/2.0}'
     prefix = 'https://authors.library.caltech.edu/id/eprint'
-    return './/{}eprint[@id="{}/{}"]'.format(ns, prefix, number)
+    return './/{{}}eprint[@id="{}/{}"]'.format(_EPRINTS_XMLNS, prefix, number)
