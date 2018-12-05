@@ -127,8 +127,8 @@ It is also noteworthy that hitting a server for tens of thousands of records
 and documents in rapid succession is likely to draw suspicion from server
 administrators.  By default, this program inserts a small delay between
 record fetches (adjustable using the -d command-line option), which may be
-too short in some cases.  Setting the value to 0 is also possible, but don't
-complain if doing so gets you blocked or banned from an institution's servers.
+too short in some cases.  Setting the value to 0 is also possible, but might
+get you blocked or banned from an institution's servers.
 '''
     # Process arguments -------------------------------------------------------
 
