@@ -1,8 +1,8 @@
 '''
-Eprints2bag: package up CODA materials as BagIt bags
+eprints2bag: package up CODA materials as BagIt bags
 
 This is a program to encapsulate the process of downloading content from
-Eprints and encapsulating it as BagIt-format bags for deposition into DPN
+EPrints and encapsulating it as BagIt-format bags for deposition into DPN
 (the Digital Preservation Network) or other storage/archiving systems.
 
 Authors

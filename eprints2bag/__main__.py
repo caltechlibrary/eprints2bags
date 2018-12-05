@@ -3,9 +3,10 @@ eprints2bag: download records from CODA bag them up
 
 Materials in EPrints must be extracted before they can be moved to a
 preservation system such as DPN or another long-term storage or dark archive.
-_Eprints2bag_ encapsulates the processes needed to gather the materials and
-bundle them up in BagIt bags.  You indicate which records from CODA you want
-(based on record numbers), and it will download the content and bag it up.
+The program _eprints2bag_ encapsulates the processes needed to gather the
+materials and bundle them up in BagIt bags.  You indicate which records from
+CODA you want (based on record numbers), and it will download the content and
+bag it up.
 
 Historical note
 ---------------

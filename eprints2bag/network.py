@@ -1,5 +1,5 @@
 '''
-network.py: miscellaneous network utilities for Holdit.
+network.py: miscellaneous network utilities for eprints2bag.
 
 Authors
 -------
