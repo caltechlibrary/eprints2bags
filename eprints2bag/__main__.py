@@ -4,15 +4,13 @@ eprints2bag: download records from CODA bag them up
 Materials in EPrints must be extracted before they can be moved to a
 preservation system such as DPN or another long-term storage or dark archive.
 The program _eprints2bag_ encapsulates the processes needed to gather the
-materials and bundle them up in BagIt bags.  You indicate which records from
-CODA you want (based on record numbers), and it will download the content and
-bag it up.
+materials and bundle them up in BagIt bags.
 
 Historical note
 ---------------
 
 Much of the original algorithms and ideas for this code came from the
-eprints2bag (https://github.com/caltechlibrary/eprints2bag) collection of
+eprints2dpn (https://github.com/caltechlibrary/eprints2dpn) collection of
 Perl scripts written by Betsy Coles in early 2018.
 
 Authors
@@ -72,9 +70,9 @@ def main(api_url = 'A', base_name = 'B', delay = 100, fetch_list = 'F',
          debug = False, no_bags = False, no_color = False, version = False):
     '''eprints2bag bags up EPrints content as BagIt bags.
 
-This program contacts an EPrints server whose network API is accessible at
-the URL given by the command-line option -a (or /a on Windows).  A typical
-EPrints API URL has the form "https://server.institution.edu/rest".
+This program contacts an EPrints REST server whose network API is accessible
+at the URL given by the command-line option -a (or /a on Windows).  A typical
+EPrints server URL has the form "https://server.institution.edu/rest".
 
 The EPrints records to be written will be limited to the list of eprint
 numbers found in the file given by the option -f (or /f on Windows).  If no
@@ -104,11 +102,12 @@ option and the NUMBER is the EPrints number for a given entry.
 Each directory will contain an EP3XML XML file and additional document
 file(s) associated with the EPrints record in question.  Documents associated
 with each record will be fetched over the network.  The list of documents for
-each record is determined from XML file, in the <documents> element.
+each record is determined from XML file, in the <documents> element.  Certain
+EPrints internal documents such as "indexcodes.txt" are ignored.
 
-Downloading some documents may require using a user login and password.
-These can be supplied using the command-line arguments -u and -p,
-respectively (/u and /p on Windows).
+Downloading some documents may require supplying a user login and password to
+the EPrints server.  These can be supplied using the command-line arguments
+-u and -p, respectively (/u and /p on Windows).
 
 The final step of this program is to create BagIt bags from the contents of
 the subdirectories created for each record, then tar up and gzip the bag
@@ -122,7 +121,7 @@ Beware that some file systems have limitations on the number of subdirectories
 that can be created, which directly impacts how many record subdirectories
 can be created by this program.  In particular, note that Linux ext2 and ext3
 file systems are limited to 31,998 subdirectories.  This means you cannot
-grab over 32,000 entries at a time from an EPrints server.
+grab more than 32,000 entries at a time from an EPrints server.
 
 It is also noteworthy that hitting a server for tens of thousands of records
 and documents in rapid succession is likely to draw suspicion from server
