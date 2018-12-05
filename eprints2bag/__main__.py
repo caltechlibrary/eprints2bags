@@ -30,7 +30,6 @@ file "LICENSE" for more information.
 
 import bagit
 from   collections import defaultdict
-import errno
 import lxml.etree as etree
 import os
 from   os import path
@@ -38,6 +37,7 @@ import plac
 import requests
 import shutil
 import tarfile
+import traceback
 
 import eprints2bag
 from   eprints2bag.constants import ON_WINDOWS
