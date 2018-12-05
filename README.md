@@ -31,9 +31,50 @@ Materials in EPrints must be extracted before they can be moved to a preservatio
 ✺ Installation instructions
 ---------------------------
 
-
 ▶︎ Running eprints2bags
 ---------------------
+
+This program contacts an EPrints REST server whose network API is accessible at the URL given by the command-line option `-a` (or `/a` on Windows).  A typical EPrints server URL has the form `https://server.institution.edu/rest`.
+
+The EPrints records to be written will be limited to the list of record numbers found in the file given by the option `-f` (or `/f` on Windows).  If no `-f` option is given, this program will download all the contents available at the given EPrints server.  The value of `-f` can also be one or more integers separated by commas (e.g., `-f 54602,54604`), or a range of numbers separated by a dash (e.g., `-f 1-100`, which is interpreted as the list of numbers 1, 2, ..., 100 inclusive).  In those cases, the records written will be limited to those numbered.
+
+By default, if a record requested or implied by the arguments to `-f` is missing from the EPrints server, this will count as an error and stop execution of the program.  If the option `-m` (or `/m` on Windows) is given, missing records will be ignored.
+
+This program writes the output in the directory given by the command line option `-o` (or `/o` on Windows).  If the directory does not exist, this program will create it.  If the directory does exist, it will be overwritten with the new content.  The result of running this program will be individual directories underneath the directory given by the -o option, with each subdirectory named according to the EPrints record number (e.g., `/path/to/output/430`, `/path/to/output/431`, ...).  If the -b option (`/b` on Windows) is given, the subdirectory names are changed to have the form _BASENAME-NUMBER_ where _BASENAME_ is the text string provided with the `-b` option and the _NUMBER_ is the EPrints number for a given entry.
+
+Each directory will contain an EP3XML XML file and additional document file(s) associated with the EPrints record in question.  Documents associated with each record will be fetched over the network.  The list of documents for each record is determined from XML file, in the `<documents>` element.  Certain EPrints internal documents such as `indexcodes.txt` are ignored.
+
+Downloading some documents may require supplying a user login and password to the EPrints server.  These can be supplied using the command-line arguments `-u` and `-p`, respectively (`/u` and `/p` on Windows).
+
+The final step of this program is to create BagIt bags from the contents of the subdirectories created for each record, then tar up and gzip the bag directory.  This is done by default, after the documents are downloaded for each record, unless the `-B` option (`/B` on Windows) is given.  Note that creating bags is a destructive operation: it replaces the individual directories of each record with a restructured directory corresponding to the BagIt format.
+
+### Summary of command-line options
+
+The following table summarizes all the command line options available. (Note: on Windows computers, `/` must be usedas the prefix character instead of `-`):
+
+| Short    | Long&nbsp;form&nbsp;opt | Meaning | Default |  |
+|----------|-------------------|----------------------|---------|---|
+| `-a`_A_  | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
+| `-b`_B_  | `--base-name`_B_  | Name outputs with the template _B_-n | Use only the record number n  |  |
+| `-d`_D_  | `--delay`_D_      | Pause _D_ ms between records | 100 | |
+| `-f`_F_  | `--from-file`_F_  | Read record numbers from _F_ | Fetch all records from the server | |
+| `-m`     | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
+| `-o`_O_  | `--output`_O_     | Write outputs to directory _O_ |  |  ⚑ |
+| `-u`_U_ | `--user`_U_        | User name for EPrints server login |  |
+| `-p`_P_ | `--pswd`_U_        | Password for EPrints proxy login |  |
+| `-B`     | `--no-bags`       | Don't create BagIt bags | Bag up the records | |
+| `-C`     | `--no-color`      | Don't color-code the output | Use colors in the terminal output |
+| `-D`     | `--debug`         | Debugging mode | Normal mode |
+| `-V`     | `--version`       | Print program version info and exit | Do other actions instead |
+
+ ⚑ &nbsp; Required argument.
+
+
+### Additional notes and considerations
+
+Beware that some file systems have limitations on the number of subdirectories that can be created, which directly impacts how many record subdirectories can be created by this program.  In particular, note that Linux ext2 and ext3 file systems are limited to 31,998 subdirectories.  This means you cannot grab more than 32,000 entries at a time from an EPrints server.
+
+It is also noteworthy that hitting a server for tens of thousands of records and documents in rapid succession is likely to draw suspicion from server administrators.  By default, this program inserts a small delay between record fetches (adjustable using the `-d` command-line option), which may be too short in some cases.  Setting the value to 0 is also possible, but might get you blocked or banned from an institution's servers.
 
 
 ⁇ Getting help and support
