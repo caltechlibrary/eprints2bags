@@ -72,7 +72,7 @@ The following is a simple example showing how to get a single record (#85447) fr
 Beginning to process 1 EPrints entry.
 Output will be written under directory "/tmp/eprints"
 ======================================================================
-Getting record for 85447
+Getting record with id 85447
 Creating /tmp/eprints/85447
 Downloading https://authors.library.caltech.edu/85447/1/1-s2.0-S0164121218300517-main.pdf
 Making bag out of /tmp/eprints/85447

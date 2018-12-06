@@ -215,7 +215,7 @@ get you blocked or banned from an institution's servers.
             # Start by getting the full record in EP3 XML format.  A failure
             # here will either cause an exit or moving to the next record.
             try:
-                say.msg('Getting record for {}'.format(number), 'white')
+                say.msg('Getting record with id {}'.format(number), 'white')
                 xml_element = eprints_xml(number, api_url, user, password)
             except NoContent:
                 if missing_ok:
@@ -252,7 +252,8 @@ get you blocked or banned from an institution's servers.
 
         if not quiet:
             say.msg('='*70, 'dark')
-        say.info('Done. Wrote {} EPrints records to {}/.', count, output_dir)
+        say.info('Done. Wrote {} EPrints record{} to {}/.', count,
+                 's' if count > 1 else '', output_dir)
         if len(missing) > 500:
             say.warn('More than 500 records requested with -f were not found')
         elif len(missing) > 0:
