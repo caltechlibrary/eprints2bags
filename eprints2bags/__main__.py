@@ -250,10 +250,9 @@ get you blocked or banned from an institution's servers.
     say.info('Done. Wrote {} EPrints records to {}/.', count, output_dir)
     if len(missing) > 0:
         if len(missing) > 500:
-            say.warn('*** Note: > 500 records requested with -f were not found')
+            say.warn('More than 500 records requested with -f were not found')
         else:
-            say.warn('*** Note: the following requested records were not found:')
-            say.warn('*** ' + ', '.join(missing) + '.')
+            say.warn('The following records were not found: '+ ', '.join(missing) + '.')
 
 
 # If this is windows, we want the command-line args to use slash intead
