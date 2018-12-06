@@ -23,8 +23,8 @@ import eprints2bags
 if __debug__:
     import logging
     eprints2bags_logger = logging.getLogger('eprints2bags')
-    formatter          = logging.Formatter('%(name)s: %(message)s')
-    handler            = logging.StreamHandler()
+    formatter           = logging.Formatter('%(name)s: %(message)s')
+    handler             = logging.StreamHandler()
     handler.setFormatter(formatter)
     handler.setLevel(logging.DEBUG)
     eprints2bags_logger.addHandler(handler)
