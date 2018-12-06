@@ -64,20 +64,21 @@ The final step of this program is to create BagIt bags from the contents of the 
 
 The following table summarizes all the command line options available. (Note: on Windows computers, `/` must be usedas the prefix character instead of `-`):
 
-| Short    | Long&nbsp;form&nbsp;opt | Meaning | Default |  |
-|----------|-------------------|----------------------|---------|---|
-| `-a`_A_  | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
-| `-b`_B_  | `--base-name`_B_  | Name outputs with the template _B_-n | Use only the record number n  |  |
-| `-d`_D_  | `--delay`_D_      | Pause _D_ ms between records | 100 | |
-| `-f`_F_  | `--from-file`_F_  | Read record numbers from _F_ | Fetch all records from the server | |
-| `-m`     | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
-| `-o`_O_  | `--output`_O_     | Write outputs to directory _O_ |  |  ⚑ |
-| `-u`_U_ | `--user`_U_        | User name for EPrints server login |  |
-| `-p`_P_ | `--pswd`_U_        | Password for EPrints proxy login |  |
-| `-B`     | `--no-bags`       | Don't create BagIt bags | Bag up the records | |
-| `-C`     | `--no-color`      | Don't color-code the output | Use colors in the terminal output |
-| `-D`     | `--debug`         | Debugging mode | Normal mode |
-| `-V`     | `--version`       | Print program version info and exit | Do other actions instead |
+| Short   | Long&nbsp;form&nbsp;opt | Meaning | Default |  |
+|---------|-------------------|----------------------|---------|---|
+| `-a`_A_ | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
+| `-b`_B_ | `--base-name`_B_  | Name outputs with the template _B_-n | Use only the record number n  | |
+| `-d`_D_ | `--delay`_D_      | Pause _D_ ms between records | 100 | |
+| `-f`_F_ | `--from-file`_F_  | Read record numbers from _F_ | Fetch all records from the server | |
+| `-m`    | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
+| `-o`_O_ | `--output`_O_     | Write outputs to directory _O_ |  |  ⚑ |
+| `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
+| `-p`_P_ | `--pswd`_U_       | Password for EPrints proxy login | |
+| `-q`    | `--quiet`         | Don't print info messages while working | Be chatty while working | |
+| `-B`    | `--no-bags`       | Don't create BagIt bags | Bag up the records | |
+| `-C`    | `--no-color`      | Don't color-code the output | Use colors in the terminal output | |
+| `-D`    | `--debug`         | Debugging mode | Normal mode | |
+| `-V`    | `--version`       | Print program version info and exit | Do other actions instead | |
 
  ⚑ &nbsp; Required argument.
 
