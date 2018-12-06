@@ -219,7 +219,7 @@ get you blocked or banned from an institution's servers.
                     raise
             # Create the output subdirectory and write the DC and XML output.
             record_dir = path.join(output_dir, name_prefix + str(number))
-            say.info('Creating {}', record_dir)
+            say.msg('Creating {}'.format(record_dir), 'white')
             make_dir(record_dir)
             write_record(number, xml_element, name_prefix, record_dir)
             # Download any documents referenced in the XML record.
