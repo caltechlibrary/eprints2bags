@@ -208,6 +208,7 @@ get you blocked or banned from an institution's servers.
 
         count = 0
         missing = wanted.copy()
+        say.msg('='*70, 'dark')
         for number in wanted:
             try:
                 if __debug__: log('Fetching XML for {}'.format(number))
@@ -232,7 +233,6 @@ get you blocked or banned from an institution's servers.
                 tar_file = record_dir + '.tgz'
                 say.info('Creating {}', tar_file)
                 make_tarball(record_dir, tar_file)
-                say.info('Deleting {}', record_dir)
                 shutil.rmtree(record_dir)
             # Track what we've done so far.
             count += 1
@@ -247,6 +247,7 @@ get you blocked or banned from an institution's servers.
             import pdb; pdb.set_trace()
         say.error('{}\n{}', str(err), traceback.format_exc())
 
+    say.msg('='*70, 'dark')
     say.info('Done. Wrote {} EPrints records to {}/.', count, output_dir)
     if len(missing) > 0:
         if len(missing) > 500:
