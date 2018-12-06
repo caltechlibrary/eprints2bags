@@ -44,14 +44,14 @@ def network_available():
         r.close()
 
 
-def download_files(downloads_list, user, pswd, output_dir):
+def download_files(downloads_list, user, pswd, output_dir, say):
     for item in downloads_list:
         file = path.realpath(path.join(output_dir, path.basename(item)))
-        print('Downloading {}'.format(item))
+        say.info('Downloading {}', item)
         error = download(item, user, pswd, file)
         if error:
-            print('*** Failed to download {}'.format(item))
-            print('*** Reason: {}'.format(error))
+            say.error('*** Failed to download {}', item)
+            say.error('*** Reason: {}', error)
 
 
 def download(url, user, password, local_destination):
