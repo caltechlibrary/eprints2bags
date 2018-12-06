@@ -21,6 +21,9 @@ from   PIL import Image
 import sys
 import tarfile
 
+import eprints2bags
+from   eprints2bags.debug import log
+
 
 # Main functions.
 # .............................................................................
@@ -40,7 +43,7 @@ def make_dir(dir_path):
         os.mkdir(dir_path)
     except OSError as err:
         if err.errno == errno.EEXIST:
-            print('Reusing existing directory {}'.format(dir_path))
+            if __debug__: log('Reusing existing directory {}', dir_path)
         else:
             raise
 
