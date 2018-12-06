@@ -137,7 +137,6 @@ The [vector artwork](https://thenounproject.com/search/?q=bag&i=1002779) of a ba
 Eprints2bags makes use of numerous open-source packages, without which it would have been effectively impossible to develop Turf with the resources we had.  We want to acknowledge this debt.  In alphabetical order, the packages are:
 
 * [colorama](https://github.com/tartley/colorama) &ndash; makes ANSI escape character sequences work under MS Windows terminals
-* [halo](https://github.com/ManrajGrover/halo) &ndash; busy-spinners for Python command-line programs
 * [ipdb](https://github.com/gotcha/ipdb) &ndash; the IPython debugger
 * [plac](http://micheles.github.io/plac/) &ndash; a command line argument parser
 * [requests](http://docs.python-requests.org) &ndash; an HTTP library for Python
