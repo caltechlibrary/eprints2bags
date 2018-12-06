@@ -200,7 +200,8 @@ get you blocked or banned from an institution's servers.
         if len(wanted) >= 31998:
             exit(say.fatal_text("Can't process more than 31,998 entries due to file system limitations."))
 
-        say.info('Beginning to process {} EPrints entries.', len(wanted))
+        say.info('Beginning to process {} EPrints {}.', len(wanted),
+                 'entries' if len(wanted) > 1 else 'entry')
         say.info('Output will be written under directory "{}"', output_dir)
         if not path.exists(output_dir):
             os.mkdir(output_dir)
