@@ -9,7 +9,7 @@
 __version__     = '1.0.0'
 __title__       = 'eprints2bags'
 __name__        = 'eprints2bags'
-__description__ = '''Package up CODA materials as BagIt bags.'''
+__description__ = '''Package up EPrints materials as BagIt bags.'''
 __url__         = 'https://github.com/caltechlibrary/eprints2bags'
 __author__      = 'Michael Hucka <mhucka@caltech.edu>, Betsy Coles <betsycoles@gmail.com>'
 __email__       = 'mhucka@caltech.edu'
