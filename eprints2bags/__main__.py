@@ -208,7 +208,8 @@ get you blocked or banned from an institution's servers.
 
         count = 0
         missing = wanted.copy()
-        say.msg('='*70, 'dark')
+        if not quiet:
+            say.msg('='*70, 'dark')
         for number in wanted:
             try:
                 if __debug__: log('Fetching XML for {}'.format(number))
@@ -240,6 +241,14 @@ get you blocked or banned from an institution's servers.
                 missing.remove(number)
             if delay:
                 sleep(delay/1000)
+
+        if not quiet:
+            say.msg('='*70, 'dark')
+        say.info('Done. Wrote {} EPrints records to {}/.', count, output_dir)
+        if len(missing) > 500:
+            say.warn('More than 500 records requested with -f were not found')
+        elif len(missing) > 0:
+            say.warn('The following records were not found: '+ ', '.join(missing) + '.')
     except KeyboardInterrupt as err:
         exit(say.fatal_text('Quitting.'))
     except Exception as err:
@@ -248,14 +257,6 @@ get you blocked or banned from an institution's servers.
             import pdb; pdb.set_trace()
         else:
             exit(say.error_text('{}', str(err)))
-
-    say.msg('='*70, 'dark')
-    say.info('Done. Wrote {} EPrints records to {}/.', count, output_dir)
-    if len(missing) > 0:
-        if len(missing) > 500:
-            say.warn('More than 500 records requested with -f were not found')
-        else:
-            say.warn('The following records were not found: '+ ', '.join(missing) + '.')
 
 
 # If this is windows, we want the command-line args to use slash intead
