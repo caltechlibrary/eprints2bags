@@ -43,7 +43,12 @@ def eprints_api(url, op, user, password):
     start = url.find('//')
     if start < 0:
         raise BadURL('Unable to parse "{}" as a normal URL'.format(url))
-    return url[:start + 2] + user + ':' + password + '@' + url[start + 2:] + op
+    if user and password:
+        return url[:start + 2] + user + ':' + password + '@' + url[start + 2:] + op
+    elif user and not password:
+        return url[:start + 2] + user + '@' + url[start + 2:] + op
+    else:
+        return url[:start + 2] + url[start + 2:] + op
 
 
 def eprints_records_list(base_url, user, password):
