@@ -42,7 +42,7 @@ import traceback
 
 import eprints2bags
 from   eprints2bags.constants import ON_WINDOWS
-from   eprints2bags.debug import log
+from   eprints2bags.debug import set_debug, log
 from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files
 from   eprints2bags.files import readable, writable, make_dir, make_tarball
@@ -244,8 +244,10 @@ get you blocked or banned from an institution's servers.
         exit(say.fatal_text('Quitting.'))
     except Exception as err:
         if debug:
+            say.error('{}\n{}', str(err), traceback.format_exc())
             import pdb; pdb.set_trace()
-        say.error('{}\n{}', str(err), traceback.format_exc())
+        else:
+            exit(say.error_text('{}', str(err)))
 
     say.msg('='*70, 'dark')
     say.info('Done. Wrote {} EPrints records to {}/.', count, output_dir)
