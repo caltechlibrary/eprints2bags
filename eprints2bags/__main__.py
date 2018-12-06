@@ -42,6 +42,8 @@ import traceback
 
 import eprints2bags
 from   eprints2bags.constants import ON_WINDOWS
+from   eprints2bags.debug import log
+from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files
 from   eprints2bags.files import readable, writable, make_dir, make_tarball
 from   eprints2bags.eprints import *
@@ -59,6 +61,7 @@ from   eprints2bags.eprints import *
     output_dir = ('write output to directory "O"',                   'option', 'o'),
     password   = ('EPrints server user password',                    'option', 'p'),
     user       = ('EPrints server user login name',                  'option', 'u'),
+    quiet      = ('do not print info messages while working',        'flag',   'q'),
     no_bags    = ('do not create bags; just leave the content',      'flag',   'B'),
     no_color   = ('do not color-code terminal output (default: do)', 'flag',   'C'),
     debug      = ('turn on debugging',                               'flag',   'D'),
@@ -67,7 +70,8 @@ from   eprints2bags.eprints import *
 
 def main(api_url = 'A', base_name = 'B', delay = 100, fetch_list = 'F',
          missing_ok = False, output_dir = 'O', user = 'U', password = 'P',
-         debug = False, no_bags = False, no_color = False, version = False):
+         quiet = False, debug = False, no_bags = False, no_color = False,
+         version = False):
     '''eprints2bags bags up EPrints content as BagIt bags.
 
 This program contacts an EPrints REST server whose network API is accessible
@@ -130,10 +134,11 @@ record fetches (adjustable using the -d command-line option), which may be
 too short in some cases.  Setting the value to 0 is also possible, but might
 get you blocked or banned from an institution's servers.
 '''
-    # Process arguments -------------------------------------------------------
-
+    say = MessageHandler(not no_color, quiet)
     prefix = '/' if ON_WINDOWS else '-'
     hint = '(Hint: use {}h for help.)'.format(prefix)
+
+    # Process arguments -------------------------------------------------------
 
     if debug:
         set_debug(True)
@@ -141,12 +146,12 @@ get you blocked or banned from an institution's servers.
         print_version()
         exit()
     if not network_available():
-        exit('No network.')
+        exit(say.fatal_text('No network.'))
 
     if api_url == 'A':
-        exit('Must provide a URL for the EPrints API. {}'.format(hint))
+        exit(say.fatal_text('Must provide an Eprints API URL. {}', hint))
     elif not api_url.startswith('http'):
-        exit('Argument to {}a must be a full URL.'.format(prefix))
+        exit(say.fatal_text('Argument to {}a must be a full URL.', prefix))
 
     if base_name == 'B':
         name_prefix = ''
@@ -164,21 +169,22 @@ get you blocked or banned from an institution's servers.
         if not path.isabs(fetch_list):
             fetch_list = path.realpath(path.join(os.getcwd(), fetch_list))
         if not path.exists(fetch_list):
-            exit('File not found: {}'.format(fetch_list))
+            exit(say.fatal_text('File not found: {}', fetch_list))
         if not readable(fetch_list):
-            exit('File not readable: {}'.format(fetch_list))
+            exit(say.fatal_text('File not readable: {}', fetch_list))
         with open(fetch_list, 'r', encoding = 'utf-8-sig') as file:
+            if __debug__: log('Reading {}'.format(fetch_list))
             wanted = [id.strip() for id in file.readlines()]
     else:
         wanted = []
 
     if output_dir == 'O':
-        exit('Must provide an output directory using the -o option')
+        exit(say.fatal_text('Must provide an output directory using the -o option'))
     if not path.isabs(output_dir):
         output_dir = path.realpath(path.join(os.getcwd(), output_dir))
     if path.isdir(output_dir):
         if not writable(output_dir):
-            exit('Directory not writable: {}'.format(output_dir))
+            exit(say.fatal_text('Directory not writable: {}', output_dir))
 
     if user == 'U':
         user = None
@@ -189,18 +195,22 @@ get you blocked or banned from an institution's servers.
 
     try:
         if not wanted:
+            if __debug__: log('Fetching records list from {}'.format(api_url))
             wanted = eprints_records_list(api_url, user, password)
         if len(wanted) >= 31998:
-            exit("Can't process more than 31,998 entries due to file system limitations.")
+            exit(say.fatal_text("Can't process more than 31,998 entries due to file system limitations."))
 
-        print('Output will be written under directory {}'.format(output_dir))
+        say.info('Beginning to process {} EPrints entries.', len(wanted))
+        say.info('Output will be written under directory "{}"', output_dir)
         if not path.exists(output_dir):
             os.mkdir(output_dir)
+            if __debug__: log('Created output directory {}', output_dir)
 
         count = 0
         missing = wanted.copy()
         for number in wanted:
             try:
+                if __debug__: log('Fetching XML for {}'.format(number))
                 xml_element = eprints_xml(number, api_url, user, password)
             except NoContent:
                 if missing_ok:
@@ -209,20 +219,20 @@ get you blocked or banned from an institution's servers.
                     raise
             # Create the output subdirectory and write the DC and XML output.
             record_dir = path.join(output_dir, name_prefix + str(number))
-            print('Creating {}'.format(record_dir))
+            say.info('Creating {}', record_dir)
             make_dir(record_dir)
             write_record(number, xml_element, name_prefix, record_dir)
             # Download any documents referenced in the XML record.
             associated_documents = eprints_documents(xml_element)
-            download_files(associated_documents, user, password, record_dir)
+            download_files(associated_documents, user, password, record_dir, say)
             # Bag up, tar up, and gzip the directory by default.
             if not no_bags:
-                print('Making bag out of {}'.format(record_dir))
+                say.info('Making bag out of {}', record_dir)
                 bagit.make_bag(record_dir, checksums = ["sha256", "sha512", "md5"])
                 tar_file = record_dir + '.tgz'
-                print('Creating {}'.format(tar_file))
+                say.info('Creating {}', tar_file)
                 make_tarball(record_dir, tar_file)
-                print('Deleting {}'.format(record_dir))
+                say.info('Deleting {}', record_dir)
                 shutil.rmtree(record_dir)
             # Track what we've done so far.
             count += 1
@@ -231,19 +241,19 @@ get you blocked or banned from an institution's servers.
             if delay:
                 sleep(delay/1000)
     except KeyboardInterrupt as err:
-        exit('Quitting.')
+        exit(say.fatal_text('Quitting.'))
     except Exception as err:
         if debug:
             import pdb; pdb.set_trace()
-        print('{}\n{}'.format(str(err), traceback.format_exc()))
+        say.error('{}\n{}', str(err), traceback.format_exc())
 
-    print('Done. Wrote {} EPrints records to {}/.'.format(count, output_dir))
+    say.info('Done. Wrote {} EPrints records to {}/.', count, output_dir)
     if len(missing) > 0:
         if len(missing) > 500:
-            print('*** Note: > 500 records requested with -f were not found')
+            say.warn('*** Note: > 500 records requested with -f were not found')
         else:
-            print('*** Note: the following requested records were not found:')
-            print('*** ' + ', '.join(missing) + '.')
+            say.warn('*** Note: the following requested records were not found:')
+            say.warn('*** ' + ', '.join(missing) + '.')
 
 
 # If this is windows, we want the command-line args to use slash intead
