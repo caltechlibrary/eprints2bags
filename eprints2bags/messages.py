@@ -103,11 +103,11 @@ class MessageHandler():
 
 
     def msg_text(self, text, flags = None):
-        return color(text.format(*args), flags, self._colorize)
+        return color(text, flags, self._colorize)
 
 
     def msg(self, text, flags = None):
-        msg(self.msg_text(text.format(*args), flags))
+        msg(self.msg_text(text, flags))
 
 
 # Message utility funcions.
