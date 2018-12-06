@@ -60,6 +60,27 @@ Downloading some documents may require supplying a user login and password to th
 
 The final step of this program is to create BagIt bags from the contents of the subdirectories created for each record, then tar up and gzip the bag directory.  This is done by default, after the documents are downloaded for each record, unless the `-B` option (`/B` on Windows) is given.  Note that creating bags is a destructive operation: it replaces the individual directories of each record with a restructured directory corresponding to the BagIt format.
 
+### Examples
+
+On Linux and macOS systems, assuming that the installation proceeds normally, you should end up with a program called `eprints2bags` in a location normally searched by your terminal shell for commands.  Running eprints2bags then consists of invoking the program like any other program on your system.
+
+The following is a simple example showing how to get a single record (#85447) from Caltech's [CODA](https://libguides.caltech.edu/CODA) Eprints server (with user name and password blanked out here for security reasons):
+
+```
+# eprints2bags -o /tmp/eprints -f 85447 -a https://authors.library.caltech.edu/rest -u XXXXX -p XXXXX
+
+Beginning to process 1 EPrints entry.
+Output will be written under directory "/tmp/eprints"
+======================================================================
+Getting record for 85447
+Creating /tmp/eprints/85447
+Downloading https://authors.library.caltech.edu/85447/1/1-s2.0-S0164121218300517-main.pdf
+Making bag out of /tmp/eprints/85447
+Creating tarball /tmp/eprints/85447.tgz
+======================================================================
+Done. Wrote 1 EPrints records to /tmp/eprints/.
+```
+
 ### Summary of command-line options
 
 The following table summarizes all the command line options available. (Note: on Windows computers, `/` must be usedas the prefix character instead of `-`):
