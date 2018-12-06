@@ -108,5 +108,7 @@ def eprints_documents(xml):
 
 def write_record(number, xml, dir_prefix, dir_path):
     xml_file_name = dir_prefix + str(number) + '.xml'
+    encoded = etree.tostring(xml, encoding = 'UTF-8', method = 'xml')
     with open(path.join(dir_path, xml_file_name), 'w') as file:
-        file.write(etree.tostring(xml, encoding='UTF-8').decode().rstrip() + '\n')
+        file.write("<?xml version='1.0' encoding='utf-8'?>\n")
+        file.write(encoded.decode().rstrip() + '\n')
