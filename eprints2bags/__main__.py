@@ -206,35 +206,42 @@ get you blocked or banned from an institution's servers.
             os.mkdir(output_dir)
             if __debug__: log('Created output directory {}', output_dir)
 
-        count = 0
-        missing = wanted.copy()
         if not quiet:
             say.msg('='*70, 'dark')
+        count = 0
+        missing = wanted.copy()
         for number in wanted:
+            # Start by getting the full record in EP3 XML format.  A failure
+            # here will either cause an exit or moving to the next record.
             try:
-                if __debug__: log('Fetching XML for {}'.format(number))
+                say.msg('Getting record for {}'.format(number), 'white')
                 xml_element = eprints_xml(number, api_url, user, password)
             except NoContent:
                 if missing_ok:
+                    say.warn('Server has no content for {}', number)
                     continue
                 else:
                     raise
-            # Create the output subdirectory and write the DC and XML output.
+
+            # Good so far.  Create the directory and write the XML out.
             record_dir = path.join(output_dir, name_prefix + str(number))
-            say.msg('Creating {}'.format(record_dir), 'white')
+            say.info('Creating {}', record_dir)
             make_dir(record_dir)
             write_record(number, xml_element, name_prefix, record_dir)
+
             # Download any documents referenced in the XML record.
             associated_documents = eprints_documents(xml_element)
             download_files(associated_documents, user, password, record_dir, say)
+
             # Bag up, tar up, and gzip the directory by default.
             if not no_bags:
                 say.info('Making bag out of {}', record_dir)
                 bagit.make_bag(record_dir, checksums = ["sha256", "sha512", "md5"])
                 tar_file = record_dir + '.tgz'
-                say.info('Creating {}', tar_file)
+                say.info('Creating tarball {}', tar_file)
                 make_tarball(record_dir, tar_file)
                 shutil.rmtree(record_dir)
+
             # Track what we've done so far.
             count += 1
             if wanted and number in wanted:
