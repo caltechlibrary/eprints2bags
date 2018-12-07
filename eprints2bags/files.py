@@ -67,9 +67,9 @@ def verify_tarball(tarball_path):
     '''Check the integrtive of a tar file and raise an exception if needed.'''
     # Algorithm originally from https://stackoverflow.com/a/32312857/743730
     try:
-        with tarfile.open(tarball_path) as tarfile:
-            for member in tarfile.getmembers():
-                with tarfile.extractfile(member.name) as target:
+        with tarfile.open(tarball_path) as tfile:
+            for member in tfile.getmembers():
+                with tfile.extractfile(member.name) as target:
                     for chunk in iter(lambda: target.read(1024), b''):
                         pass
     except:
