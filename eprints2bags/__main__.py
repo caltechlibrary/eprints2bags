@@ -45,7 +45,8 @@ from   eprints2bags.constants import ON_WINDOWS
 from   eprints2bags.debug import set_debug, log
 from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files
-from   eprints2bags.files import readable, writable, make_dir, make_tarball
+from   eprints2bags.files import readable, writable, make_dir
+from   eprints2bags.files import make_tarball, verify_tarball
 from   eprints2bags.eprints import *
 
 
