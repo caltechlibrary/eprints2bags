@@ -237,10 +237,13 @@ get you blocked or banned from an institution's servers.
             # Bag up, tar up, and gzip the directory by default.
             if not no_bags:
                 say.info('Making bag out of {}', record_dir)
-                bagit.make_bag(record_dir, checksums = ["sha256", "sha512", "md5"])
+                bag = bagit.make_bag(record_dir,
+                                     checksums = ["sha256", "sha512", "md5"])
+                bag.validate()
                 tar_file = record_dir + '.tgz'
                 say.info('Creating tarball {}', tar_file)
                 make_tarball(record_dir, tar_file)
+                verify_tarball(tar_file)
                 shutil.rmtree(record_dir)
 
             # Track what we've done so far.
@@ -260,6 +263,10 @@ get you blocked or banned from an institution's servers.
             say.warn('The following records were not found: '+ ', '.join(missing) + '.')
     except KeyboardInterrupt as err:
         exit(say.fatal_text('Quitting.'))
+    except CorruptedContent as err:
+        exit(say.fatal_text(str(err)))
+    except bagit.BagValidationError as err:
+        exit(say.fatal_text('Bag validation failure: {}'.format(str(err))))
     except Exception as err:
         if debug:
             say.error('{}\n{}', str(err), traceback.format_exc())
