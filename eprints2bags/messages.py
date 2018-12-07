@@ -107,7 +107,8 @@ class MessageHandler():
 
 
     def msg(self, text, flags = None):
-        msg(self.msg_text(text, flags))
+        if not self.be_quiet():
+            msg(self.msg_text(text, flags))
 
 
 # Message utility funcions.
