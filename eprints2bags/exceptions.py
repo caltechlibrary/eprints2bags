@@ -30,6 +30,10 @@ class NoContent(Exception):
     '''No content found at the given location.'''
     pass
 
+class CorruptedContent(Exception):
+    '''Content corruption has been detected.'''
+    pass
+
 class AuthenticationFailure(Exception):
     '''Problem obtaining or using authentication credentials.'''
     pass
