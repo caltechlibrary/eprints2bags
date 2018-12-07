@@ -15,6 +15,7 @@ file "LICENSE" for more information.
 '''
 
 import errno
+import gzip
 import os
 from   os import path
 from   PIL import Image
@@ -23,6 +24,7 @@ import tarfile
 
 import eprints2bags
 from   eprints2bags.debug import log
+from   eprints2bags.exceptions import *
 
 
 # Main functions.
@@ -59,3 +61,16 @@ def make_tarball(source_dir, tarball_path):
                     tar_file.add(path.join(root, file))
     finally:
         os.chdir(current_dir)
+
+
+def verify_tarball(tarball_path):
+    '''Check the integrtive of a tar file and raise an exception if needed.'''
+    # Algorithm originally from https://stackoverflow.com/a/32312857/743730
+    try:
+        with tarfile.open(tarball_path) as tarfile:
+            for member in tarfile.getmembers():
+                with tarfile.extractfile(member.name) as target:
+                    for chunk in iter(lambda: target.read(1024), b''):
+                        pass
+    except:
+        raise CorruptedContent('Failed to verify file "{}"'.format(tarball_path))
