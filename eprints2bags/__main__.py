@@ -79,7 +79,7 @@ This program contacts an EPrints REST server whose network API is accessible
 at the URL given by the command-line option -a (or /a on Windows).  A typical
 EPrints server URL has the form "https://server.institution.edu/rest".
 
-The EPrints records to be written will be limited to the list of eprint
+The EPrints records to be written will be limited to the list of EPrints
 numbers found in the file given by the option -f (or /f on Windows).  If no
 -f option is given, this program will download all the contents available at
 the given EPrints server.  The value of -f can also be one or more integers
@@ -121,6 +121,16 @@ each record, unless the -B option (/B on Windows) is given.  Note that
 creating bags is a destructive operation: it replaces the individual
 directories of each record with a restructured directory corresponding to the
 BagIt format.
+
+If the -B (/B on  Windows) is given, bags will not be created and the content
+directories will be left in the output directory (the location given by the
+-o or /o option).
+
+This program will print messages as it works.  To reduce the number of messages
+to warnings and errors, use the option -q (or /q on Windows).  The output will
+be color-coded unless the -C option (or /C on Windows) is given; this option
+can be helpful if the color control signals create problems for your terminal
+emulator.
 
 Beware that some file systems have limitations on the number of subdirectories
 that can be created, which directly impacts how many record subdirectories
