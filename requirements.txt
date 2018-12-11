@@ -1,5 +1,8 @@
-requests>=2.19.1
 bagit>=1.7.0
-plac>=1.0.0
-setuptools>=40.4.2
+colorama>=0.3.0
+keyring>=12.2.0
 lxml>=4.2.5
+plac>=1.0.0
+requests>=2.19.1
+setuptools>=40.4.2
+termcolor>=1.1.0
