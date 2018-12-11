@@ -9,7 +9,7 @@ A program for downloading records from an Eprints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.4+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.1.0-b44e88.svg?style=flat-square)](http://shields.io)
+[![Latest release](https://img.shields.io/badge/Latest_release-1.2.0-b44e88.svg?style=flat-square)](http://shields.io)
 
 Table of Contents
 -----------------
@@ -102,7 +102,9 @@ The following table summarizes all the command line options available. (Note: on
 | `-q`    | `--quiet`         | Don't print info messages while working | Be chatty while working | |
 | `-B`    | `--no-bags`       | Don't create BagIt bags | Bag up the records | |
 | `-C`    | `--no-color`      | Don't color-code the output | Use colors in the terminal output | |
+| `-K`    | `--no-keyring`    | Don't color-code the output | Use colors in the terminal output | |
 | `-D`    | `--debug`         | Debugging mode | Normal mode | |
+| `-R`    | `--reset`         | Reset user login & password used | Reuse previously-used credentials |
 | `-V`    | `--version`       | Print program version info and exit | Do other actions instead | |
 
  ⚑ &nbsp; Required argument.
@@ -140,8 +142,11 @@ The [vector artwork](https://thenounproject.com/search/?q=bag&i=1002779) of a ba
 
 Eprints2bags makes use of numerous open-source packages, without which it would have been effectively impossible to develop Turf with the resources we had.  We want to acknowledge this debt.  In alphabetical order, the packages are:
 
+* [bagit]() &ndash; 
 * [colorama](https://github.com/tartley/colorama) &ndash; makes ANSI escape character sequences work under MS Windows terminals
 * [ipdb](https://github.com/gotcha/ipdb) &ndash; the IPython debugger
+* [keyring](https://github.com/jaraco/keyring) &ndash; access the system keyring service from Python
+* [lxml](https://lxml.de) &ndash; an XML parsing library for Python
 * [plac](http://micheles.github.io/plac/) &ndash; a command line argument parser
 * [requests](http://docs.python-requests.org) &ndash; an HTTP library for Python
 * [setuptools](https://github.com/pypa/setuptools) &ndash; library for `setup.py`
