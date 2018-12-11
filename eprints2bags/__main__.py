@@ -41,7 +41,9 @@ from   timeit import default_timer as timer
 import traceback
 
 import eprints2bags
-from   eprints2bags.constants import ON_WINDOWS
+from   eprints2bags.constants import ON_WINDOWS, KEYRING
+from   eprints2bags.credentials import service_credentials, password
+from   eprints2bags.credentials import keyring_credentials, save_keyring_credentials
 from   eprints2bags.debug import set_debug, log
 from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files
@@ -66,13 +68,15 @@ from   eprints2bags.eprints import *
     no_bags    = ('do not create bags; just leave the content',      'flag',   'B'),
     no_color   = ('do not color-code terminal output (default: do)', 'flag',   'C'),
     debug      = ('turn on debugging',                               'flag',   'D'),
+    no_keyring = ('do not use a keyring',                            'flag',   'K'),
+    reset      = ('reset user and password used',                    'flag',   'R'),
     version    = ('print version info and exit',                     'flag',   'V'),
 )
 
 def main(api_url = 'A', base_name = 'B', delay = 100, fetch_list = 'F',
          missing_ok = False, output_dir = 'O', user = 'U', password = 'P',
          quiet = False, debug = False, no_bags = False, no_color = False,
-         version = False):
+         no_keyring = False, reset = False, version = False):
     '''eprints2bags bags up EPrints content as BagIt bags.
 
 This program contacts an EPrints REST server whose network API is accessible
@@ -110,9 +114,22 @@ with each record will be fetched over the network.  The list of documents for
 each record is determined from XML file, in the <documents> element.  Certain
 EPrints internal documents such as "indexcodes.txt" are ignored.
 
-Downloading some documents may require supplying a user login and password to
-the EPrints server.  These can be supplied using the command-line arguments
--u and -p, respectively (/u and /p on Windows).
+Downloading documents usually requires supplying a user login and password to
+the EPrints server.  By default, this program uses the operating system's
+keyring/keychain functionality to get a user name and password.  If the
+information does not exist from a previous run of eprints2bags, it will query
+the user interactively for the user name and password, and (unless the -K or
+/K argument is given) store them in the user's keyring/keychain so that it
+does not have to ask again in the future.  It is also possible to supply the
+information directly on the command line using the -u and -p options (or /u
+and /p on Windows), but this is discouraged because it is insecure on
+multiuser computer systems.
+
+To reset the user name and password (e.g., if a mistake was made the last time
+and the wrong credentials were stored in the keyring/keychain system), add the
+-R (or /R on Windows) command-line argument to a command.  The next time
+eprints2bags runs, it will query for the user name and password again even
+if an entry already exists in the keyring or keychain.
 
 The final step of this program is to create BagIt bags from the contents of
 the subdirectories created for each record, then tar up and gzip the bag
@@ -145,6 +162,9 @@ record fetches (adjustable using the -d command-line option), which may be
 too short in some cases.  Setting the value to 0 is also possible, but might
 get you blocked or banned from an institution's servers.
 '''
+    # Initial setup -----------------------------------------------------------
+
+    keyring = not no_keyring   # Avoid double negative in code, for readability
     say = MessageHandler(not no_color, quiet)
     prefix = '/' if ON_WINDOWS else '-'
     hint = '(Hint: use {}h for help.)'.format(prefix)
@@ -211,6 +231,9 @@ get you blocked or banned from an institution's servers.
         if len(wanted) >= 31998:
             exit(say.fatal_text("Can't process more than 31,998 entries due to file system limitations."))
 
+        if not user or not password or reset:
+            user, password = login_credentials(user, password, keyring, reset)
+
         say.info('Beginning to process {} EPrints {}.', len(wanted),
                  'entries' if len(wanted) > 1 else 'entry')
         say.info('Output will be written under directory "{}"', output_dir)
@@ -273,7 +296,7 @@ get you blocked or banned from an institution's servers.
         elif len(missing) > 0:
             say.warn('The following records were not found: '+ ', '.join(missing) + '.')
     except KeyboardInterrupt as err:
-        exit(say.fatal_text('Quitting.'))
+        exit(say.msg('Quitting.', 'error'))
     except CorruptedContent as err:
         exit(say.fatal_text(str(err)))
     except bagit.BagValidationError as err:
@@ -301,6 +324,27 @@ def print_version():
     print('Author: {}'.format(eprints2bags.__author__))
     print('URL: {}'.format(eprints2bags.__url__))
     print('License: {}'.format(eprints2bags.__license__))
+
+
+def login_credentials(user, pswd, use_keyring, reset):
+    if use_keyring and not reset:
+        if __debug__: log('Getting credentials from keyring')
+        tmp_user, tmp_pswd, _, _ = service_credentials(KEYRING, "EPrints server",
+                                                       user, pswd)
+    else:
+        if not use_keyring:
+            if __debug__: log('Keyring disabled')
+        if reset:
+            if __debug__: log('Reset invoked')
+        tmp_user = input('EPrints server login: ')
+        tmp_pswd = password('Password for "{}": '.format(tmp_user))
+    if use_keyring:
+        # Save the credentials if they're different.
+        s_user, s_pswd, _, _ = keyring_credentials(KEYRING)
+        if s_user != tmp_user or s_pswd != tmp_pswd:
+            if __debug__: log('Saving credentials to keyring')
+            save_keyring_credentials(KEYRING, tmp_user, tmp_pswd)
+    return tmp_user, tmp_pswd
 
 
 # Main entry point.
