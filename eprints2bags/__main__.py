@@ -68,15 +68,15 @@ from   eprints2bags.eprints import *
     no_bags    = ('do not create bags; just leave the content',      'flag',   'B'),
     no_color   = ('do not color-code terminal output (default: do)', 'flag',   'C'),
     debug      = ('turn on debugging',                               'flag',   'D'),
-    no_keyring = ('do not use a keyring',                            'flag',   'K'),
-    reset      = ('reset user and password used',                    'flag',   'R'),
+    no_keyring = ('do not use a keyring service',                    'flag',   'K'),
+    reset_keys = ('reset user and password used',                    'flag',   'R'),
     version    = ('print version info and exit',                     'flag',   'V'),
 )
 
 def main(api_url = 'A', base_name = 'B', delay = 100, fetch_list = 'F',
          missing_ok = False, output_dir = 'O', user = 'U', password = 'P',
          quiet = False, debug = False, no_bags = False, no_color = False,
-         no_keyring = False, reset = False, version = False):
+         no_keyring = False, reset_keys = False, version = False):
     '''eprints2bags bags up EPrints content as BagIt bags.
 
 This program contacts an EPrints REST server whose network API is accessible
@@ -231,8 +231,8 @@ get you blocked or banned from an institution's servers.
         if len(wanted) >= 31998:
             exit(say.fatal_text("Can't process more than 31,998 entries due to file system limitations."))
 
-        if not user or not password or reset:
-            user, password = login_credentials(user, password, keyring, reset)
+        if not user or not password or reset_keys:
+            user, password = login_credentials(user, password, keyring, reset_keys)
 
         say.info('Beginning to process {} EPrints {}.', len(wanted),
                  'entries' if len(wanted) > 1 else 'entry')

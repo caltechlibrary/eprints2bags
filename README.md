@@ -110,9 +110,9 @@ The following table summarizes all the command line options available. (Note: on
 | `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
 | `-p`_P_ | `--password`_U_   | Password for EPrints proxy login | |
 | `-q`    | `--quiet`         | Don't print info messages while working | Be chatty while working | |
-| `-B`    | `--no-bags`       | Don't create BagIt bags | Bag up the records | |
+| `-B`    | `--no-bags`       | Don't create bags or archives | Bag up the records | |
 | `-C`    | `--no-color`      | Don't color-code the output | Use colors in the terminal output | |
-| `-K`    | `--no-keyring`    | Don't color-code the output | Use colors in the terminal output | |
+| `-K`    | `--no-keyring`    | Don't use a keyring/keychain | Store login info in keyring | |
 | `-D`    | `--debug`         | Debugging mode | Normal mode | |
 | `-R`    | `--reset`         | Reset user login & password used | Reuse previously-used credentials |
 | `-V`    | `--version`       | Print program version info and exit | Do other actions instead | |
