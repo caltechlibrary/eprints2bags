@@ -1,7 +1,7 @@
 eprints2bags<img width="100px" align="right" src=".graphics/noun_bag_1002779.svg">
 =========
 
-A program for downloading records from an Eprints server and creating [BagIt](https://en.wikipedia.org/wiki/BagIt) bags out of them.
+A program for downloading records from an Eprints server and creating [BagIt](https://en.wikipedia.org/wiki/BagIt) packages out of them.
 
 *Authors*:      [Michael Hucka](http://github.com/mhucka), [Betsy Coles](https://github.com/betsycoles)<br>
 *Repository*:   [https://github.com/caltechlibrary/eprints2bags](https://github.com/caltechlibrary/eprints2bags)<br>
@@ -20,14 +20,15 @@ Table of Contents
 * [Getting help and support](#-getting-help-and-support)
 * [Do you like it?](#-do-you-like-it)
 * [Contributing — info for developers](#-contributing--info-for-developers)
-* [History](#✍︎-history)
+* [History](#-history)
 * [Acknowledgments](#︎-acknowledgments)
 * [Copyright and license](#︎-copyright-and-license)
+
 
 ☀ Introduction
 -----------------------------
 
-Materials in EPrints must be extracted before they can be moved to a preservation system such as [DPN](https://dpn.org) or another long-term storage or dark archive.  _Eprints2bags_ encapsulates the processes needed to gather the materials and bundle them up in [BagIt](https://en.wikipedia.org/wiki/BagIt) bags.  The program works over a network using an EPrints server's REST API.  It downloads a subset of records or all records, and bags them up individually.  Eprints2bags is a command-line tool written in Python 3.
+Materials in EPrints must be extracted before they can be moved to a preservation system such as [DPN](https://dpn.org) or another long-term storage or dark archive.  _Eprints2bags_ encapsulates the processes needed to gather the materials and bundle them up in [BagIt](https://en.wikipedia.org/wiki/BagIt) packages.  The program works over a network using an EPrints server's REST API.  It downloads a subset of records or all records, and bags them up individually.  Eprints2bags is a command-line tool written in Python 3.
 
 
 ✺ Installation instructions
@@ -146,7 +147,7 @@ We would be happy to receive your help and participation with enhancing eprints2
 Everyone is asked to read and respect the [code of conduct](CONDUCT.md) when participating in this project.
 
 
-✍︎ History
+❡ History
 --------
 
 In 2018, [Betsy Coles](https://github.com/betsycoles) wrote a [set of Perl scripts](https://github.com/caltechlibrary/eprints2dpn) and described a workflow for bagging content from Caltech's Eprints-based [Caltech Collection of Open Digital Archives (CODA)](https://libguides.caltech.edu/CODA) server.  The original code is still available in this repository in the [historical](historical) subdirectory.  In late 2018, Mike Hucka sought to expand the functionality of the original tools and generalize them in anticipation of having to stop using DPN because on 2018-12-04, DPN announced they were shutting down. Thus was born _eprints2bags_.
@@ -159,7 +160,7 @@ The [vector artwork](https://thenounproject.com/search/?q=bag&i=1002779) of a ba
 
 Eprints2bags makes use of numerous open-source packages, without which it would have been effectively impossible to develop Turf with the resources we had.  We want to acknowledge this debt.  In alphabetical order, the packages are:
 
-* [bagit]() &ndash; 
+* [bagit](https://github.com/LibraryOfCongress/bagit-python) &ndash; Python library for working with [BagIt](https://tools.ietf.org/html/draft-kunze-bagit-17) style packages
 * [colorama](https://github.com/tartley/colorama) &ndash; makes ANSI escape character sequences work under MS Windows terminals
 * [ipdb](https://github.com/gotcha/ipdb) &ndash; the IPython debugger
 * [keyring](https://github.com/jaraco/keyring) &ndash; access the system keyring service from Python
