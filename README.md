@@ -9,7 +9,7 @@ A program for downloading records from an Eprints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.4+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.2.0-b44e88.svg?style=flat-square)](http://shields.io)
+[![Latest release](https://img.shields.io/badge/Latest_release-1.2.1-b44e88.svg?style=flat-square)](http://shields.io)
 
 Table of Contents
 -----------------
@@ -86,6 +86,13 @@ Creating tarball /tmp/eprints/85447.tgz
 ======================================================================
 Done. Wrote 1 EPrints records to /tmp/eprints/.
 ```
+
+The following is a screen cast to give a sense for what it's like to run `eprints2bags`. Click on the following image:
+
+<p align="center">
+  <a href="https://asciinema.org/a/aCH9JVEHAGfDfT1B7mCX18kar"><img width="80%" src=".graphics/eprints2bags-asciinema.png" alt="Screencast of simple eprints2bags demo"></a>
+</p>
+
 
 ### Summary of command-line options
 
