@@ -18,6 +18,8 @@ Table of Contents
 * [Installation instructions](#-installation-instructions)
 * [Running eprints2bags](#︎-running-eprints2bags)
 * [Getting help and support](#-getting-help-and-support)
+* [Do you like it?](#-do-you-like-it)
+* [Contributing — info for developers](#-contributing--info-for-developers)
 * [History](#✍︎-history)
 * [Acknowledgments](#︎-acknowledgments)
 * [Copyright and license](#︎-copyright-and-license)
@@ -127,6 +129,14 @@ If you find an issue, please submit it in [the GitHub issue tracker](https://git
 ------------------
 
 If you like this software, don't forget to give this repo a star on GitHub to show your support!
+
+
+♬ Contributing &mdash; info for developers
+------------------------------------------
+
+We would be happy to receive your help and participation with enhancing eprints2bags.  A quick way to find out what is currently on people's plates and our near-term plans is to look at the [GitHub issue tracker](https://github.com/caltechlibrary/eprints2bags/issues) for this project, but the possibilities are not limited to what you see there &ndash; if you have ideas for new features and enhancements, please feel free to write them up as a new issue or contact the developers directly!
+
+Everyone is asked to read and respect the [code of conduct](CONDUCT.md) when participating in this project.
 
 
 ✍︎ History
