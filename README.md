@@ -85,7 +85,7 @@ Downloading https://authors.library.caltech.edu/85447/1/1-s2.0-S0164121218300517
 Making bag out of /tmp/eprints/85447
 Creating tarball /tmp/eprints/85447.tgz
 ======================================================================
-Done. Wrote 1 EPrints records to /tmp/eprints/.
+Done. Wrote 1 EPrints record to /tmp/eprints/.
 ```
 
 The following is a screen cast to give a sense for what it's like to run `eprints2bags`. Click on the following image:
@@ -97,7 +97,7 @@ The following is a screen cast to give a sense for what it's like to run `eprint
 
 ### Summary of command-line options
 
-The following table summarizes all the command line options available. (Note: on Windows computers, `/` must be usedas the prefix character instead of `-`):
+The following table summarizes all the command line options available. (Note: on Windows computers, `/` must be used as the prefix character instead of `-`):
 
 | Short   | Long&nbsp;form&nbsp;opt | Meaning | Default |  |
 |---------|-------------------|----------------------|---------|---|
@@ -158,7 +158,7 @@ In 2018, [Betsy Coles](https://github.com/betsycoles) wrote a [set of Perl scrip
 
 The [vector artwork](https://thenounproject.com/search/?q=bag&i=1002779) of a bag used as a logo for Eprints2bags was created by [StoneHub](https://thenounproject.com/stonehub/) from the Noun Project.  It is licensed under the Creative Commons [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/) license.
 
-Eprints2bags makes use of numerous open-source packages, without which it would have been effectively impossible to develop Turf with the resources we had.  We want to acknowledge this debt.  In alphabetical order, the packages are:
+Eprints2bags makes use of numerous open-source packages, without which it would have been effectively impossible to develop eprints2bags with the resources we had.  We want to acknowledge this debt.  In alphabetical order, the packages are:
 
 * [bagit](https://github.com/LibraryOfCongress/bagit-python) &ndash; Python library for working with [BagIt](https://tools.ietf.org/html/draft-kunze-bagit-17) style packages
 * [colorama](https://github.com/tartley/colorama) &ndash; makes ANSI escape character sequences work under MS Windows terminals
