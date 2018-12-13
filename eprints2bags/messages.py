@@ -63,7 +63,7 @@ class MessageHandler():
 
     def warn_text(self, text, *args):
         '''Prints a nonfatal, noncritical warning message.'''
-        return color('Warning: ' + text.format(*args), 'warn', self._colorize)
+        return color(text.format(*args), 'warn', self._colorize)
 
 
     def warn(self, text, *args):
@@ -73,7 +73,7 @@ class MessageHandler():
 
     def error_text(self, text, *args):
         '''Prints a message reporting a critical error.'''
-        return color('Error: ' + text.format(*args), 'error', self._colorize)
+        return color(text.format(*args), 'error', self._colorize)
 
 
     def error(self, text, *args):
@@ -86,7 +86,7 @@ class MessageHandler():
         exit the program; it leaves that to the caller in case the caller
         needs to perform additional tasks before exiting.
         '''
-        return color('FATAL: ' + text.format(*args), ['error', 'bold'], self._colorize)
+        return color('FATAL ' + text.format(*args), ['error', 'bold'], self._colorize)
 
 
     def fatal(self, text, *args):
