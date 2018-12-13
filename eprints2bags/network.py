@@ -22,6 +22,7 @@ from   time import sleep
 import ssl
 import urllib
 from   urllib import request
+import urllib3
 
 import eprints2bags
 from   eprints2bags.debug import log
@@ -62,6 +63,7 @@ def download(url, user, password, local_destination):
     try:
         req = requests.get(url, stream = True, auth = (user, password))
     except requests.exceptions.ConnectionError as err:
+        import pdb; pdb.set_trace()
         if err.args and isinstance(err.args[0], urllib3.exceptions.MaxRetryError):
             return 'Unable to resolve destination host'
         else:
