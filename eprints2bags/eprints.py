@@ -100,12 +100,12 @@ def eprints_documents(xml):
     files = []
     for document in xml.findall('.//{' + _EPRINTS_XMLNS + '}documents'):
         for url in document.findall('.//{' + _EPRINTS_XMLNS + '}url'):
-            if not eprints_internal(url.text):
+            if not eprints_internal_file(url.text):
                 files.append(url.text)
     return files
 
 
-def eprints_internal(url):
+def eprints_internal_file(url):
     return any(url.endswith(name) for name in _EPRINTS_INTERNAL_FILES)
 
 
