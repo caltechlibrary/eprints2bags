@@ -44,13 +44,14 @@ def writable(dest):
 
 
 def make_dir(dir_path):
-    try:
-        os.mkdir(dir_path)
-    except OSError as err:
-        if err.errno == errno.EEXIST:
-            if __debug__: log('Reusing existing directory {}', dir_path)
-        else:
-            raise
+    '''Creates directory 'dir_path' (including intermediate directories).'''
+    if path.isdir(dir_path):
+        if __debug__: log('Reusing existing directory {}', dir_path)
+        return
+    else:
+        if __debug__: log('Creating directory {}', dir_path)
+        # If this gets an exception, let it bubble up to caller.
+        os.makedirs(dir_path)
 
 
 def archive_extension(type):
