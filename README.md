@@ -87,7 +87,7 @@ To reset the user name and password (e.g., if a mistake was made the last time a
 Running eprints2bags then consists of invoking the program like any other program on your system.  The following is a simple example showing how to get a single record (#85447) from Caltech's [CODA](https://libguides.caltech.edu/CODA) Eprints server (with user name and password blanked out here for security reasons):
 
 ```
-# eprints2bags -o /tmp/eprints -f 85447 -a https://authors.library.caltech.edu/rest -u XXXXX -p XXXXX
+# eprints2bags -o /tmp/eprints -i 85447 -a https://authors.library.caltech.edu/rest -u XXXXX -p XXXXX
 
 Beginning to process 1 EPrints entry.
 Output will be written under directory "/tmp/eprints"
