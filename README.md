@@ -117,7 +117,7 @@ The following table summarizes all the command line options available. (Note: on
 | `-a`_A_ | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
 | `-b`_B_ | `--base-name`_B_  | Name the records with the template _B_-n | Use only the record number, n  | |
 | `-f`_F_ | `--final-fmt`_F_  | Create single-file archive in format _F_ | Uncompressed ZIP archive | |
-| `-i`_I_ | `--id-list`_I_    | List of records to get (can be a file name) | Fetch all records from the server | |
+| `-i`_L_ | `--id-list`_L_    | List of records to get (can be a file name) | Fetch all records from the server | |
 | `-m`    | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
 | `-o`_O_ | `--output-dir`_O_ | Write outputs to directory _O_ |  |  ⚑ |
 | `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
