@@ -92,7 +92,10 @@ def eprints_xml(number, base_url, user, password):
     url = eprints_api(base_url, '/eprint/{}.xml'.format(number), user, password)
     (response, error) = net('get', url)
     if error:
-        raise error
+        if isinstance(error, NoContent):
+            return None
+        else:
+            raise error
     return etree.fromstring(response.content)
 
 
