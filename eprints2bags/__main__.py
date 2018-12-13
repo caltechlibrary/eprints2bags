@@ -101,8 +101,8 @@ numbers found in the file given by the option -i (or /i on Windows).  If no
 the given EPrints server.  The value of -i can also be one or more integers
 separated by commas (e.g., -i 54602,54604), or a range of numbers separated
 by a dash (e.g., -i 1-100, which is interpreted as the list of numbers 1, 2,
-..., 100 inclusive).  In those cases, the records written will be limited to
-those numbered.
+..., 100 inclusive), or some combination thereof.  In those cases, the
+records written will be limited to those numbered.
 
 By default, if a record requested or implied by the arguments to -i is
 missing from the EPrints server, this will count as an error and stop
@@ -112,7 +112,7 @@ missing records will be ignored.
 This program writes the output in the directory given by the command line
 option -o (or /o on Windows).  If the directory does not exist, this program
 will create it.  If the directory does exist, it will be overwritten with the
-new content.  The result of running this program will be individual
+new contents.  The result of running this program will be individual
 directories underneath the directory given by the -o option, with each
 subdirectory named according to the EPrints record number (e.g.,
 /path/to/output/430, /path/to/output/431, ...).  If the -b option (/b on
@@ -144,7 +144,7 @@ as-is.  Other possible values are: "compressed-zip", "uncompressed-zip",
 recognized and supported than tar format, and uncompressed ZIP is used because
 file corruption is generally more damaging to a compressed archive than an
 uncompressed one.  Since the main use case for eprints2bags is to archive
-content for long-term storage, avoiding compression seems safer.
+contents for long-term storage, avoiding compression seems safer.
 
 Downloading documents usually requires supplying a user login and password to
 the EPrints server.  By default, this program uses the operating system's
@@ -157,11 +157,11 @@ information directly on the command line using the -u and -p options (or /u
 and /p on Windows), but this is discouraged because it is insecure on
 multiuser computer systems.
 
-To reset the user name and password (e.g., if a mistake was made the last time
-and the wrong credentials were stored in the keyring/keychain system), add the
--R (or /R on Windows) command-line argument to a command.  The next time
-eprints2bags runs, it will query for the user name and password again even
-if an entry already exists in the keyring or keychain.
+To reset the user name and password (e.g., if a mistake was made the last
+time and the wrong credentials were stored in the keyring/keychain system),
+add the -R (or /R on Windows) command-line argument to a command.  When
+`eprints2bags` is run with this option, it will query for the user name and
+password again even if an entry already exists in the keyring or keychain.
 
 This program will print messages as it works.  To reduce the number of messages
 to warnings and errors, use the option -q (or /q on Windows).  The output will
@@ -268,7 +268,7 @@ get you blocked or banned from an institution's servers.
             say.msg('Getting record with id {}'.format(number), 'white')
             xml_element = eprints_xml(number, api_url, user, password)
             if xml_element == None:
-                say.warn('Server has no content for {}', number)
+                say.warn('Server has no contents for {}', number)
                 continue
 
             # Good so far.  Create the directory and write the XML out.
@@ -378,7 +378,7 @@ def file_comments(bag):
     text += 'About this archive file:\n'
     text += '\n'
     text += 'This is an archive of a file directory organized in BagIt v1.0 format.\n'
-    text += 'The bag contains the content from the EPrints record located at\n'
+    text += 'The bag contains the contents from the EPrints record located at\n'
     text += bag.info['External-Identifier']
     text += '\n\n'
     text += 'The software used to create this archive file was:\n'
