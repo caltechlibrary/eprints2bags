@@ -237,6 +237,7 @@ get you blocked or banned from an institution's servers.
     if password == 'P':
         password = None
 
+    delay = int(delay)
     name_prefix = '' if base_name == 'B' else base_name + '-'
     archive_fmt = "uncompressed-zip" if final_fmt == 'F' else final_fmt.lower()
     if archive_fmt and archive_fmt not in _RECOGNIZED_ARCHIVE_FORMATS:
@@ -260,20 +261,15 @@ get you blocked or banned from an institution's servers.
         make_dir(output_dir)
 
         say.msg('='*70, 'dark')
-        count = 0
         missing = wanted.copy()
         for number in wanted:
             # Start by getting the full record in EP3 XML format.  A failure
             # here will either cause an exit or moving to the next record.
-            try:
-                say.msg('Getting record with id {}'.format(number), 'white')
-                xml_element = eprints_xml(number, api_url, user, password)
-            except NoContent:
-                if missing_ok:
-                    say.warn('Server has no content for {}', number)
-                    continue
-                else:
-                    raise
+            say.msg('Getting record with id {}'.format(number), 'white')
+            xml_element = eprints_xml(number, api_url, user, password)
+            if xml_element == None:
+                say.warn('Server has no content for {}', number)
+                continue
 
             # Good so far.  Create the directory and write the XML out.
             record_dir = path.join(output_dir, name_prefix + str(number))
@@ -294,24 +290,23 @@ get you blocked or banned from an institution's servers.
                 if __debug__: log('Verifying bag {}', bag.path)
                 bag.validate()
 
-            # Create single-file archives of the bags by default.
-            if archive_fmt != 'none' and not no_bags:
-                dest = record_dir + archive_extension(archive_fmt)
-                say.info('Creating archive file {}', dest)
-                create_archive(dest, archive_fmt, record_dir, file_comments(bag))
-                if __debug__: log('Verifying archive file {}', dest)
-                verify_archive(dest, archive_fmt)
-                if __debug__: log('Deleting directory {}', record_dir)
-                shutil.rmtree(record_dir)
+                # Create single-file archives of the bags by default.
+                if archive_fmt != 'none':
+                    dest = record_dir + archive_extension(archive_fmt)
+                    say.info('Creating archive file {}', dest)
+                    create_archive(dest, archive_fmt, record_dir, file_comments(bag))
+                    if __debug__: log('Verifying archive file {}', dest)
+                    verify_archive(dest, archive_fmt)
+                    if __debug__: log('Deleting directory {}', record_dir)
+                    shutil.rmtree(record_dir)
 
             # Track what we've done so far.
-            count += 1
             if wanted and number in wanted:
                 missing.remove(number)
-            if delay:
-                sleep(delay/1000)
+            sleep(delay/1000)
 
         say.msg('='*70, 'dark')
+        count = len(wanted) - len(missing)
         say.info('Done. Wrote {} EPrints record{} to {}/.', count,
                  's' if count > 1 else '', output_dir)
         if len(missing) > 500:
