@@ -104,7 +104,7 @@ Done. Wrote 1 EPrints record to /tmp/eprints/.
 The following is a screen cast to give a sense for what it's like to run `eprints2bags`. Click on the following image:
 
 <p align="center">
-  <a href="https://asciinema.org/a/aCH9JVEHAGfDfT1B7mCX18kar"><img width="80%" src=".graphics/eprints2bags-asciinema.png" alt="Screencast of simple eprints2bags demo"></a>
+  <a href="https://asciinema.org/a/v13itB47vfE8CYF4LMFTgqlZy"><img width="80%" src=".graphics/eprints2bags-asciinema.png" alt="Screencast of simple eprints2bags demo"></a>
 </p>
 
 
