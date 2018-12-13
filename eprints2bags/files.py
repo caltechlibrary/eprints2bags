@@ -75,7 +75,7 @@ def create_archive(archive_file, type, source_dir, comment = None):
                     for file in files:
                         zf.write(os.path.join(root, file))
                 if comment:
-                    zf.comment = comment
+                    zf.comment = comment.encode()
         finally:
             os.chdir(current_dir)
     else:
