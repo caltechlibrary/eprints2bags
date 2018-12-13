@@ -19,8 +19,11 @@ import gzip
 import os
 from   os import path
 from   PIL import Image
+import shutil
 import sys
 import tarfile
+import zipfile
+from   zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 
 import eprints2bags
 from   eprints2bags.debug import log
@@ -50,27 +53,56 @@ def make_dir(dir_path):
             raise
 
 
-def make_tarball(source_dir, tarball_path):
-    current_dir = os.getcwd()
-    try:
-        # cd to get a tarball with only the source_dir and not the full path.
-        os.chdir(path.dirname(source_dir))
-        with tarfile.open(tarball_path, "w:gz") as tar_file:
-            for root, dirs, files in os.walk(path.basename(source_dir)):
-                for file in files:
-                    tar_file.add(path.join(root, file))
-    finally:
-        os.chdir(current_dir)
+def archive_extension(type):
+    if type.endswith('zip'):
+        return '.zip'
+    elif type.endswith('tar'):
+        return '.tar' if type.startswith('uncompressed') else '.tar.gz'
+    else:
+        raise InternalError('Unrecognized archive format: {}'.format(type))
 
 
-def verify_tarball(tarball_path):
-    '''Check the integrtive of a tar file and raise an exception if needed.'''
-    # Algorithm originally from https://stackoverflow.com/a/32312857/743730
-    try:
-        with tarfile.open(tarball_path) as tfile:
+def create_archive(archive_file, type, source_dir, comment = None):
+    root_dir = path.dirname(path.normpath(source_dir))
+    base_dir = path.basename(source_dir)
+    if type.endswith('zip'):
+        format = ZIP_STORED if type.startswith('uncompress') else ZIP_DEFLATED
+        current_dir = os.getcwd()
+        try:
+            os.chdir(root_dir)
+            with zipfile.ZipFile(archive_file, 'w', format) as zf:
+                for root, dirs, files in os.walk(base_dir):
+                    for file in files:
+                        zf.write(os.path.join(root, file))
+                if comment:
+                    zf.comment = comment
+        finally:
+            os.chdir(current_dir)
+    else:
+        if type.startswith('uncompress'):
+            shutil.make_archive(source_dir, 'tar', root_dir, base_dir)
+        else:
+            shutil.make_archive(source_dir, 'gztar', root_dir, base_dir)
+
+
+def verify_archive(archive_file, type):
+    '''Check the integrity of an archive and raise an exception if needed.'''
+    if type.endswith('zip'):
+        error = ZipFile(archive_file).testzip()
+        if error:
+            raise CorruptedContent('Failed to verify file "{}"'.format(archive_file))
+    else:
+        # Algorithm originally from https://stackoverflow.com/a/32312857/743730
+        tfile = None
+        try:
+            tfile = tarfile.open(archive_file)
             for member in tfile.getmembers():
-                with tfile.extractfile(member.name) as target:
-                    for chunk in iter(lambda: target.read(1024), b''):
+                content = tfile.extractfile(member.name)
+                if content:
+                    for chunk in iter(lambda: content.read(1024), b''):
                         pass
-    except:
-        raise CorruptedContent('Failed to verify file "{}"'.format(tarball_path))
+        except Exception as err:
+            raise CorruptedContent('Failed to verify file "{}"'.format(archive_file))
+        finally:
+            if tfile:
+                tfile.close()
