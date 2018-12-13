@@ -22,7 +22,7 @@ Table of Contents
 
 * [Introduction](#-introduction)
 * [Installation instructions](#-installation-instructions)
-* [Running eprints2bags](#︎-running-eprints2bags)
+* [Using eprints2bags](#︎-using-eprints2bags)
 * [Getting help and support](#-getting-help-and-support)
 * [Do you like it?](#-do-you-like-it)
 * [Contributing — info for developers](#-contributing--info-for-developers)
@@ -54,7 +54,7 @@ sudo python3 -m pip install . --upgrade
 
 On Linux and macOS systems, assuming that the installation proceeds normally, you should end up with a program called `eprints2bags` in a location normally searched by your terminal shell for commands.
 
-▶︎ Running eprints2bags
+▶︎ Using eprints2bags
 ---------------------
 
 This program contacts an EPrints REST server whose network API is accessible at the URL given by the command-line option `-a` (or `/a` on Windows).  A typical EPrints server URL has the form `https://server.institution.edu/rest`.  The `-a` (or `/a`) option is required; the program cannot infer the server address on its own.
