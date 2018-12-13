@@ -238,8 +238,8 @@ get you blocked or banned from an institution's servers.
         password = None
 
     name_prefix = '' if base_name == 'B' else base_name + '-'
-    final_fmt = "uncompressed-zip" if final_fmt == 'F' else final_fmt.lower()
-    if final_fmt and final_fmt not in _RECOGNIZED_ARCHIVE_FORMATS:
+    archive_fmt = "uncompressed-zip" if final_fmt == 'F' else final_fmt.lower()
+    if archive_fmt and archive_fmt not in _RECOGNIZED_ARCHIVE_FORMATS:
         exit(say.fatal_text('Value of {}f option not recognized. {}', prefix, hint))
 
     # Do the real work --------------------------------------------------------
@@ -257,12 +257,9 @@ get you blocked or banned from an institution's servers.
         say.info('Beginning to process {} EPrints {}.', len(wanted),
                  'entries' if len(wanted) > 1 else 'entry')
         say.info('Output will be written under directory "{}"', output_dir)
-        if not path.exists(output_dir):
-            os.mkdir(output_dir)
-            if __debug__: log('Created output directory {}', output_dir)
+        make_dir(output_dir)
 
-        if not quiet:
-            say.msg('='*70, 'dark')
+        say.msg('='*70, 'dark')
         count = 0
         missing = wanted.copy()
         for number in wanted:
@@ -298,12 +295,12 @@ get you blocked or banned from an institution's servers.
                 bag.validate()
 
             # Create single-file archives of the bags by default.
-            if final_fmt != 'none' and not no_bags:
-                afile = record_dir + archive_extension(final_fmt)
-                say.info('Creating archive file {}', afile)
-                create_archive(afile, final_fmt, record_dir, zip_comment(bag))
-                if __debug__: log('Verifying archive file {}', afile)
-                verify_archive(afile, final_fmt)
+            if archive_fmt != 'none' and not no_bags:
+                dest = record_dir + archive_extension(archive_fmt)
+                say.info('Creating archive file {}', dest)
+                create_archive(dest, archive_fmt, record_dir, file_comments(bag))
+                if __debug__: log('Verifying archive file {}', dest)
+                verify_archive(dest, archive_fmt)
                 if __debug__: log('Deleting directory {}', record_dir)
                 shutil.rmtree(record_dir)
 
@@ -314,8 +311,7 @@ get you blocked or banned from an institution's servers.
             if delay:
                 sleep(delay/1000)
 
-        if not quiet:
-            say.msg('='*70, 'dark')
+        say.msg('='*70, 'dark')
         say.info('Done. Wrote {} EPrints record{} to {}/.', count,
                  's' if count > 1 else '', output_dir)
         if len(missing) > 500:
@@ -381,7 +377,7 @@ def update_bag_info(bag, xml):
     bag.info['External-Description'] = 'Archive of EPrints record and document files'
 
 
-def zip_comment(bag):
+def file_comments(bag):
     text = '~ '*35
     text += '\n'
     text += 'About this archive file:\n'
