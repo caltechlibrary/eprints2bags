@@ -109,6 +109,17 @@ def eprints_internal_file(url):
     return any(url.endswith(name) for name in _EPRINTS_INTERNAL_FILES)
 
 
+def eprints_record_id(xml):
+    node = xml.find('.//{' + _EPRINTS_XMLNS + '}eprint')
+    return node.attrib['id'] if 'id' in node.attrib else ''
+
+
+def eprints_official_url(xml):
+    node = xml.find('.//{' + _EPRINTS_XMLNS + '}official_url')
+    # Do not remove the explicit test for None below.
+    return node.text if node != None else ''
+
+
 def write_record(number, xml, dir_prefix, dir_path):
     xml_file_name = dir_prefix + str(number) + '.xml'
     encoded = etree.tostring(xml, encoding = 'UTF-8', method = 'xml')
