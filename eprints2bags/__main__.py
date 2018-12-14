@@ -111,16 +111,18 @@ missing from the EPrints server, this will count as an error and stop
 execution of the program.  If the option -m (or /m on Windows) is given,
 missing records will be ignored.
 
-This program writes the output in the directory given by the command line
-option -o (or /o on Windows).  If the directory does not exist, this program
-will create it.  If the directory does exist, it will be overwritten with the
-new contents.  The result of running this program will be individual
-directories underneath the directory given by the -o option, with each
+This program writes its output in subdirectories under the directory given by
+the command-line option -o (or /o on Windows).  If the directory does not
+exist, this program will create it.  If no -o is given, the current directory
+where eprints2bags is running is used.  Whatever the destination is,
+eprints2bags will create subdirectories in the destination, with each
 subdirectory named according to the EPrints record number (e.g.,
-/path/to/output/430, /path/to/output/431, ...).  If the -b option (/b on
-Windows) is given, the subdirectory names are changed to have the form
-"BASENAME-NUMBER" where BASENAME is the text string provided with the -b
-option and the NUMBER is the EPrints number for a given entry.
+/path/to/output/430, /path/to/output/431, /path/to/output/432, ...).  If the
+-b option (/b on Windows) is given, the subdirectory names are changed to
+have the form _BASENAME-NUMBER_ where _BASENAME_ is the text string provided
+with the -b option and the _NUMBER_ is the EPrints number for a given entry
+(meaning, /path/to/output/BASENAME-430, /path/to/output/BASENAME-431,
+/path/to/output/BASENAME-432, ...).
 
 Each directory will contain an EP3XML XML file and additional document
 file(s) associated with the EPrints record in question.  Documents associated
@@ -171,11 +173,20 @@ be color-coded unless the -C option (or /C on Windows) is given; this option
 can be helpful if the color control signals create problems for your terminal
 emulator.
 
-Beware that some file systems have limitations on the number of subdirectories
-that can be created, which directly impacts how many record subdirectories
-can be created by this program.  In particular, note that Linux ext2 and ext3
-file systems are limited to 31,998 subdirectories.  This means you cannot
-grab more than 32,000 entries at a time from an EPrints server.
+Beware that some file systems have limitations on the number of
+subdirectories that can be created, which directly impacts how many record
+subdirectories can be created by this program.  eprints2bags attempts to
+guess the type of file system where the output is being written and warn the
+user if the number of records exceeds known maximums (e.g., 31,998
+subdirectories for the ext2 and ext3 file systems in Linux), but its internal
+table does not include all possible file systems and it may not be able to
+warn users in all cases.  If you encounter file system limitations on the
+number of subdirectories that can be created, a simple solution is to
+manually create an intermediate level of subdirectories under the destination
+given to -o, then run eprints2bags multiple times, each time indicating a
+different subrange of records to the -i option and a different subdirectory
+to -o, such that the number of records written to each destination is below
+the file system's limit on total number of directories.
 
 It is also noteworthy that hitting a server for tens of thousands of records
 and documents in rapid succession is likely to draw suspicion from server
@@ -227,7 +238,7 @@ get you blocked or banned from an institution's servers.
         wanted = []
 
     if output_dir == 'O':
-        exit(say.fatal_text('Must provide an output directory. {}', hint))
+        output_dir = os.getcwd()
     if not path.isabs(output_dir):
         output_dir = path.realpath(path.join(os.getcwd(), output_dir))
     if path.isdir(output_dir):
