@@ -57,17 +57,11 @@ def download_files(downloads_list, user, pswd, output_dir, say):
     for item in downloads_list:
         file = path.realpath(path.join(output_dir, path.basename(item)))
         say.info('Downloading {}', item)
-        error = download(item, user, pswd, file)
-        if error:
-            say.error('*** Failed to download {}', item)
-            say.error('*** Reason: {}', error)
+        download(item, user, pswd, file)
 
 
 def download(url, user, password, local_destination, recursing = 0):
-    '''Download the 'url' to the file 'local_destination'.  If an error
-    occurs, returns a string describing the reason for failure; otherwise,
-    returns False to indicate no error occurred.
-    '''
+    '''Download the 'url' to the file 'local_destination'.'''
     try:
         req = requests.get(url, stream = True, auth = (user, password))
     except requests.exceptions.ConnectionError as err:
@@ -75,20 +69,24 @@ def download(url, user, password, local_destination, recursing = 0):
             raise NetworkFailure('Giving up after too many connection errors')
         arg0 = err.args[0]
         if isinstance(arg0, urllib3.exceptions.MaxRetryError):
-            return 'Unable to resolve destination host'
+            if network_available():
+                raise NetworkFailure('Unable to resolve destination host')
+            else:
+                raise NetworkFailure('Lost network connection with server')
         elif (isinstance(arg0, urllib3.exceptions.ProtocolError)
               and arg0.args and isinstance(args0.args[1], ConnectionResetError)):
             if __debug__: log('download() got ConnectionResetError; will recurse')
-            import pdb; pdb.set_trace()
             sleep(1)                    # Sleep a short time and try again.
             recursing += 1
-            return download(url, user, password, local_destination, recursing)
+            download(url, user, password, local_destination, recursing)
         else:
-            return str(err)
+            raise NetworkFailure(str(err))
+    except requests.exceptions.ReadTimeout as err:
+        raise NetworkFailure('Timed out reading data -- possible network failure')
     except requests.exceptions.InvalidSchema as err:
-        return 'Unsupported network protocol'
+        raise NetworkFailure('Unsupported network protocol')
     except Exception as err:
-        return str(err)
+        raise
 
     # Interpret the response.
     code = req.status_code
@@ -97,7 +95,7 @@ def download(url, user, password, local_destination, recursing = 0):
         sleep(1)                        # Sleep a short time and try again.
         recursing += 1
         if __debug__: log('Calling download() recursively for http code 202')
-        return download(url, user, password, local_destination, recursing)
+        download(url, user, password, local_destination, recursing)
     elif 200 <= code < 400:
         # The following originally started out as the code here:
         # https://stackoverflow.com/a/16696317/743730
@@ -107,23 +105,22 @@ def download(url, user, password, local_destination, recursing = 0):
                 if chunk:
                     f.write(chunk)
         req.close()
-        return False                    # No error.
     elif code in [401, 402, 403, 407, 451, 511]:
-        return "Access is forbidden or requires authentication"
+        raise AuthenticationFailure("Access is forbidden or requires authentication")
     elif code in [404, 410]:
-        return "No content found at this location"
+        raise NoContent("No content found at this location")
     elif code in [405, 406, 409, 411, 412, 414, 417, 428, 431, 505, 510]:
-        return "Server returned code {} -- please report this".format(code)
+        raise InternalError("Server returned code {} -- please report this".format(code))
     elif code in [415, 416]:
-        return "Server rejected the request"
+        raise ServiceFailure("Server rejected the request")
     elif code == 429:
-        return "Server blocking further requests due to rate limits"
+        raise RateLimitExceeded("Server blocking further requests due to rate limits")
     elif code == 503:
-        return "Server is unavailable -- try again later"
+        raise ServiceFailure("Server is unavailable -- try again later")
     elif code in [500, 501, 502, 506, 507, 508]:
-        return "Internal server error"
+        raise ServiceFailure("Internal server error")
     else:
-        return "Unable to resolve URL"
+        raise NetworkFailure("Unable to resolve URL")
 
 
 def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
