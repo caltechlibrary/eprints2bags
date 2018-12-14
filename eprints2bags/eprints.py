@@ -15,7 +15,7 @@ file "LICENSE" for more information.
 '''
 
 from   collections import defaultdict
-import lxml.etree as etree
+from   lxml import etree
 import os
 from   os import path
 import shutil
