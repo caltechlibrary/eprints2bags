@@ -30,7 +30,7 @@ file "LICENSE" for more information.
 import bagit
 from   collections import defaultdict
 from   humanize import intcomma
-import lxml.etree as etree
+from   lxml import etree
 import os
 from   os import path
 import plac
