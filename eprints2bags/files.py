@@ -14,11 +14,9 @@ open-source software released under a 3-clause BSD license.  Please see the
 file "LICENSE" for more information.
 '''
 
-import errno
 import gzip
 import os
 from   os import path
-from   PIL import Image
 from   psutil import disk_partitions
 import shutil
 import sys
