@@ -248,6 +248,9 @@ get you blocked or banned from an institution's servers.
     # Do the real work --------------------------------------------------------
 
     try:
+        if not user or not password or reset_keys:
+            user, password = login_credentials(user, password, keyring, reset_keys)
+
         if not wanted:
             if __debug__: log('Fetching records list from {}'.format(api_url))
             wanted = eprints_records_list(api_url, user, password)
@@ -256,9 +259,6 @@ get you blocked or banned from an institution's servers.
         if fs in KNOWN_SUBDIR_LIMITS and len(wanted) > KNOWN_SUBDIR_LIMITS[fs]:
             text = '{} is too many folders for the file system holding "{}".'
             exit(say.fatal_text(text.format(intcomma(num_wanted), output_dir)))
-
-        if not user or not password or reset_keys:
-            user, password = login_credentials(user, password, keyring, reset_keys)
 
         say.info('Beginning to process {} EPrints {}.', intcomma(len(wanted)),
                  'entries' if len(wanted) > 1 else 'entry')
