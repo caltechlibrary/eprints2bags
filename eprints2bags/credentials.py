@@ -98,7 +98,7 @@ def save_keyring_credentials(service, user, pswd, host=None, port=None):
     port = port if port else ''
     if sys.platform.startswith('win'):
         keyring.set_keyring(WinVaultKeyring())
-    keyring.setpassword(service, 'credentials', _encoded(user, pswd, host, port))
+    keyring.set_password(service, 'credentials', _encoded(user, pswd, host, port))
 
 
 _sep = ''
