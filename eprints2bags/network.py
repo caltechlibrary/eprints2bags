@@ -69,11 +69,18 @@ def timed_request(get_or_post, url, **kwargs):
         return http_method(url, timeout = 10, verify = False, **kwargs)
 
 
-def download_files(downloads_list, user, pswd, output_dir, say):
+def download_files(downloads_list, user, pswd, output_dir, missing_ok, say):
     for item in downloads_list:
         file = path.realpath(path.join(output_dir, path.basename(item)))
         say.info('Downloading {}', item)
-        download(item, user, pswd, file)
+        try:
+            download(item, user, pswd, file)
+        except NoContent as err:
+            if missing_ok:
+                say.error(str(err))
+                continue
+            else:
+                raise
 
 
 def download(url, user, password, local_destination, recursing = 0):
