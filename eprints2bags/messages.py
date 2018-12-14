@@ -86,7 +86,7 @@ class MessageHandler():
         exit the program; it leaves that to the caller in case the caller
         needs to perform additional tasks before exiting.
         '''
-        return color('FATAL ' + text.format(*args), ['error', 'bold'], self._colorize)
+        return color('FATAL: ' + text.format(*args), ['error', 'bold'], self._colorize)
 
 
     def fatal(self, text, *args):
