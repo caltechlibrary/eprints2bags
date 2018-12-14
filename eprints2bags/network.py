@@ -147,7 +147,7 @@ def download(url, user, password, local_destination, recursing = 0):
     elif code == 503:
         raise ServiceFailure('Server is unavailable -- try again later')
     elif code in [500, 501, 502, 506, 507, 508]:
-        raise ServiceFailure('Internal server error')
+        raise ServiceFailure('Internal server error (HTTP code {})'.format(code))
     else:
         raise NetworkFailure('Unable to resolve {}'.format(url))
 
