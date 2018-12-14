@@ -309,9 +309,7 @@ get you blocked or banned from an institution's servers.
         count = len(wanted) - len(missing)
         say.info('Done. Wrote {} EPrints record{} to {}/.', count,
                  's' if count > 1 else '', output_dir)
-        if len(missing) > 500:
-            say.warn('More than 500 records requested with -f were not found')
-        elif len(missing) > 0:
+        if len(missing) > 0:
             say.warn('The following records were not found: '+ ', '.join(missing) + '.')
     except KeyboardInterrupt as err:
         exit(say.msg('Quitting.', 'error'))
