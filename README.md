@@ -9,12 +9,14 @@ A program for downloading records from an Eprints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.4+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.3.0-b44e88.svg?style=flat-square)](http://shields.io)
+[![Latest release](https://img.shields.io/badge/Latest_release-1.3.1-b44e88.svg?style=flat-square)](http://shields.io)
 
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.3.0_: `eprints2bags` now generates uncompressed [ZIP](https://en.wikipedia.org/wiki/Zip_(file_format)) archives of bags by default, instead of using compressed [tar](https://en.wikipedia.org/wiki/Tar_(computing)) format.  This was done in the belief that ZIP format is more widely supported and because compressed archive file contents may be more difficult to recover if the archive file becomes corrupted.  Also, `eprints2bags` now uses the run-time environment's keychain/keyring services to store the user name and password between runs, for convenience when running the program repeatedly.  Finally, some of the the command-line options have been changed.
+_Version 1.3.1_: Fix bugs handling network exceptions while downloading content from servers, fix a missing Python import, rename `CONDUCT.md` to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) so that GitHub can find it, and add [CONTRIBUTING.md](CONTRIBUTING.md).
+
+_Version 1.3.0_: `eprints2bags` now generates uncompressed [ZIP](https://www.loc.gov/preservation/digital/formats/fdd/fdd000354.shtml) archives of bags by default, instead of using compressed [tar](https://en.wikipedia.org/wiki/Tar_(computing)) format.  This was done in the belief that ZIP format is more widely supported and because compressed archive file contents may be more difficult to recover if the archive file becomes corrupted.  Also, `eprints2bags` now uses the run-time environment's keychain/keyring services to store the user name and password between runs, for convenience when running the program repeatedly.  Finally, some of the the command-line options have been changed.
 
 
 Table of Contents
@@ -156,9 +158,7 @@ If you like this software, don't forget to give this repo a star on GitHub to sh
 ♬ Contributing &mdash; info for developers
 ------------------------------------------
 
-We would be happy to receive your help and participation with enhancing eprints2bags.  A quick way to find out what is currently on people's plates and our near-term plans is to look at the [GitHub issue tracker](https://github.com/caltechlibrary/eprints2bags/issues) for this project, but the possibilities are not limited to what you see there &ndash; if you have ideas for new features and enhancements, please feel free to write them up as a new issue or contact the developers directly!
-
-Everyone is asked to read and respect the [code of conduct](CONDUCT.md) when participating in this project.
+We would be happy to receive your help and participation with enhancing `eprints2bags`!  Please visit the [guidelines for contributing](CONTRIBUTING.md) for some tips on getting started.
 
 
 ❡ History
