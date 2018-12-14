@@ -9,12 +9,12 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.4+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.3.1-b44e88.svg?style=flat-square)](http://shields.io)
+[![Latest release](https://img.shields.io/badge/Latest_release-1.4.0-b44e88.svg?style=flat-square)](http://shields.io)
 
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.3.1_: (a) Fixes an important network handling bug that could cause incomplete records to be saved, (b) fixes bugs in handling network exceptions while downloading content from servers, (c) improves detection of file system limitations, (d) fixes a missing import, (e) renames `CONDUCT.md` to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) so that GitHub can find it,  (e) adds [CONTRIBUTING.md](CONTRIBUTING.md), and (e) updates the documentation.
+_Version 1.4.0_: This release (a) fixes an important network handling bug that could cause incomplete records to be saved, (b) fixes bugs in handling network exceptions while downloading content from servers, (c) improves detection of file system limitations, (d) makes `-o` an optional argument, (e) fixes a missing Python package import, (f) renames `CONDUCT.md` to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) so that GitHub can find it,  (g) adds [`CONTRIBUTING.md`](CONTRIBUTING.md), and (h) updates the documentation.  This release also fixes some other minor bugs and includes some internal code refactoring.
 
 _Version 1.3.0_: Eprints2bags now generates uncompressed [ZIP](https://www.loc.gov/preservation/digital/formats/fdd/fdd000354.shtml) archives of bags by default, instead of using compressed [tar](https://en.wikipedia.org/wiki/Tar_(computing)) format.  This was done in the belief that ZIP format is more widely supported and because compressed archive file contents may be more difficult to recover if the archive file becomes corrupted.  Also, the program `eprints2bags` now uses the run-time environment's keychain/keyring services to store the user name and password between runs, for convenience when running the program repeatedly.  Finally, some of the the command-line options have been changed.
 
@@ -65,7 +65,7 @@ The EPrints records to be written will be limited to the list of numerical EPrin
 
 By default, if a record requested or implied by the arguments to `-i` is missing from the EPrints server, this **is considered an error** and stops execution of the program.  If the option `-m` (or `/m` on Windows) is given, missing records will be ignored instead.  Option `-m` is particularly useful when giving a range of numbers with the `-i` option, as it is common for EPrints records to be updated or deleted and gaps to be left in the numbering.
 
-`eprints2bags` writes its output in subdirectories under the directory given by the command-line option `-o` (or `/o` on Windows).  If the directory does not exist, this program will create it.  If the directory does exist, it will be overwritten with the new contents.  The result of running this program will be individual directories underneath the directory given by the `-o` option, with each subdirectory named according to the EPrints record number (e.g., `/path/to/output/430`, `/path/to/output/431`, `/path/to/output/432`, ...).  If the `-b` option (`/b` on Windows) is given, the subdirectory names are changed to have the form _BASENAME-NUMBER_ where _BASENAME_ is the text string provided with the `-b` option and the _NUMBER_ is the EPrints number for a given entry.
+`eprints2bags` writes its output in subdirectories under the directory given by the command-line option `-o` (or `/o` on Windows).  If the directory does not exist, this program will create it.  If no `-o` is given, the current directory where `eprints2bags` is running is used.  Whatever the destination is, `eprints2bags` will create subdirectories in the destination, with each subdirectory named according to the EPrints record number (e.g., `/path/to/output/430`, `/path/to/output/431`, `/path/to/output/432`, ...).  If the `-b` option (`/b` on Windows) is given, the subdirectory names are changed to have the form _BASENAME-NUMBER_ where _BASENAME_ is the text string provided with the `-b` option and the _NUMBER_ is the EPrints number for a given entry (meaning, `/path/to/output/BASENAME-430`, `/path/to/output/BASENAME-431`, `/path/to/output/BASENAME-432`, ...).
 
 
 ### Contents gathered and output produced
@@ -146,7 +146,7 @@ The following table summarizes all the command line options available. (Note: on
 | `-f`_F_ | `--final-fmt`_F_  | Create single-file archive in format _F_ | Uncompressed ZIP archive | |
 | `-i`_L_ | `--id-list`_L_    | List of records to get (can be a file name) | Fetch all records from the server | |
 | `-m`    | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
-| `-o`_O_ | `--output-dir`_O_ | Write outputs to directory _O_ |  |  ⚑ |
+| `-o`_O_ | `--output-dir`_O_ | Write outputs in the directory _O_ | Write in the current directory |  |
 | `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
 | `-p`_P_ | `--password`_U_   | Password for EPrints proxy login | |
 | `-y`_Y_ | `--delay`_Y_      | Pause _Y_ ms between getting records | 100 milliseconds | |
