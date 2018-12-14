@@ -29,6 +29,14 @@ from   eprints2bags.debug import log
 from   eprints2bags.exceptions import *
 
 
+# Constants.
+# .............................................................................
+
+_MAX_RECURSIVE_CALLS = 5
+'''How many times can certain network functions call themselves upcon
+encountering a network error before they stop and give up.'''
+
+
 # Main functions.
 # .............................................................................
 
@@ -55,7 +63,7 @@ def download_files(downloads_list, user, pswd, output_dir, say):
             say.error('*** Reason: {}', error)
 
 
-def download(url, user, password, local_destination):
+def download(url, user, password, local_destination, recursing = 0):
     '''Download the 'url' to the file 'local_destination'.  If an error
     occurs, returns a string describing the reason for failure; otherwise,
     returns False to indicate no error occurred.
@@ -63,9 +71,18 @@ def download(url, user, password, local_destination):
     try:
         req = requests.get(url, stream = True, auth = (user, password))
     except requests.exceptions.ConnectionError as err:
-        import pdb; pdb.set_trace()
-        if err.args and isinstance(err.args[0], urllib3.exceptions.MaxRetryError):
+        if recursing >= _MAX_RECURSIVE_CALLS:
+            raise NetworkFailure('Giving up after too many connection errors')
+        arg0 = err.args[0]
+        if isinstance(arg0, urllib3.exceptions.MaxRetryError):
             return 'Unable to resolve destination host'
+        elif (isinstance(arg0, urllib3.exceptions.ProtocolError)
+              and arg0.args and isinstance(args0.args[1], ConnectionResetError)):
+            if __debug__: log('download() got ConnectionResetError; will recurse')
+            import pdb; pdb.set_trace()
+            sleep(1)                    # Sleep a short time and try again.
+            recursing += 1
+            return download(url, user, password, local_destination, recursing)
         else:
             return str(err)
     except requests.exceptions.InvalidSchema as err:
@@ -78,10 +95,13 @@ def download(url, user, password, local_destination):
     if code == 202:
         # Code 202 = Accepted, "received but not yet acted upon."
         sleep(1)                        # Sleep a short time and try again.
-        return download(url, local_destination)
+        recursing += 1
+        if __debug__: log('Calling download() recursively for http code 202')
+        return download(url, user, password, local_destination, recursing)
     elif 200 <= code < 400:
         # The following originally started out as the code here:
         # https://stackoverflow.com/a/16696317/743730
+        if __debug__: log('Downloading content')
         with open(local_destination, 'wb') as f:
             for chunk in req.iter_content(chunk_size = 1024):
                 if chunk:
@@ -106,7 +126,7 @@ def download(url, user, password, local_destination):
         return "Unable to resolve URL"
 
 
-def net(get_or_post, url, polling = False, **kwargs):
+def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
     '''Gets or posts the 'url' with optional keyword arguments provided.
     Returns a tuple of (response, exception), where the first element is
     the response from the get or post http call, and the second element is
@@ -122,8 +142,17 @@ def net(get_or_post, url, polling = False, **kwargs):
         http_method = requests.get if get_or_post == 'get' else requests.post
         req = http_method(url, **kwargs)
     except requests.exceptions.ConnectionError as ex:
-        if ex.args and isinstance(ex.args[0], urllib3.exceptions.MaxRetryError):
+        if recursing >= _MAX_RECURSIVE_CALLS:
+            return (req, NetworkFailure('Giving up after too many connection errors'))
+        arg0 = err.args[0]
+        if isinstance(arg0, urllib3.exceptions.MaxRetryError):
             return (req, NetworkFailure('Unable to resolve destination host'))
+        elif (isinstance(arg0, urllib3.exceptions.ProtocolError)
+              and arg0.args and isinstance(args0.args[1], ConnectionResetError)):
+            if __debug__: log('net() got ConnectionResetError; will recurse')
+            sleep(1)                    # Sleep a short time and try again.
+            recursing += 1
+            return net(get_or_post, url, polling, recursing, **kwargs)
         else:
             return (req, NetworkFailure(str(ex)))
     except requests.exceptions.InvalidSchema as ex:
