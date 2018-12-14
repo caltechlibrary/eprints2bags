@@ -78,17 +78,20 @@ def download_files(downloads_list, user, pswd, output_dir, say):
 
 def download(url, user, password, local_destination, recursing = 0):
     '''Download the 'url' to the file 'local_destination'.'''
+    def addurl(text):
+        return (text + ' for {}').format(url)
+
     try:
         req = timed_request('get', url, stream = True, auth = (user, password))
     except requests.exceptions.ConnectionError as err:
         if recursing >= _MAX_RECURSIVE_CALLS:
-            raise NetworkFailure('Giving up after too many connection errors')
+            raise NetworkFailure(addurl('Too many connection errors'))
         arg0 = err.args[0]
         if isinstance(arg0, urllib3.exceptions.MaxRetryError):
             if network_available():
-                raise NetworkFailure('Unable to resolve destination host')
+                raise NetworkFailure(addurl('Unable to resolve host'))
             else:
-                raise NetworkFailure('Lost network connection with server')
+                raise NetworkFailure(addurl('Lost network connection with server'))
         elif (isinstance(arg0, urllib3.exceptions.ProtocolError)
               and arg0.args and isinstance(args0.args[1], ConnectionResetError)):
             if __debug__: log('download() got ConnectionResetError; will recurse')
@@ -99,11 +102,11 @@ def download(url, user, password, local_destination, recursing = 0):
             raise NetworkFailure(str(err))
     except requests.exceptions.ReadTimeout as err:
         if network_available():
-            raise ServiceFailure('Timed out reading data from server')
+            raise ServiceFailure(addurl('Timed out reading data from server'))
         else:
-            raise NetworkFailure('Timed out reading data over network')
+            raise NetworkFailure(addurl('Timed out reading data over network'))
     except requests.exceptions.InvalidSchema as err:
-        raise NetworkFailure('Unsupported network protocol')
+        raise NetworkFailure(addurl('Unsupported network protocol'))
     except Exception as err:
         raise
 
@@ -118,28 +121,28 @@ def download(url, user, password, local_destination, recursing = 0):
     elif 200 <= code < 400:
         # The following originally started out as the code here:
         # https://stackoverflow.com/a/16696317/743730
-        if __debug__: log('Downloading content')
+        if __debug__: log(addurl('Downloading content'))
         with open(local_destination, 'wb') as f:
             for chunk in req.iter_content(chunk_size = 1024):
                 if chunk:
                     f.write(chunk)
         req.close()
     elif code in [401, 402, 403, 407, 451, 511]:
-        raise AuthenticationFailure("Access is forbidden or requires authentication")
+        raise AuthenticationFailure(addurl('Access is forbidden'))
     elif code in [404, 410]:
-        raise NoContent("No content found at this location")
+        raise NoContent(addurl('No content found'))
     elif code in [405, 406, 409, 411, 412, 414, 417, 428, 431, 505, 510]:
-        raise InternalError("Server returned code {} -- please report this".format(code))
+        raise InternalError(addurl('Server returned code {}'.format(code)))
     elif code in [415, 416]:
-        raise ServiceFailure("Server rejected the request")
+        raise ServiceFailure(addurl('Server rejected the request'))
     elif code == 429:
-        raise RateLimitExceeded("Server blocking further requests due to rate limits")
+        raise RateLimitExceeded('Server blocking further requests due to rate limits')
     elif code == 503:
-        raise ServiceFailure("Server is unavailable -- try again later")
+        raise ServiceFailure('Server is unavailable -- try again later')
     elif code in [500, 501, 502, 506, 507, 508]:
-        raise ServiceFailure("Internal server error")
+        raise ServiceFailure('Internal server error')
     else:
-        raise NetworkFailure("Unable to resolve URL")
+        raise NetworkFailure('Unable to resolve {}'.format(url))
 
 
 def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
