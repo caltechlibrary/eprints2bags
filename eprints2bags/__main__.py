@@ -29,6 +29,7 @@ file "LICENSE" for more information.
 
 import bagit
 from   collections import defaultdict
+from   humanize import intcomma
 import lxml.etree as etree
 import os
 from   os import path
@@ -48,6 +49,7 @@ from   eprints2bags.debug import set_debug, log
 from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files
 from   eprints2bags.files import readable, writable, make_dir
+from   eprints2bags.files import fs_type, KNOWN_SUBDIR_LIMITS
 from   eprints2bags.files import create_archive, verify_archive, archive_extension
 from   eprints2bags.eprints import *
 
@@ -249,13 +251,16 @@ get you blocked or banned from an institution's servers.
         if not wanted:
             if __debug__: log('Fetching records list from {}'.format(api_url))
             wanted = eprints_records_list(api_url, user, password)
-        if len(wanted) >= 31998:
-            exit(say.fatal_text("Can't process more than 31,998 entries due to file system limitations."))
+        fs = fs_type(output_dir)
+        if __debug__: log('Destination file system is {}', fs)
+        if fs in KNOWN_SUBDIR_LIMITS and len(wanted) > KNOWN_SUBDIR_LIMITS[fs]:
+            text = '{} is too many folders for the file system holding "{}".'
+            exit(say.fatal_text(text.format(intcomma(num_wanted), output_dir)))
 
         if not user or not password or reset_keys:
             user, password = login_credentials(user, password, keyring, reset_keys)
 
-        say.info('Beginning to process {} EPrints {}.', len(wanted),
+        say.info('Beginning to process {} EPrints {}.', intcomma(len(wanted)),
                  'entries' if len(wanted) > 1 else 'entry')
         say.info('Output will be written under directory "{}"', output_dir)
         make_dir(output_dir)
@@ -307,7 +312,7 @@ get you blocked or banned from an institution's servers.
 
         say.msg('='*70, 'dark')
         count = len(wanted) - len(missing)
-        say.info('Done. Wrote {} EPrints record{} to {}/.', count,
+        say.info('Done. Wrote {} EPrints record{} to {}/.', intcomma(count),
                  's' if count > 1 else '', output_dir)
         if len(missing) > 0:
             say.warn('The following records were not found: '+ ', '.join(missing) + '.')
