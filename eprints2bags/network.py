@@ -18,11 +18,13 @@ import http.client
 from   http.client import responses as http_responses
 from   os import path
 import requests
+from   requests.packages.urllib3.exceptions import InsecureRequestWarning
 from   time import sleep
 import ssl
 import urllib
 from   urllib import request
 import urllib3
+import warnings
 
 import eprints2bags
 from   eprints2bags.debug import log
@@ -53,6 +55,20 @@ def network_available():
         r.close()
 
 
+def timed_request(get_or_post, url, **kwargs):
+    # Wrap requests.get() with a timeout.
+    # 'verify' means whether to perform HTTPS certificate verification.
+    http_method = requests.get if get_or_post == 'get' else requests.post
+    with warnings.catch_warnings():
+        # When verify = True, the underlying urllib3 library used by the
+        # Python requests module will issue a warning about unverified HTTPS
+        # requests.  If we don't care, then the warnings are a constant
+        # annoyance.  See also this for a discussion:
+        # https://github.com/kennethreitz/requests/issues/2214
+        warnings.simplefilter("ignore", InsecureRequestWarning)
+        return http_method(url, timeout = 10, verify = False, **kwargs)
+
+
 def download_files(downloads_list, user, pswd, output_dir, say):
     for item in downloads_list:
         file = path.realpath(path.join(output_dir, path.basename(item)))
@@ -63,7 +79,7 @@ def download_files(downloads_list, user, pswd, output_dir, say):
 def download(url, user, password, local_destination, recursing = 0):
     '''Download the 'url' to the file 'local_destination'.'''
     try:
-        req = requests.get(url, stream = True, auth = (user, password))
+        req = timed_request('get', url, stream = True, auth = (user, password))
     except requests.exceptions.ConnectionError as err:
         if recursing >= _MAX_RECURSIVE_CALLS:
             raise NetworkFailure('Giving up after too many connection errors')
@@ -82,7 +98,10 @@ def download(url, user, password, local_destination, recursing = 0):
         else:
             raise NetworkFailure(str(err))
     except requests.exceptions.ReadTimeout as err:
-        raise NetworkFailure('Timed out reading data -- possible network failure')
+        if network_available():
+            raise ServiceFailure('Timed out reading data from server')
+        else:
+            raise NetworkFailure('Timed out reading data over network')
     except requests.exceptions.InvalidSchema as err:
         raise NetworkFailure('Unsupported network protocol')
     except Exception as err:
@@ -136,8 +155,7 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
     '''
     try:
         if __debug__: log('HTTP {} {}', get_or_post, url)
-        http_method = requests.get if get_or_post == 'get' else requests.post
-        req = http_method(url, **kwargs)
+        req = timed_request(get_or_post, url, **kwargs)
     except requests.exceptions.ConnectionError as ex:
         if recursing >= _MAX_RECURSIVE_CALLS:
             return (req, NetworkFailure('Giving up after too many connection errors'))
@@ -152,6 +170,11 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
             return net(get_or_post, url, polling, recursing, **kwargs)
         else:
             return (req, NetworkFailure(str(ex)))
+    except requests.exceptions.ReadTimeout as err:
+        if network_available():
+            return (req, ServiceFailure('Timed out reading data from server'))
+        else:
+            return (req, NetworkFailure('Timed out reading data over network'))
     except requests.exceptions.InvalidSchema as ex:
         return (req, NetworkFailure('Unsupported network protocol'))
     except Exception as ex:
