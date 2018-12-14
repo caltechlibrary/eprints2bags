@@ -218,7 +218,9 @@ get you blocked or banned from an institution's servers.
         exit(say.fatal_text('Argument to {}a must be a full URL.', prefix))
 
     # Wanted is a list of strings, not of ints, to avoid repeated conversions.
-    if ',' in id_list or id_list.isdigit():
+    if id_list == 'I':
+        wanted = []
+    elif ',' in id_list or id_list.isdigit():
         wanted = id_list.split(',')
     elif '-' in id_list and '.' not in id_list:
         range_list = id_list.split('-')
