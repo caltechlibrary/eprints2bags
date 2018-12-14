@@ -268,7 +268,7 @@ get you blocked or banned from an institution's servers.
         fs = fs_type(output_dir)
         if __debug__: log('Destination file system is {}', fs)
         if fs in KNOWN_SUBDIR_LIMITS and len(wanted) > KNOWN_SUBDIR_LIMITS[fs]:
-            text = '{} is too many folders for the file system holding "{}".'
+            text = '{} is too many folders for the file system at "{}".'
             exit(say.fatal_text(text.format(intcomma(num_wanted), output_dir)))
 
         say.info('Beginning to process {} EPrints {}.', intcomma(len(wanted)),
@@ -284,8 +284,12 @@ get you blocked or banned from an institution's servers.
             say.msg('Getting record with id {}'.format(number), 'white')
             xml_element = eprints_xml(number, api_url, user, password)
             if xml_element == None:
-                say.warn('Server has no contents for {}', number)
-                continue
+                if missing_ok:
+                    say.warn('Server has no contents for {}', number)
+                    continue
+                else:
+                    say.error('Server has no contents for {}', number)
+                    exit(say.fatal_text('Quitting. {}', hint))
 
             # Good so far.  Create the directory and write the XML out.
             record_dir = path.join(output_dir, name_prefix + str(number))
@@ -294,8 +298,8 @@ get you blocked or banned from an institution's servers.
             write_record(number, xml_element, name_prefix, record_dir)
 
             # Download any documents referenced in the XML record.
-            associated_documents = eprints_documents(xml_element)
-            download_files(associated_documents, user, password, record_dir, say)
+            docs = eprints_documents(xml_element)
+            download_files(docs, user, password, record_dir, missing_ok, say)
 
             # Bag up the directory by default.
             if not no_bags:
