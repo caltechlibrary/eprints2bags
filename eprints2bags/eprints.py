@@ -88,12 +88,22 @@ def eprints_records_list(base_url, user, password):
     return numbers
 
 
-def eprints_xml(number, base_url, user, password):
+def eprints_xml(number, base_url, user, password, missing_ok, say):
     url = eprints_api(base_url, '/eprint/{}.xml'.format(number), user, password)
     (response, error) = net('get', url)
     if error:
         if isinstance(error, NoContent):
-            return None
+            if missing_ok:
+                say.warn('Server has no contents for record number {}', number)
+                return None
+            else:
+                raise error
+        elif isinstance(error, ServiceFailure):
+            if missing_ok:
+                say.error(str(error) + ' for record number {}'.format(number))
+                return None
+            else:
+                raise error
         else:
             raise error
     return etree.fromstring(response.content)

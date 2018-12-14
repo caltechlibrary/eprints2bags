@@ -282,30 +282,25 @@ get you blocked or banned from an institution's servers.
             # Start by getting the full record in EP3 XML format.  A failure
             # here will either cause an exit or moving to the next record.
             say.msg('Getting record with id {}'.format(number), 'white')
-            xml_element = eprints_xml(number, api_url, user, password)
-            if xml_element == None:
-                if missing_ok:
-                    say.warn('Server has no contents for {}', number)
-                    continue
-                else:
-                    say.error('Server has no contents for {}', number)
-                    exit(say.fatal_text('Quitting. {}', hint))
+            xml = eprints_xml(number, api_url, user, password, missing_ok, say)
+            if xml == None:
+                continue
 
             # Good so far.  Create the directory and write the XML out.
             record_dir = path.join(output_dir, name_prefix + str(number))
             say.info('Creating {}', record_dir)
             make_dir(record_dir)
-            write_record(number, xml_element, name_prefix, record_dir)
+            write_record(number, xml, name_prefix, record_dir)
 
             # Download any documents referenced in the XML record.
-            docs = eprints_documents(xml_element)
+            docs = eprints_documents(xml)
             download_files(docs, user, password, record_dir, missing_ok, say)
 
             # Bag up the directory by default.
             if not no_bags:
                 say.info('Making bag out of {}', record_dir)
                 bag = bagit.make_bag(record_dir, checksums = _BAG_CHECKSUMS)
-                update_bag_info(bag, xml_element)
+                update_bag_info(bag, xml)
                 bag.save()
                 if __debug__: log('Verifying bag {}', bag.path)
                 bag.validate()
