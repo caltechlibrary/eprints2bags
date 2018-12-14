@@ -147,7 +147,7 @@ def download(url, user, password, local_destination, recursing = 0):
     elif code == 503:
         raise ServiceFailure('Server is unavailable -- try again later')
     elif code in [500, 501, 502, 506, 507, 508]:
-        raise ServiceFailure('Internal server error (HTTP code {})'.format(code))
+        raise ServiceFailure(addurl('Internal server error (HTTP code {})'.format(code)))
     else:
         raise NetworkFailure('Unable to resolve {}'.format(url))
 
@@ -163,15 +163,18 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
     If keyword 'polling' is True, certain statuses like 404 are ignored and
     the response is returned; otherwise, they are considered errors.
     '''
+    def addurl(text):
+        return (text + ' for {}').format(url)
+
     try:
         if __debug__: log('HTTP {} {}', get_or_post, url)
         req = timed_request(get_or_post, url, **kwargs)
     except requests.exceptions.ConnectionError as ex:
         if recursing >= _MAX_RECURSIVE_CALLS:
-            return (req, NetworkFailure('Giving up after too many connection errors'))
+            return (req, NetworkFailure(addurl('Too many connection errors')))
         arg0 = err.args[0]
         if isinstance(arg0, urllib3.exceptions.MaxRetryError):
-            return (req, NetworkFailure('Unable to resolve destination host'))
+            return (req, NetworkFailure(addurl('Unable to resolve host')))
         elif (isinstance(arg0, urllib3.exceptions.ProtocolError)
               and arg0.args and isinstance(args0.args[1], ConnectionResetError)):
             if __debug__: log('net() got ConnectionResetError; will recurse')
@@ -182,11 +185,11 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
             return (req, NetworkFailure(str(ex)))
     except requests.exceptions.ReadTimeout as err:
         if network_available():
-            return (req, ServiceFailure('Timed out reading data from server'))
+            return (req, ServiceFailure(addurl('Timed out reading data from server')))
         else:
-            return (req, NetworkFailure('Timed out reading data over network'))
+            return (req, NetworkFailure(addurl('Timed out reading data over network')))
     except requests.exceptions.InvalidSchema as ex:
-        return (req, NetworkFailure('Unsupported network protocol'))
+        return (req, NetworkFailure(addurl('Unsupported network protocol')))
     except Exception as ex:
         return (req, ex)
 
@@ -194,19 +197,19 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
     code = req.status_code
     error = None
     if code in [404, 410] and not polling:
-        error = NoContent("No content found at this location")
+        error = NoContent(addurl("No content found"))
     elif code in [401, 402, 403, 407, 451, 511]:
-        error = AuthenticationFailure("Access is forbidden or requires authentication")
+        error = AuthenticationFailure(addurl('Access is forbidden'))
     elif code in [405, 406, 409, 411, 412, 414, 417, 428, 431, 505, 510]:
-        error = ServiceFailure("Server sent {} -- please report this".format(code))
+        error = InternalError(addurl('Server returned code {}'.format(code)))
     elif code in [415, 416]:
-        error = ServiceFailure("Server rejected the request")
+        error = ServiceFailure(addurl('Server rejected the request'))
     elif code == 429:
-        error = RateLimitExceeded("Server blocking further requests due to rate limits") 
+        error = RateLimitExceeded('Server blocking further requests due to rate limits')
     elif code == 503:
-        error = ServiceFailure("Server is unavailable -- try again later")
+        error = ServiceFailure('Server is unavailable -- try again later')
     elif code in [500, 501, 502, 506, 507, 508]:
-        error = ServiceFailure("Internal server error")
+        error = ServiceFailure('Internal server error (HTTP code {})'.format(code))
     elif not (200 <= code < 400):
-        error = NetworkFailure("Unable to resolve URL")
+        error = NetworkFailure("Unable to resolve {}".format(url))
     return (req, error)
