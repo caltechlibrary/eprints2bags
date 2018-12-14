@@ -14,7 +14,7 @@ A program for downloading records from an Eprints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.3.1_: Fix bugs handling network exceptions while downloading content from servers, fix a missing Python import, rename `CONDUCT.md` to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) so that GitHub can find it, and add [CONTRIBUTING.md](CONTRIBUTING.md).
+_Version 1.3.1_: Fixes bugs in handling network exceptions while downloading content from servers, fixes an important network handling bug that could cause incomplete records to be saved, fixes a missing Python import, renames `CONDUCT.md` to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) so that GitHub can find it, and adds [CONTRIBUTING.md](CONTRIBUTING.md).
 
 _Version 1.3.0_: `eprints2bags` now generates uncompressed [ZIP](https://www.loc.gov/preservation/digital/formats/fdd/fdd000354.shtml) archives of bags by default, instead of using compressed [tar](https://en.wikipedia.org/wiki/Tar_(computing)) format.  This was done in the belief that ZIP format is more widely supported and because compressed archive file contents may be more difficult to recover if the archive file becomes corrupted.  Also, `eprints2bags` now uses the run-time environment's keychain/keyring services to store the user name and password between runs, for convenience when running the program repeatedly.  Finally, some of the the command-line options have been changed.
 
@@ -117,7 +117,7 @@ The following table summarizes all the command line options available. (Note: on
 | Short   | Long&nbsp;form&nbsp;opt | Meaning | Default |  |
 |---------|-------------------|----------------------|---------|---|
 | `-a`_A_ | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
-| `-b`_B_ | `--base-name`_B_  | Name the records with the template _B_-n | Use only the record number, n  | |
+| `-b`_B_ | `--base-name`_B_  | Name the records with the template _B_-n | Use only the record id number, n  | |
 | `-f`_F_ | `--final-fmt`_F_  | Create single-file archive in format _F_ | Uncompressed ZIP archive | |
 | `-i`_L_ | `--id-list`_L_    | List of records to get (can be a file name) | Fetch all records from the server | |
 | `-m`    | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
@@ -183,6 +183,7 @@ Eprints2bags makes use of numerous open-source packages, without which it would 
 * [requests](http://docs.python-requests.org) &ndash; an HTTP library for Python
 * [setuptools](https://github.com/pypa/setuptools) &ndash; library for `setup.py`
 * [termcolor](https://pypi.org/project/termcolor/) &ndash; ANSI color formatting for output in terminal
+* [urllib3](https://urllib3.readthedocs.io/en/latest/) &ndash; HTTP client library for Python
 
 ☮︎ Copyright and license
 ---------------------
