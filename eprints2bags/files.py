@@ -19,6 +19,7 @@ import gzip
 import os
 from   os import path
 from   PIL import Image
+from   psutil import disk_partitions
 import shutil
 import sys
 import tarfile
@@ -28,6 +29,26 @@ from   zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 import eprints2bags
 from   eprints2bags.debug import log
 from   eprints2bags.exceptions import *
+
+
+# Constants.
+# .............................................................................
+
+KNOWN_SUBDIR_LIMITS = {
+    'ext2'  : 31998,         # https://en.wikipedia.org/wiki/Ext2
+    'ext3'  : 31998,         # https://en.wikipedia.org/wiki/Ext3
+    'ext4'  : sys.maxsize,   # https://en.wikipedia.org/wiki/Ext4
+    'hfs'   : 2147483648,    # https://support.apple.com/en-us/HT201711
+    'apfs'  : 2147483648,    # can't find number; using hfs+ value
+    'ntfs'  : 4294967295,    # https://en.wikipedia.org/wiki/NTFS
+    'xfs'   : sys.maxsize,   # https://access.redhat.com/articles/rhel-limits
+    'zfs'   : sys.maxsize,   # https://access.redhat.com/articles/rhel-limits
+    'gfs'   : sys.maxsize,   # https://access.redhat.com/articles/rhel-limits
+    'gfs2'  : sys.maxsize,   # https://access.redhat.com/articles/rhel-limits
+    'exfat' : 2796202,       # https://en.wikipedia.org/wiki/ExFAT
+    'fat32' : 65534,
+}
+'''Maximum number of subdirectories for different types of file systems.'''
 
 
 # Main functions.
@@ -41,6 +62,19 @@ def readable(dest):
 def writable(dest):
     '''Returns True if the destination is writable.'''
     return os.access(dest, os.F_OK | os.W_OK)
+
+
+def fs_type(p):
+    '''Return the type of the file system on which the path 'p' is located.'''
+    # Code modified from https://stackoverflow.com/a/25286268/743730
+    root_type = None
+    for part in disk_partitions():
+        if part.mountpoint == '/':
+            root_type = part.fstype
+            continue
+        if p.startswith(part.mountpoint):
+            root_type = part.fstype
+    return root_type
 
 
 def make_dir(dir_path):
