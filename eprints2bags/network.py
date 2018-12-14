@@ -166,6 +166,7 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
     def addurl(text):
         return (text + ' for {}').format(url)
 
+    req = None
     try:
         if __debug__: log('HTTP {} {}', get_or_post, url)
         req = timed_request(get_or_post, url, **kwargs)

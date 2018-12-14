@@ -57,7 +57,7 @@ def eprints_records_list(base_url, user, password):
     (response, error) = net('get', url)
     if error:
         raise error
-    if not response.content:
+    if not response or not response.content:
         raise ServiceFailure('Failed to get a list back from server')
     xml = etree.fromstring(response.content)
     # The content from this call is in XHTML format.  It looks like this, and
