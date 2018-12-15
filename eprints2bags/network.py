@@ -75,7 +75,7 @@ def download_files(downloads_list, user, pswd, output_dir, missing_ok, say):
         say.info('Downloading {}', item)
         try:
             download(item, user, pswd, file)
-        except NoContent as err:
+        except (NoContent, ServiceFailure, AuthenticationFailure) as err:
             if missing_ok:
                 say.error(str(err))
                 continue

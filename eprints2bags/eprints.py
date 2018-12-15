@@ -98,7 +98,10 @@ def eprints_xml(number, base_url, user, password, missing_ok, say):
                 return None
             else:
                 raise error
-        elif isinstance(error, ServiceFailure):
+        elif isinstance(error, ServiceFailure) or isinstance(error, AuthenticationFailure):
+            # Our EPrints server sometimes returns with access forbidden for
+            # specific records.  When ignoring missing entries, I guess it
+            # makes sense to just flag them and move on.
             if missing_ok:
                 say.error(str(error) + ' for record number {}'.format(number))
                 return None
