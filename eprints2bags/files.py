@@ -134,7 +134,7 @@ def verify_archive(archive_file, type):
                 if content:
                     for chunk in iter(lambda: content.read(1024), b''):
                         pass
-        except Exception as err:
+        except Exception as ex:
             raise CorruptedContent('Failed to verify file "{}"'.format(archive_file))
         finally:
             if tfile:

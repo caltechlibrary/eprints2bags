@@ -75,9 +75,9 @@ def download_files(downloads_list, user, pswd, output_dir, missing_ok, say):
         say.info('Downloading {}', item)
         try:
             download(item, user, pswd, file)
-        except (NoContent, ServiceFailure, AuthenticationFailure) as err:
+        except (NoContent, ServiceFailure, AuthenticationFailure) as ex:
             if missing_ok:
-                say.error(str(err))
+                say.error(str(ex))
                 continue
             else:
                 raise
@@ -90,10 +90,10 @@ def download(url, user, password, local_destination, recursing = 0):
 
     try:
         req = timed_request('get', url, stream = True, auth = (user, password))
-    except requests.exceptions.ConnectionError as err:
+    except requests.exceptions.ConnectionError as ex:
         if recursing >= _MAX_RECURSIVE_CALLS:
             raise NetworkFailure(addurl('Too many connection errors'))
-        arg0 = err.args[0]
+        arg0 = ex.args[0]
         if isinstance(arg0, urllib3.exceptions.MaxRetryError):
             if network_available():
                 raise NetworkFailure(addurl('Unable to resolve host'))
@@ -106,15 +106,15 @@ def download(url, user, password, local_destination, recursing = 0):
             recursing += 1
             download(url, user, password, local_destination, recursing)
         else:
-            raise NetworkFailure(str(err))
-    except requests.exceptions.ReadTimeout as err:
+            raise NetworkFailure(str(ex))
+    except requests.exceptions.ReadTimeout as ex:
         if network_available():
             raise ServiceFailure(addurl('Timed out reading data from server'))
         else:
             raise NetworkFailure(addurl('Timed out reading data over network'))
-    except requests.exceptions.InvalidSchema as err:
+    except requests.exceptions.InvalidSchema as ex:
         raise NetworkFailure(addurl('Unsupported network protocol'))
-    except Exception as err:
+    except Exception as ex:
         raise
 
     # Interpret the response.
@@ -173,7 +173,7 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
     except requests.exceptions.ConnectionError as ex:
         if recursing >= _MAX_RECURSIVE_CALLS:
             return (req, NetworkFailure(addurl('Too many connection errors')))
-        arg0 = err.args[0]
+        arg0 = ex.args[0]
         if isinstance(arg0, urllib3.exceptions.MaxRetryError):
             return (req, NetworkFailure(addurl('Unable to resolve host')))
         elif (isinstance(arg0, urllib3.exceptions.ProtocolError)
@@ -184,7 +184,7 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
             return net(get_or_post, url, polling, recursing, **kwargs)
         else:
             return (req, NetworkFailure(str(ex)))
-    except requests.exceptions.ReadTimeout as err:
+    except requests.exceptions.ReadTimeout as ex:
         if network_available():
             return (req, ServiceFailure(addurl('Timed out reading data from server')))
         else:

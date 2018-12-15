@@ -328,18 +328,18 @@ get you blocked or banned from an institution's servers.
                  's' if count > 1 else '', output_dir)
         if len(missing) > 0:
             say.warn('The following records were not found: '+ ', '.join(missing) + '.')
-    except KeyboardInterrupt as err:
+    except KeyboardInterrupt as ex:
         exit(say.msg('Quitting.', 'error'))
-    except CorruptedContent as err:
-        exit(say.fatal_text(str(err)))
-    except bagit.BagValidationError as err:
-        exit(say.fatal_text('Bag validation failure: {}'.format(str(err))))
-    except Exception as err:
+    except CorruptedContent as ex:
+        exit(say.fatal_text(str(ex)))
+    except bagit.BagValidationError as ex:
+        exit(say.fatal_text('Bag validation failure: {}'.format(str(ex))))
+    except Exception as ex:
         if debug:
-            say.error('{}\n{}', str(err), traceback.format_exc())
+            say.error('{}\n{}', str(ex), traceback.format_exc())
             import pdb; pdb.set_trace()
         else:
-            exit(say.error_text('{}', str(err)))
+            exit(say.error_text('{}', str(ex)))
 
 
 # If this is windows, we want the command-line args to use slash intead
