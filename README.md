@@ -17,7 +17,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 _Version 1.4.0_: This release (a) fixes an important network handling bug that could cause incomplete records to be saved, (b) fixes bugs in handling network exceptions while downloading content from servers, (c) improves detection of file system limitations, (d) makes `-o` an optional argument, (e) fixes a missing Python package import, (f) renames `CONDUCT.md` to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) so that GitHub can find it,  (g) adds [`CONTRIBUTING.md`](CONTRIBUTING.md), and (h) updates the documentation.  This release also fixes some other minor bugs and includes some internal code refactoring.
 
-_Version 1.3.0_: Eprints2bags now generates uncompressed [ZIP](https://www.loc.gov/preservation/digital/formats/fdd/fdd000354.shtml) archives of bags by default, instead of using compressed [tar](https://en.wikipedia.org/wiki/Tar_(computing)) format.  This was done in the belief that ZIP format is more widely supported and because compressed archive file contents may be more difficult to recover if the archive file becomes corrupted.  Also, the program `eprints2bags` now uses the run-time environment's keychain/keyring services to store the user name and password between runs, for convenience when running the program repeatedly.  Finally, some of the the command-line options have been changed.
+The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
 
 Table of Contents
