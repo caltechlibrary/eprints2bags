@@ -381,9 +381,12 @@ def login_credentials(user, pswd, use_keyring, reset):
 
 
 def update_bag_info(bag, xml):
+    # The official_url field is not always present.  We try to get it if we
+    # can, and default to using the eprints record id if we can't.
     official_url = eprints_official_url(xml)
-    bag.info['Internal-Sender-Identifier'] = eprints_record_id(xml)
-    bag.info['External-Identifier'] = official_url
+    record_id = eprints_record_id(xml)
+    bag.info['Internal-Sender-Identifier'] = record_id
+    bag.info['External-Identifier'] = official_url if official_url else record_id
     bag.info['External-Description'] = 'Archive of EPrints record and document files'
 
 
