@@ -57,7 +57,7 @@ def network_available():
         r.close()
 
 
-def host_from_url(url):
+def url_host(url):
     parts = urlsplit(url)
     if parts.netloc:
         host = host_from_netloc(parts.netloc)
