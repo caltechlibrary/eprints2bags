@@ -14,6 +14,7 @@ open-source software released under a 3-clause BSD license.  Please see the
 file "LICENSE" for more information.
 '''
 
+import codecs
 from   collections import defaultdict
 from   lxml import etree
 import os
@@ -147,6 +148,6 @@ def write_record(number, xml, dir_prefix, dir_path):
     encoded = etree.tostring(xml, encoding = 'UTF-8', method = 'xml')
     file_path = path.join(dir_path, xml_file_name)
     if __debug__: log('Writing file {}', file_path)
-    with open(file_path, 'w') as file:
+    with codecs.open(file_path, 'w', 'utf-8') as file:
         file.write("<?xml version='1.0' encoding='utf-8'?>\n")
         file.write(encoded.decode().rstrip() + '\n')
