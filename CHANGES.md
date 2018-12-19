@@ -6,7 +6,8 @@ Version 1.5.0
 
 * Store login & password on a per-server basis, instead of (as previously) a single login & password for all servers
 * Fix handling lack of `official_url` elements in EPrints records
-* Change how thumbnail images and other files are ignored for a given record, by looking at the `<relation>` element to see if it is `isVolatileVersionOf`
+* Change how thumbnail images and other files are identified for a given record, by looking at the `<relation>` element to see if it is `isVolatileVersionOf`
+* Refactor credentials-handling code and remove no-longer-needed `credentials.py`
 * Minor internal changes
 
 
