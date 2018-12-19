@@ -6,7 +6,7 @@
 # @website https://github.com/caltechlibrary/eprints2bags
 # =============================================================================
 
-__version__     = '1.4.1'
+__version__     = '1.5.0'
 __title__       = 'eprints2bags'
 __name__        = 'eprints2bags'
 __description__ = '''Package up EPrints materials as BagIt bags.'''
