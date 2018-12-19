@@ -15,7 +15,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.5.0_: `eprints2bags` now determines which derived files to ignore for a given record by looking at the `<relation>` element for each document, and checking if the relationship is `isVolatileVersionOf`.  This makes it possible to ignore thumbnail images no matter what format or file name they have. It also now stores user login & password information on a per-server basis, instead of (as previously) using a single login & password for all servers.
+_Version 1.5.0_: `eprints2bags` now determines which derived files to ignore for a given record by looking at the `<relation>` element for each document, and checking if the relationship is `isVolatileVersionOf`.  This makes it possible to ignore thumbnail images no matter what format or file name they have. It also now stores user login & password information on a per-server basis, instead of (as previously) using a single login & password for all servers, and accepts empty user names and passwords in case an EPrints server does not need them.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 

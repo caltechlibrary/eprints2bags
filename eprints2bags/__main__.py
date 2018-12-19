@@ -164,7 +164,10 @@ the user interactively for the user name and password, and (unless the -K or
 does not have to ask again in the future.  It is also possible to supply the
 information directly on the command line using the -u and -p options (or /u
 and /p on Windows), but this is discouraged because it is insecure on
-multiuser computer systems.
+multiuser computer systems.  If a given EPrints server does not require a user
+name and password, do not use -u or -p and leave the values blank when
+prompted for them by eprints2bags.  (Empty user name and password are allowed
+values.)
 
 To reset the user name and password (e.g., if a mistake was made the last
 time and the wrong credentials were stored in the keyring/keychain system),
@@ -173,10 +176,10 @@ add the -R (or /R on Windows) command-line argument to a command.  When
 password again even if an entry already exists in the keyring or keychain.
 
 This program will print messages as it works.  To reduce the number of messages
-to warnings and errors, use the option -q (or /q on Windows).  The output will
-be color-coded unless the -C option (or /C on Windows) is given; this option
-can be helpful if the color control signals create problems for your terminal
-emulator.
+to warnings and errors, use the option -q (or /q on Windows).  Also, output
+is color-coded by default unless the -C option (or /C on Windows) is given;
+this option can be helpful if the color control signals create problems for
+your terminal emulator.
 
 Beware that some file systems have limitations on the number of
 subdirectories that can be created, which directly impacts how many record

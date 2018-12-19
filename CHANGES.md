@@ -5,6 +5,7 @@ Version 1.5.0
 -------------
 
 * Store login & password on a per-server basis, instead of (as previously) a single login & password for all servers
+* Accept empty user names and passwords for EPrints servers that don't need them
 * Fix handling lack of `official_url` elements in EPrints records
 * Change how thumbnail images and other files are identified for a given record, by looking at the `<relation>` element to see if it is `isVolatileVersionOf`
 * Make sure to write files in UTF-8 format regardless of whether the user's environment variables are set properly.  (Previously, having set `LC_ALL` to an unusual value would result in an error such as `'ascii' codec can't encode character '\u2019' in position 3540: ordinal not in range(128)`.)
