@@ -21,6 +21,7 @@ from   os import path
 import shutil
 
 import eprints2bags
+from   eprints2bags.debug import log
 from   eprints2bags.exceptions import *
 from   eprints2bags.network import net
 
@@ -114,8 +115,10 @@ def eprints_documents(xml):
     # Ignore documents that are derived versions of original docs. These are
     # thumbnails and the indexcodes.txt file.
     for document in xml.findall('.//{' + _EPRINTS_XMLNS + '}document'):
-        if not eprints_derived_file(document):
-            url = document.find('.//{' + _EPRINTS_XMLNS + '}url')
+        url = document.find('.//{' + _EPRINTS_XMLNS + '}url')
+        if eprints_derived_file(document):
+            if __debug__: log('Ignoring derived file {}', url.text)
+        else:
             files.append(url.text)
     return files
 
@@ -142,6 +145,8 @@ def eprints_official_url(xml):
 def write_record(number, xml, dir_prefix, dir_path):
     xml_file_name = dir_prefix + str(number) + '.xml'
     encoded = etree.tostring(xml, encoding = 'UTF-8', method = 'xml')
-    with open(path.join(dir_path, xml_file_name), 'w') as file:
+    file_path = path.join(dir_path, xml_file_name)
+    if __debug__: log('Writing file {}', file_path)
+    with open(file_path, 'w') as file:
         file.write("<?xml version='1.0' encoding='utf-8'?>\n")
         file.write(encoded.decode().rstrip() + '\n')
