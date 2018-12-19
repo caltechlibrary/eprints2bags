@@ -100,7 +100,9 @@ def main(api_url = 'A', base_name = 'B', final_fmt = 'F',  id_list = 'I',
 
 This program contacts an EPrints REST server whose network API is accessible
 at the URL given by the command-line option -a (or /a on Windows).  A typical
-EPrints server URL has the form "https://server.institution.edu/rest".
+EPrints server URL has the form "https://server.institution.edu/rest".  This
+program will automatically add "/eprint" to the URL path, so omit that part
+of the URL in the value given to -a.
 
 The EPrints records to be written will be limited to the list of EPrints
 numbers found in the file given by the option -i (or /i on Windows).  If no

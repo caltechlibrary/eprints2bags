@@ -60,7 +60,7 @@ On Linux and macOS systems, assuming that the installation proceeds normally, yo
 ▶︎ Using Eprints2bags
 ---------------------
 
-`eprints2bags` contacts an EPrints REST server whose network API is accessible at the URL given by the command-line option `-a` (or `/a` on Windows).  A typical EPrints server URL has the form `https://somename.yourinstitution.edu/rest`.  The `-a` (or `/a`) option is required; the program cannot infer the server address on its own.
+`eprints2bags` contacts an EPrints REST server whose network API is accessible at the URL given by the command-line option `-a` (or `/a` on Windows).  A typical EPrints server URL has the form `https://somename.yourinstitution.edu/rest`.  **This program will automatically add `/eprint` to the URL path given**, so omit that part of the URL in the value given to `-a`.  The `-a` (or `/a`) option is required; the program cannot infer the server address on its own.
 
 The EPrints records to be written will be limited to the list of numerical EPrints identifiers found in the file given by the option `-i` (or `/i` on Windows).  If no `-i` option is given, `eprints2bags` will download all the contents available at the given EPrints server.  The value of `-i` can also be one or more integers separated by commas (e.g., `-i 54602,54604`), or a range of numbers separated by a dash (e.g., `-i 1-100`, which is interpreted as the list of numbers 1, 2, ..., 100 inclusive), or some combination thereof.
 
