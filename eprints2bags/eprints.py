@@ -117,6 +117,12 @@ def eprints_documents(xml):
     # thumbnails and the indexcodes.txt file.
     for document in xml.findall('.//{' + _EPRINTS_XMLNS + '}document'):
         url = document.find('.//{' + _EPRINTS_XMLNS + '}url')
+        if url == None:
+            if hasattr(document, 'attrib'):
+                if __debug__: log('Ignoring doc with no file: {}', document.attrib['id'])
+            else:
+                if __debug__: log('Ignoring document {}', document)
+            continue
         if eprints_derived_file(document):
             if __debug__: log('Ignoring derived file {}', url.text)
         else:
