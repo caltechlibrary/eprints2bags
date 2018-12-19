@@ -214,7 +214,7 @@ We thank the following people for suggestions and ideas that led to improvements
 * [setuptools](https://github.com/pypa/setuptools) &ndash; library for `setup.py`
 * [termcolor](https://pypi.org/project/termcolor/) &ndash; ANSI color formatting for output in terminal
 * [urllib3](https://urllib3.readthedocs.io/en/latest/) &ndash; HTTP client library for Python
-
+* [validators](https://github.com/kvesteri/validators) &ndash; data validation package for Python
 
 ☮︎ Copyright and license
 ---------------------
