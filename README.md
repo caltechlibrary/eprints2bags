@@ -9,13 +9,13 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.4.0-b44e88.svg?style=flat-square)](http://shields.io)
-[![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1145-blue.svg?style=flat-square)](https://data.caltech.edu/badge/records/1145)
+[![Latest release](https://img.shields.io/badge/Latest_release-1.5.0-b44e88.svg?style=flat-square)](http://shields.io)
+<!-- [![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1145-blue.svg?style=flat-square)](https://data.caltech.edu/badge/records/1145) -->
 
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.4.0_: This release (a) fixes an important network handling bug that could cause incomplete records to be saved, (b) fixes bugs in handling network exceptions while downloading content from servers, (c) improves detection of file system limitations, (d) makes `-o` an optional argument, (e) fixes a missing Python package import, (f) renames `CONDUCT.md` to [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) so that GitHub can find it,  (g) adds [`CONTRIBUTING.md`](CONTRIBUTING.md), and (h) updates the documentation.  This release also fixes some other minor bugs and includes some internal code refactoring.
+_Version 1.5.0_: `eprints2bags` now determines which derived files to ignore for a given record by looking at the `<relation>` element for each document, and checking if the relationship is `isVolatileVersionOf`.  This makes it possible to ignore thumbnail images no matter what format or file name they have. It also now stores user login & password information on a per-server basis, instead of (as previously) using a single login & password for all servers.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -198,6 +198,8 @@ In 2018, [Betsy Coles](https://github.com/betsycoles) wrote a [set of Perl scrip
 
 The [vector artwork](https://thenounproject.com/search/?q=bag&i=1002779) of a bag used as a logo for this repository was created by [StoneHub](https://thenounproject.com/stonehub/) from the Noun Project.  It is licensed under the Creative Commons [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/) license.
 
+We thank the following people for suggestions and ideas that led to improvements in `eprints2bags`: Robert Doiel, Tom Morrell, Tommy Keswick.
+
 `eprints2bags` makes use of numerous open-source packages, without which it would have been effectively impossible to develop `eprints2bags` with the resources we had.  We want to acknowledge this debt.  In alphabetical order, the packages are:
 
 * [bagit](https://github.com/LibraryOfCongress/bagit-python) &ndash; Python library for working with [BagIt](https://tools.ietf.org/html/draft-kunze-bagit-17) style packages
@@ -212,6 +214,7 @@ The [vector artwork](https://thenounproject.com/search/?q=bag&i=1002779) of a ba
 * [setuptools](https://github.com/pypa/setuptools) &ndash; library for `setup.py`
 * [termcolor](https://pypi.org/project/termcolor/) &ndash; ANSI color formatting for output in terminal
 * [urllib3](https://urllib3.readthedocs.io/en/latest/) &ndash; HTTP client library for Python
+
 
 ☮︎ Copyright and license
 ---------------------
