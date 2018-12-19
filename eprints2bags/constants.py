@@ -19,5 +19,5 @@ import sys
 ON_WINDOWS = sys.platform.startswith('win')
 '''True if we're running on a Windows system, False otherwise.'''
 
-KEYRING = "org.caltechlibrary.eprints2bags"
-'''The name of the keyring used to store Caltech access credentials, if any.'''
+KEYRING_PREFIX = "eprints2bags:"
+'''Prefix used to create a keyring entry for a given server.'''
