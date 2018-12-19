@@ -23,7 +23,9 @@ from   time import sleep
 import ssl
 import urllib
 from   urllib import request
+from   urllib.parse import urlsplit
 import urllib3
+import validators
 import warnings
 
 import eprints2bags
@@ -53,6 +55,19 @@ def network_available():
         return False
     if r:
         r.close()
+
+
+def host_from_url(url):
+    parts = urlsplit(url)
+    if parts.netloc:
+        host = host_from_netloc(parts.netloc)
+        if validators.domain(host):
+            return host
+    return ''
+
+
+def host_from_netloc(nl):
+    return nl[:nl.find(':')] if ':' in nl else nl
 
 
 def timed_request(get_or_post, url, **kwargs):
