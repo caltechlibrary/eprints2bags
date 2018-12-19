@@ -29,25 +29,30 @@ file "LICENSE" for more information.
 
 import bagit
 from   collections import defaultdict
+import getpass
 from   humanize import intcomma
+import keyring
 from   lxml import etree
 import os
 from   os import path
 import plac
 import requests
 import shutil
+import sys
 import tarfile
 from   time import sleep
 from   timeit import default_timer as timer
 import traceback
 
+if sys.platform.startswith('win'):
+    import keyring.backends
+    from keyring.backends.Windows import WinVaultKeyring
+
 import eprints2bags
-from   eprints2bags.constants import ON_WINDOWS, KEYRING
-from   eprints2bags.credentials import service_credentials, password
-from   eprints2bags.credentials import keyring_credentials, save_keyring_credentials
+from   eprints2bags.constants import ON_WINDOWS, KEYRING_PREFIX
 from   eprints2bags.debug import set_debug, log
 from   eprints2bags.messages import msg, color, MessageHandler
-from   eprints2bags.network import network_available, download_files
+from   eprints2bags.network import network_available, download_files, url_host
 from   eprints2bags.files import readable, writable, make_dir
 from   eprints2bags.files import fs_type, KNOWN_SUBDIR_LIMITS
 from   eprints2bags.files import create_archive, verify_archive, archive_extension
@@ -81,7 +86,7 @@ _BAG_CHECKSUMS = ["sha256", "sha512", "md5"]
     delay      = ('wait time between fetches (default: 100 ms)',     'option', 'y'),
     no_bags    = ('do not create bags; just leave the content',      'flag',   'B'),
     no_color   = ('do not color-code terminal output',               'flag',   'C'),
-    no_keyring = ('do not use a keyring service',                    'flag',   'K'),
+    no_keyring = ('do not store credentials in a keyring service',   'flag',   'K'),
     reset_keys = ('reset user and password used',                    'flag',   'R'),
     version    = ('print version info and exit',                     'flag',   'V'),
     debug      = ('turn on debugging',                               'flag',   'Z'),
@@ -197,7 +202,7 @@ get you blocked or banned from an institution's servers.
 '''
     # Initial setup -----------------------------------------------------------
 
-    keyring = not no_keyring   # Avoid double negative in code, for readability
+    use_keyring = not no_keyring   # Avoid double negative, for readability.
     say = MessageHandler(not no_color, quiet)
     prefix = '/' if ON_WINDOWS else '-'
     hint = '(Hint: use {}h for help.)'.format(prefix)
@@ -261,9 +266,8 @@ get you blocked or banned from an institution's servers.
     # Do the real work --------------------------------------------------------
 
     try:
-        if not user or not password or reset_keys:
-            user, password = login_credentials(user, password, keyring, reset_keys)
-
+        if not user or not password:
+            user, password = credentials(api_url, user, password, use_keyring, reset_keys)
         if not wanted:
             if __debug__: log('Fetching records list from {}'.format(api_url))
             wanted = eprints_records_list(api_url, user, password)
@@ -359,25 +363,43 @@ def print_version():
     print('License: {}'.format(eprints2bags.__license__))
 
 
-def login_credentials(user, pswd, use_keyring, reset):
+def credentials(api_url, user, pswd, use_keyring, reset = False):
+    '''Returns stored credentials for the given combination of host and user,
+    or asks the user for new credentials if none are stored or reset is True.
+    Empty user names and passwords are handled too.'''
+    host = url_host(api_url)
+    ringname = KEYRING_PREFIX + host
+    if __debug__: log('Ring name: {}', ringname)
+    NONE = '__EPRINTS2BAGS__NONE__'
+    cur_user, cur_pswd = None, None
     if use_keyring and not reset:
-        if __debug__: log('Getting credentials from keyring')
-        tmp_user, tmp_pswd, _, _ = service_credentials(KEYRING, "EPrints server",
-                                                       user, pswd)
-    else:
-        if not use_keyring:
-            if __debug__: log('Keyring disabled')
-        if reset:
-            if __debug__: log('Reset invoked')
-        tmp_user = input('EPrints server login: ')
-        tmp_pswd = password('Password for "{}": '.format(tmp_user))
+        # This hack stores the user name as the "password" for a fake user 'user'
+        cur_user = user or keyring.get_password(ringname, 'user')
+        if user or (cur_user and cur_user != NONE):
+            cur_pswd = pswd or keyring.get_password(ringname, user or cur_user)
+        elif cur_user == NONE:
+            cur_pswd = NONE
+            if __debug__: log('Using empty user and password for {}', host)
+    if reset or not cur_user:
+        cur_user = input('User name for {}: '.format(host)) or NONE
+    if reset or not cur_pswd:
+        cur_pswd = password('Password for {}: '.format(host)) or NONE
     if use_keyring:
-        # Save the credentials if they're different.
-        s_user, s_pswd, _, _ = keyring_credentials(KEYRING)
-        if s_user != tmp_user or s_pswd != tmp_pswd:
-            if __debug__: log('Saving credentials to keyring')
-            save_keyring_credentials(KEYRING, tmp_user, tmp_pswd)
-    return tmp_user, tmp_pswd
+        if __debug__: log('Saving credentials to keyring')
+        keyring.set_password(ringname, 'user', cur_user)
+        keyring.set_password(ringname, cur_user, cur_pswd)
+    return (None if cur_user == NONE else cur_user,
+            None if cur_pswd == NONE else cur_pswd)
+
+
+def password(prompt):
+    # If it's a tty, use the version that doesn't echo the password.
+    if sys.stdin.isatty():
+        return getpass.getpass(prompt)
+    else:
+        sys.stdout.write(prompt)
+        sys.stdout.flush()
+        return sys.stdin.readline().rstrip()
 
 
 def update_bag_info(bag, xml):
