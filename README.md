@@ -107,6 +107,8 @@ Archive comments are a feature of the [ZIP](https://en.wikipedia.org/wiki/Zip_(f
 
 Downloading documents usually requires supplying a user login and password to the EPrints server.  By default, this program uses the operating system's keyring/keychain functionality to get a user name and password.  If the information does not exist from a previous run of `eprints2bags`, it will query the user interactively for the user name and password, and unless the `-K` argument (`/K` on Windows) is given, store them in the user's keyring/keychain so that it does not have to ask again in the future.  It is also possible to supply the information directly on the command line using the `-u` and `-p` options (or `/u` and `/p` on Windows), but this is discouraged because it is insecure on multiuser computer systems.
 
+If a given EPrints server does not require a user name and password, do not use `-u` or `-p` and leave the name and password blank when prompted for them by `eprints2bags`.  Empty user name and password are allowed values.
+
 To reset the user name and password (e.g., if a mistake was made the last time and the wrong credentials were stored in the keyring/keychain system), add the `-R` (or `/R` on Windows) command-line argument to a command.  When `eprints2bags` is run with this option, it will query for the user name and password again even if an entry already exists in the keyring or keychain.
 
 
