@@ -1,10 +1,14 @@
 Change log for eprints2bags
 ===========================
 
-(Next release &ndash; TBD)
+Version 1.5.0
 -------------
 
+* Store login & password on a per-server basis, instead of (as previously) a single login & password for all servers
 * Fix handling lack of `official_url` elements in EPrints records
+* Change how thumbnail images and other files are ignored for a given record, by looking at the `<relation>` element to see if it is `isVolatileVersionOf`
+* Minor internal changes
+
 
 Version 1.4.0
 -------------
