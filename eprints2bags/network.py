@@ -143,7 +143,6 @@ def download(url, user, password, local_destination, recursing = 0):
     elif 200 <= code < 400:
         # The following originally started out as the code here:
         # https://stackoverflow.com/a/16696317/743730
-        if __debug__: log(addurl('Downloading content'))
         with open(local_destination, 'wb') as f:
             for chunk in req.iter_content(chunk_size = 1024):
                 if chunk:
