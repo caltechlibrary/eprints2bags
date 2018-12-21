@@ -78,6 +78,7 @@ _BAG_CHECKSUMS = ["sha256", "sha512", "md5"]
     base_name  = ('use base name "B" for subdirectory names',        'option', 'b'),
     final_fmt  = ('create single-file archive of bag in format "F"', 'option', 'f'),
     id_list    = ('list of records to get (can be a file name)',     'option', 'i'),
+    lastmod    = ('only get records modified since the given date',  'option', 'l'),
     missing_ok = ('do not count missing records as an error',        'flag',   'm'),
     output_dir = ('write output to directory "O"',                   'option', 'o'),
     password   = ('EPrints server user password',                    'option', 'p'),
@@ -93,9 +94,10 @@ _BAG_CHECKSUMS = ["sha256", "sha512", "md5"]
 )
 
 def main(api_url = 'A', base_name = 'B', final_fmt = 'F',  id_list = 'I',
-         missing_ok = False, output_dir = 'O', user = 'U', password = 'P',
-         quiet = False, delay = 100, no_bags = False, no_color = False,
-         no_keyring = False, reset_keys = False, version = False, debug = False):
+         lastmod = 'L', missing_ok = False, output_dir = 'O',
+         user = 'U', password = 'P', quiet = False, delay = 100,
+         no_bags = False, no_color = False, no_keyring = False,
+         reset_keys = False, version = False, debug = False):
     '''eprints2bags bags up EPrints content as BagIt bags.
 
 This program contacts an EPrints REST server whose network API is accessible
@@ -113,8 +115,21 @@ by a dash (e.g., -i 1-100, which is interpreted as the list of numbers 1, 2,
 ..., 100 inclusive), or some combination thereof.  In those cases, the
 records written will be limited to those numbered.
 
-By default, if a record requested or implied by the arguments to -i is
-missing from the EPrints server, this will count as an error and stop
+If the -l option (or /l on Windows) is given, the records will be additionally
+filtered to return only those whose last-modified date/time stamp is no older
+than the given date/time description.  Valid descriptors are those accepted
+by the Python dateparser library.  Make sure to enclose descriptions within
+single or double quotes.  Examples:
+
+  eprints2bags -l "2 weeks ago" -a ....
+  eprints2bags -l "2014-08-29"  -a ....
+  eprints2bags -l "12 Dec 2014" -a ....
+  eprints2bags -l "July 4, 2013" -a ....
+
+Last-mod filtering is applied after any -i option is processed.
+
+By default, if a record requested or implied by the arguments to -i and/or -l
+is missing from the EPrints server, this will count as an error and stop
 execution of the program.  If the option -m (or /m on Windows) is given,
 missing records will be ignored.
 
