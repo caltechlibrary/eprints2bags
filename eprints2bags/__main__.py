@@ -50,6 +50,7 @@ if sys.platform.startswith('win'):
 
 import eprints2bags
 from   eprints2bags.constants import ON_WINDOWS, KEYRING_PREFIX
+from   eprints2bags.data_helpers import flatten, expand_range
 from   eprints2bags.debug import set_debug, log
 from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files, url_host
@@ -230,24 +231,8 @@ get you blocked or banned from an institution's servers.
     # Wanted is a list of strings, not of ints, to avoid repeated conversions.
     if id_list == 'I':
         wanted = []
-    elif ',' in id_list or id_list.isdigit():
-        wanted = id_list.split(',')
-    elif '-' in id_list and '.' not in id_list:
-        range_list = id_list.split('-')
-        # This makes the range 1-100 be 1, 2, ..., 100 instead of 1, 2, ..., 99
-        wanted = [*map(str, range(int(range_list[0]), int(range_list[1]) + 1))]
-    elif id_list != 'F':
-        if not path.isabs(id_list):
-            id_list = path.realpath(path.join(os.getcwd(), id_list))
-        if not path.exists(id_list):
-            exit(say.fatal_text('File not found: {}', id_list))
-        if not readable(id_list):
-            exit(say.fatal_text('File not readable: {}', id_list))
-        with open(id_list, 'r', encoding = 'utf-8-sig') as file:
-            if __debug__: log('Reading {}'.format(id_list))
-            wanted = [id.strip() for id in file.readlines()]
     else:
-        wanted = []
+        wanted = list(parsed_id_list(id_list))
 
     if output_dir == 'O':
         output_dir = os.getcwd()
@@ -366,6 +351,30 @@ def print_version():
     print('Author: {}'.format(eprints2bags.__author__))
     print('URL: {}'.format(eprints2bags.__url__))
     print('License: {}'.format(eprints2bags.__license__))
+
+
+def parsed_id_list(id_list):
+    # If it's a single digit, asssume it's not a file and return the number.
+    if id_list.isdigit():
+        return [id_list]
+
+    # Things get trickier because anything else could be (however improbably)
+    # a file name.  So use a process of elimination: try to see if a file by
+    # that name exists, and if it doesn't, parse the argument as numbers.
+    candidate = id_list
+    if not path.isabs(candidate):
+        candidate = path.realpath(path.join(os.getcwd(), candidate))
+    if path.exists(candidate):
+        if not readable(candidate):
+            exit(say.fatal_text('File not readable: {}', candidate))
+        with open(candidate, 'r', encoding = 'utf-8-sig') as file:
+            if __debug__: log('Reading {}'.format(candidate))
+            return [id.strip() for id in file.readlines()]
+
+    # Didn't find a file.  Try to parse as multiple numbers.
+    if ',' not in id_list and '-' not in id_list:
+        exit(say.fatal_text('Unable to understand list of record identifiers'))
+    return flatten(expand_range(x) for x in id_list.split(','))
 
 
 def credentials(api_url, user, pswd, use_keyring, reset = False):
