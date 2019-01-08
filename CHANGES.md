@@ -1,6 +1,12 @@
 Change log for eprints2bags
 ===========================
 
+Version 1.5.1
+-------------
+
+* Fix failure to parse combinations of ranges passed as arguments to `-i` option
+
+
 Version 1.5.0
 -------------
 
