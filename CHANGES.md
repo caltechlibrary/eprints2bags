@@ -1,10 +1,13 @@
 Change log for eprints2bags
 ===========================
 
-Version 1.5.1
+Version 1.6.0
 -------------
 
+* Add new `--lastmod` command-line option
 * Fix failure to parse combinations of ranges passed as arguments to `-i` option
+* Slightly change the comment block written to a zip archive to make it more specific
+* Update help strings and text in README
 
 
 Version 1.5.0

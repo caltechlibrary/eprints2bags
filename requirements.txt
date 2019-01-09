@@ -1,5 +1,6 @@
 bagit>=1.7.0
 colorama>=0.3.0
+dateparser>=0.7.0
 humanize>=0.5.1
 keyring>=12.2.0
 keyrings.alt>=3.1

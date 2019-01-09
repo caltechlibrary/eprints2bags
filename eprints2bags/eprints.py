@@ -22,6 +22,7 @@ from   os import path
 import shutil
 
 import eprints2bags
+from   eprints2bags.data_helpers import parse_datetime
 from   eprints2bags.debug import log
 from   eprints2bags.exceptions import *
 from   eprints2bags.network import net
@@ -109,6 +110,11 @@ def eprints_xml(number, base_url, user, password, missing_ok, say):
         else:
             raise error
     return etree.fromstring(response.content)
+
+
+def eprints_lastmod(xml):
+    lastmod_elem = xml.find('.//{' + _EPRINTS_XMLNS + '}lastmod')
+    return parse_datetime(lastmod_elem.text)
 
 
 def eprints_documents(xml):

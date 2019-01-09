@@ -9,13 +9,14 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.5.0-b44e88.svg?style=flat-square)](http://shields.io)
-[![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1150-blue.svg?style=flat-square)](https://data.caltech.edu/badge/records/1150)
+[![Latest release](https://img.shields.io/badge/Latest_release-1.6.0-b44e88.svg?style=flat-square)](http://shields.io)
+<!--
+[![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1150-blue.svg?style=flat-square)](https://data.caltech.edu/badge/records/1150) -->
 
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.5.0_: `eprints2bags` now determines which derived files to ignore for a given record by looking at the `<relation>` element for each document, and checking if the relationship is `isVolatileVersionOf`.  This makes it possible to ignore thumbnail images no matter what format or file name they have. It also now stores user login & password information on a per-server basis, instead of (as previously) using a single login & password for all servers, and accepts empty user names and passwords in case an EPrints server does not need them.
+_Version 1.6.0_: New command-line option `--lastmod` (`-l` for short) allows you to specify a date/time stamp, to return only those records whose last-modified date/time stamp is no older than the given description.  Valid descriptors are those accepted by the Python dateparser library. Example: `eprints2bags --lastmod "yesterday at noon" -a ...`.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -147,7 +148,8 @@ The following table summarizes all the command line options available. (Note: on
 | `-a`_A_ | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
 | `-b`_B_ | `--base-name`_B_  | Name the records with the template _B_-n | Use only the record id number, n  | |
 | `-f`_F_ | `--final-fmt`_F_  | Create single-file archive in format _F_ | Uncompressed ZIP archive | |
-| `-i`_L_ | `--id-list`_L_    | List of records to get (can be a file name) | Fetch all records from the server | |
+| `-i`_I_ | `--id-list`_I_    | List of records to get (can be a file name) | Fetch all records from the server | |
+| `-l`_L_ | `--lastmod`_L_    | Filter by last-modified date/time | Don't filter by date/time | |
 | `-m`    | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
 | `-o`_O_ | `--output-dir`_O_ | Write outputs in the directory _O_ | Write in the current directory |  |
 | `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
