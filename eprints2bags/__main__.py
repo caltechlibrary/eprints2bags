@@ -467,7 +467,7 @@ def file_comments(bag):
     text += 'About this archive file:\n'
     text += '\n'
     text += 'This is an archive of a file directory organized in BagIt v1.0 format.\n'
-    text += 'The bag contains the contents from the EPrints record located at\n'
+    text += 'The data in the bag are the contents of the EPrints record located at\n'
     text += bag.info['External-Identifier']
     text += '\n\n'
     text += 'The software used to create this archive file was:\n'
