@@ -50,7 +50,7 @@ if sys.platform.startswith('win'):
 
 import eprints2bags
 from   eprints2bags.constants import ON_WINDOWS, KEYRING_PREFIX
-from   eprints2bags.data_helpers import flatten, expand_range
+from   eprints2bags.data_helpers import flatten, expand_range, parse_datetime
 from   eprints2bags.debug import set_debug, log
 from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files, url_host
@@ -70,6 +70,10 @@ _RECOGNIZED_ARCHIVE_FORMATS = ['none', 'compressed-zip', 'uncompressed-zip',
 _BAG_CHECKSUMS = ["sha256", "sha512", "md5"]
 '''List of checksum types written with the BagIt bags.'''
 
+_LASTMOD_PRINT_FORMAT = '%b %d %Y %H:%M:%S %Z'
+'''Format in which lastmod date is printed back to the user. The value is used
+with datetime.strftime().'''
+
 
 # Main program.
 # ......................................................................
@@ -79,7 +83,7 @@ _BAG_CHECKSUMS = ["sha256", "sha512", "md5"]
     base_name  = ('use base name "B" for subdirectory names',        'option', 'b'),
     final_fmt  = ('create single-file archive of bag in format "F"', 'option', 'f'),
     id_list    = ('list of records to get (can be a file name)',     'option', 'i'),
-    lastmod    = ('only get records modified since the given date',  'option', 'l'),
+    lastmod    = ('only get records modified after given date/time', 'option', 'l'),
     missing_ok = ('do not count missing records as an error',        'flag',   'm'),
     output_dir = ('write output to directory "O"',                   'option', 'o'),
     password   = ('EPrints server user password',                    'option', 'p'),
@@ -249,6 +253,16 @@ get you blocked or banned from an institution's servers.
     else:
         wanted = list(parsed_id_list(id_list))
 
+    if lastmod == 'L':
+        lastmod = None
+    else:
+        try:
+            lastmod = parse_datetime(lastmod)
+            lastmod_str = lastmod.strftime(_LASTMOD_PRINT_FORMAT)
+            if __debug__: log('Parsed lastmod as {}', lastmod_str)
+        except Exception as ex:
+            exit(say.fatal_text('Unable to parse lastmod value: {}', str(ex)))
+
     if output_dir == 'O':
         output_dir = os.getcwd()
     if not path.isabs(output_dir):
@@ -274,7 +288,7 @@ get you blocked or banned from an institution's servers.
         if not user or not password:
             user, password = credentials(api_url, user, password, use_keyring, reset_keys)
         if not wanted:
-            if __debug__: log('Fetching records list from {}'.format(api_url))
+            say.info('Fetching records list from {}', api_url)
             wanted = eprints_records_list(api_url, user, password)
         fs = fs_type(output_dir)
         if __debug__: log('Destination file system is {}', fs)
@@ -282,8 +296,10 @@ get you blocked or banned from an institution's servers.
             text = '{} is too many folders for the file system at "{}".'
             exit(say.fatal_text(text.format(intcomma(num_wanted), output_dir)))
 
-        say.info('Beginning to process {} EPrints {}.', intcomma(len(wanted)),
+        say.info('Beginning to process {} EPrints {}', intcomma(len(wanted)),
                  'entries' if len(wanted) > 1 else 'entry')
+        if lastmod:
+            say.info('Will only keep records modified after {}', lastmod_str)
         say.info('Output will be written under directory "{}"', output_dir)
         make_dir(output_dir)
 
@@ -295,6 +311,10 @@ get you blocked or banned from an institution's servers.
             say.msg('Getting record with id {}'.format(number), 'white')
             xml = eprints_xml(number, api_url, user, password, missing_ok, say)
             if xml == None:
+                continue
+            if lastmod and eprints_lastmod(xml) < lastmod:
+                say.info("{} hasn't been modified since {} -- skipping",
+                         number, lastmod_str)
                 continue
 
             # Good so far.  Create the directory and write the XML out.
