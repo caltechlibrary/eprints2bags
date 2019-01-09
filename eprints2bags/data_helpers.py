@@ -2,6 +2,9 @@
 data_helpers: data manipulation utilities
 '''
 
+import dateparser
+import datetime
+
 # Based on http://stackoverflow.com/a/10824484/743730
 def flatten(iterable):
     '''Flatten a list produced by an iterable.  Non-recursive.'''
@@ -39,3 +42,9 @@ def expand_range(text):
         return [*map(str, range(int(range_list[0]), int(range_list[1]) + 1))]
     else:
         return text
+
+
+def parse_datetime(string):
+    '''Parse a human-written time/date string using dateparser's parse()
+function with predefined settings.'''
+    return dateparser.parse(string, settings = {'RETURN_AS_TIMEZONE_AWARE': True})
