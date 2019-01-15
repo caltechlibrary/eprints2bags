@@ -117,6 +117,11 @@ def eprints_lastmod(xml):
     return parse_datetime(lastmod_elem.text)
 
 
+def eprints_status(xml):
+    status = xml.find('.//{' + _EPRINTS_XMLNS + '}eprint_status')
+    return status.text if status != None else ''
+
+
 def eprints_documents(xml):
     files = []
     # Ignore documents that are derived versions of original docs. These are
