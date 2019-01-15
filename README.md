@@ -17,7 +17,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.7.0_: New command-line option `--status` (`-s` for short) allows you to specify values of the `<eprint_status>` field that should be used to filter candidates.  When this option is given, `eprints2bags` will only keep those records having a status value that appears in the comma-separated argument to `-s`.  Example: `eprints2bags -s "archive,inbox" -a ...`.
+_Version 1.7.0_: New command-line option `--status` (`-s` for short) allows you to specify values of the `<eprint_status>` field that should be used to filter candidates.  When this option is given, `eprints2bags` will only keep those records having a status value that appears in the comma-separated argument to `-s`.  Putting a caret character (`^`) in front of the status (or status list) negates the sense, so that eprints2bags only keeps those records whose eprints_status value is *not* among those given.  Examples: `eprints2bags -s archive -a ...` or `eprints2bags -s ^inbox,buffer,deletion -a ...`.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 

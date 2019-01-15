@@ -134,9 +134,13 @@ single or double quotes.  Examples:
 
 If the -s option (or /s on Windows) is given, the records will also be filtered
 to include only those whose eprint_status field value is one of the listed
-status codes.  Comparisons are done in a case-insensitive manner.  Examples:
+status codes.  Comparisons are done in a case-insensitive manner.  Putting a
+caret character ("^") in front of the status (or status list) negates the
+sense, so that eprints2bags only keeps those records whose eprints_status
+value is *not* among those given.  Examples:
 
-  eprints2bags -s "archive" -a ...
+  eprints2bags -s archive -a ...
+  eprints2bags -s ^inbox,buffer,deletion -a ...
 
 Both lastmod and status filering are done after the -i argument is processed.
 
@@ -281,8 +285,12 @@ get you blocked or banned from an institution's servers.
     if archive_fmt and archive_fmt not in _RECOGNIZED_ARCHIVE_FORMATS:
         exit(say.fatal_text('Value of {}f option not recognized. {}', prefix, hint))
 
-    delay = int(delay)
     status = None if status == 'S' else status.split(',')
+    status_negation = (status and status[0].startswith('^'))
+    if status_negation:                 # Remove the '^' if it's there.
+        status[0] = status[0][1:]
+
+    delay = int(delay)
     user = None if user == 'U' else user
     password = None if password == 'P' else password
     name_prefix = '' if base_name == 'B' else base_name + '-'
@@ -306,7 +314,9 @@ get you blocked or banned from an institution's servers.
         if lastmod:
             say.info('Will only keep records modified after {}', lastmod_str)
         if status:
-            say.info('Will only keep records with status {}', fmt_statuses(status))
+            say.info('Will only keep records {} status {}',
+                     'without' if status_negation else 'with',
+                     fmt_statuses(status, status_negation))
         say.info('Output will be written under directory "{}"', output_dir)
         make_dir(output_dir)
 
@@ -323,7 +333,8 @@ get you blocked or banned from an institution's servers.
                 say.info("{} hasn't been modified since {} -- skipping",
                          number, lastmod_str)
                 continue
-            if status and eprints_status(xml) not in status:
+            if status and ((not status_negation and eprints_status(xml) not in status)
+                           or (status_negation and eprints_status(xml) in status)):
                 say.info('{} has status "{}" -- skipping', number, eprints_status(xml))
                 continue
 
@@ -492,10 +503,11 @@ def file_comments(bag):
     return text
 
 
-def fmt_statuses(status_list):
+def fmt_statuses(status_list, negated):
     as_list = ['"' + x + '"' for x in status_list]
     if len(as_list) > 1:
-        return ', '.join(as_list[:-1]) + ' and ' + as_list[-1]
+        and_or = ' and ' if not negated else ' or '
+        return ', '.join(as_list[:-1]) + and_or + as_list[-1]
     else:
         return as_list[0]
 
