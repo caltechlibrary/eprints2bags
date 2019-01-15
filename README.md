@@ -9,13 +9,15 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.6.0-b44e88.svg?style=flat-square)](http://shields.io)
+[![Latest release](https://img.shields.io/badge/Latest_release-1.7.0-b44e88.svg?style=flat-square)](http://shields.io)
+<!--
 [![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1153-blue.svg?style=flat-square)](https://data.caltech.edu/records/1153)
+-->
 
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.6.0_: New command-line option `--lastmod` (`-l` for short) allows you to specify a date/time stamp, to return only those records whose last-modified date/time stamp is no older than the given description.  Valid descriptors are those accepted by the Python dateparser library. Example: `eprints2bags --lastmod "yesterday at noon" -a ...`.
+_Version 1.7.0_: New command-line option `--status` (`-s` for short) allows you to specify values of the `<eprint_status>` field that should be used to filter candidates.  When this option is given, `eprints2bags` will only keep those records having a status value that appears in the comma-separated argument to `-s`.  Example: `eprints2bags -s "archive,inbox" -a ...`.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -149,6 +151,7 @@ The following table summarizes all the command line options available. (Note: on
 | `-f`_F_ | `--final-fmt`_F_  | Create single-file archive in format _F_ | Uncompressed ZIP archive | |
 | `-i`_I_ | `--id-list`_I_    | List of records to get (can be a file name) | Fetch all records from the server | |
 | `-l`_L_ | `--lastmod`_L_    | Filter by last-modified date/time | Don't filter by date/time | |
+| `-s`_S_ | `--status`_S_     | Filter by status(s) in _S_ | Don't filter by status | |
 | `-m`    | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
 | `-o`_O_ | `--output-dir`_O_ | Write outputs in the directory _O_ | Write in the current directory |  |
 | `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
@@ -182,6 +185,7 @@ If you find an issue, please submit it in [the GitHub issue tracker](https://git
 ------------------
 
 If you like this software, don't forget to give this repo a star on GitHub to show your support!
+
 
 
 ♬ Contributing &mdash; info for developers
