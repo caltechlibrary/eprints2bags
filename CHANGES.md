@@ -1,6 +1,12 @@
 Change log for eprints2bags
 ===========================
 
+Version 1.7.0
+-------------
+
+* Add new `--status` command-line option
+
+
 Version 1.6.0
 -------------
 

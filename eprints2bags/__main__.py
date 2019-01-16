@@ -79,27 +79,28 @@ with datetime.strftime().'''
 # ......................................................................
 
 @plac.annotations(
-    api_url    = ('the URL for the REST API of the EPrints server',  'option', 'a'),
-    base_name  = ('use base name "B" for subdirectory names',        'option', 'b'),
-    final_fmt  = ('create single-file archive of bag in format "F"', 'option', 'f'),
-    id_list    = ('list of records to get (can be a file name)',     'option', 'i'),
-    lastmod    = ('only get records modified after given date/time', 'option', 'l'),
-    missing_ok = ('do not count missing records as an error',        'flag',   'm'),
-    output_dir = ('write output to directory "O"',                   'option', 'o'),
-    password   = ('EPrints server user password',                    'option', 'p'),
-    user       = ('EPrints server user login name',                  'option', 'u'),
-    quiet      = ('do not print info messages while working',        'flag',   'q'),
-    delay      = ('wait time between fetches (default: 100 ms)',     'option', 'y'),
-    no_bags    = ('do not create bags; just leave the content',      'flag',   'B'),
-    no_color   = ('do not color-code terminal output',               'flag',   'C'),
-    no_keyring = ('do not store credentials in a keyring service',   'flag',   'K'),
-    reset_keys = ('reset user and password used',                    'flag',   'R'),
-    version    = ('print version info and exit',                     'flag',   'V'),
-    debug      = ('turn on debugging',                               'flag',   'Z'),
+    api_url    = ('the URL for the REST API of the EPrints server',   'option', 'a'),
+    base_name  = ('use base name "B" for subdirectory names',         'option', 'b'),
+    final_fmt  = ('create single-file archive of bag in format "F"',  'option', 'f'),
+    id_list    = ('list of records to get (can be a file name)',      'option', 'i'),
+    lastmod    = ('only get records modified after given date/time',  'option', 'l'),
+    missing_ok = ('do not count missing records as an error',         'flag',   'm'),
+    output_dir = ('write output to directory "O"',                    'option', 'o'),
+    password   = ('EPrints server user password',                     'option', 'p'),
+    user       = ('EPrints server user login name',                   'option', 'u'),
+    status     = ('only get records whose status is in the list "S"', 'option', 's'),
+    quiet      = ('do not print info messages while working',         'flag',   'q'),
+    delay      = ('wait time between fetches (default: 100 ms)',      'option', 'y'),
+    no_bags    = ('do not create bags; just leave the content',       'flag',   'B'),
+    no_color   = ('do not color-code terminal output',                'flag',   'C'),
+    no_keyring = ('do not store credentials in a keyring service',    'flag',   'K'),
+    reset_keys = ('reset user and password used',                     'flag',   'R'),
+    version    = ('print version info and exit',                      'flag',   'V'),
+    debug      = ('turn on debugging',                                'flag',   'Z'),
 )
 
 def main(api_url = 'A', base_name = 'B', final_fmt = 'F',  id_list = 'I',
-         lastmod = 'L', missing_ok = False, output_dir = 'O',
+         lastmod = 'L', status = 'S', missing_ok = False, output_dir = 'O',
          user = 'U', password = 'P', quiet = False, delay = 100,
          no_bags = False, no_color = False, no_keyring = False,
          reset_keys = False, version = False, debug = False):
@@ -131,12 +132,21 @@ single or double quotes.  Examples:
   eprints2bags -l "12 Dec 2014" -a ....
   eprints2bags -l "July 4, 2013" -a ....
 
-Last-mod filtering is applied after any -i option is processed.
+If the -s option (or /s on Windows) is given, the records will also be filtered
+to include only those whose eprint_status field value is one of the listed
+status codes.  Comparisons are done in a case-insensitive manner.  Putting a
+caret character ("^") in front of the status (or status list) negates the
+sense, so that eprints2bags only keeps those records whose eprints_status
+value is *not* among those given.  Examples:
 
-By default, if a record requested or implied by the arguments to -i and/or -l
-is missing from the EPrints server, this will count as an error and stop
-execution of the program.  If the option -m (or /m on Windows) is given,
-missing records will be ignored.
+  eprints2bags -s archive -a ...
+  eprints2bags -s ^inbox,buffer,deletion -a ...
+
+Both lastmod and status filering are done after the -i argument is processed.
+
+By default, if a record requested or implied by the argument to -i is missing
+from the server, this will count as an error and stop execution of the program.
+If the option -m (or /m on Windows) is given, missing records will be ignored.
 
 This program writes its output in subdirectories under the directory given by
 the command-line option -o (or /o on Windows).  If the directory does not
@@ -271,16 +281,19 @@ get you blocked or banned from an institution's servers.
         if not writable(output_dir):
             exit(say.fatal_text('Directory not writable: {}', output_dir))
 
-    if user == 'U':
-        user = None
-    if password == 'P':
-        password = None
-
-    delay = int(delay)
-    name_prefix = '' if base_name == 'B' else base_name + '-'
     archive_fmt = "uncompressed-zip" if final_fmt == 'F' else final_fmt.lower()
     if archive_fmt and archive_fmt not in _RECOGNIZED_ARCHIVE_FORMATS:
         exit(say.fatal_text('Value of {}f option not recognized. {}', prefix, hint))
+
+    status = None if status == 'S' else status.split(',')
+    status_negation = (status and status[0].startswith('^'))
+    if status_negation:                 # Remove the '^' if it's there.
+        status[0] = status[0][1:]
+
+    delay = int(delay)
+    user = None if user == 'U' else user
+    password = None if password == 'P' else password
+    name_prefix = '' if base_name == 'B' else base_name + '-'
 
     # Do the real work --------------------------------------------------------
 
@@ -300,6 +313,10 @@ get you blocked or banned from an institution's servers.
                  'entries' if len(wanted) > 1 else 'entry')
         if lastmod:
             say.info('Will only keep records modified after {}', lastmod_str)
+        if status:
+            say.info('Will only keep records {} status {}',
+                     'without' if status_negation else 'with',
+                     fmt_statuses(status, status_negation))
         say.info('Output will be written under directory "{}"', output_dir)
         make_dir(output_dir)
 
@@ -315,6 +332,10 @@ get you blocked or banned from an institution's servers.
             if lastmod and eprints_lastmod(xml) < lastmod:
                 say.info("{} hasn't been modified since {} -- skipping",
                          number, lastmod_str)
+                continue
+            if status and ((not status_negation and eprints_status(xml) not in status)
+                           or (status_negation and eprints_status(xml) in status)):
+                say.info('{} has status "{}" -- skipping', number, eprints_status(xml))
                 continue
 
             # Good so far.  Create the directory and write the XML out.
@@ -480,6 +501,15 @@ def file_comments(bag):
     text += '~ '*35
     text += '\n'
     return text
+
+
+def fmt_statuses(status_list, negated):
+    as_list = ['"' + x + '"' for x in status_list]
+    if len(as_list) > 1:
+        and_or = ' and ' if not negated else ' or '
+        return ', '.join(as_list[:-1]) + and_or + as_list[-1]
+    else:
+        return as_list[0]
 
 
 # Main entry point.
