@@ -17,7 +17,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.7.0_: New command-line option `--status` (`-s` for short) allows you to specify values of the `<eprint_status>` field that should be used to filter candidates.  When this option is given, `eprints2bags` will only keep those records having a status value that appears in the comma-separated argument to `-s`.  Putting a caret character (`^`) in front of the status (or status list) negates the sense, so that eprints2bags only keeps those records whose eprints_status value is *not* among those given.  Examples: `eprints2bags -s archive -a ...` or `eprints2bags -s ^inbox,buffer,deletion -a ...`.
+_Version 1.7.0_: The new command-line option `--status` (`-s` for short) allows you to specify values of the `<eprint_status>` field that should be used to filter candidate records.  When this option is given, `eprints2bags` will only keep those records having a status value that appears in the comma-separated argument to `-s`.  Putting a caret character (`^`) in front of the status (or status list) negates the sense, so that `eprints2bags` will only keep those records whose `<eprints_status>` field value is *not* among those given.  Examples: `eprints2bags -s archive -a ...` or `eprints2bags -s ^inbox,buffer,deletion -a ...`.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -66,7 +66,7 @@ On Linux and macOS systems, assuming that the installation proceeds normally, yo
 
 The EPrints records to be written will be limited to the list of numerical EPrints identifiers found in the file given by the option `-i` (or `/i` on Windows).  If no `-i` option is given, `eprints2bags` will download all the contents available at the given EPrints server.  The value of `-i` can also be one or more integers separated by commas (e.g., `-i 54602,54604`), or a range of numbers separated by a dash (e.g., `-i 1-100`, which is interpreted as the list of numbers 1, 2, ..., 100 inclusive), or some combination thereof.
 
-By default, if a record requested or implied by the arguments to `-i` is missing from the EPrints server, this **is considered an error** and stops execution of the program.  If the option `-m` (or `/m` on Windows) is given, missing records will be ignored instead.  Option `-m` is particularly useful when giving a range of numbers with the `-i` option, as it is common for EPrints records to be updated or deleted and gaps to be left in the numbering.
+By default, if an error occurs when requesting a record from the EPrints server, it **stops execution of `eprints2bags`**.  Common causes of errors include missing records implied by the arguments to `-i`, authentication errors, and missing files associated with a given record.  If the option `-m` (or `/m` on Windows) is given, missing records will be ignored instead.  Option `-m` is particularly useful when giving a range of numbers with the `-i` option, as it is common for EPrints records to be updated or deleted and gaps to be left in the numbering.  (Running without `-i` will skip over gaps and errors won't result for missing records, but errors may still result from permissions errors or other causes.)
 
 `eprints2bags` writes its output in subdirectories under the directory given by the command-line option `-o` (or `/o` on Windows).  If the directory does not exist, this program will create it.  If no `-o` is given, the current directory where `eprints2bags` is running is used.  Whatever the destination is, `eprints2bags` will create subdirectories in the destination, with each subdirectory named according to the EPrints record number (e.g., `/path/to/output/430`, `/path/to/output/431`, `/path/to/output/432`, ...).  If the `-b` option (`/b` on Windows) is given, the subdirectory names are changed to have the form _BASENAME-NUMBER_ where _BASENAME_ is the text string provided with the `-b` option and the _NUMBER_ is the EPrints number for a given entry (meaning, `/path/to/output/BASENAME-430`, `/path/to/output/BASENAME-431`, `/path/to/output/BASENAME-432`, ...).
 
@@ -105,6 +105,28 @@ Payload-Oxum: 4646541.2
 Archive comments are a feature of the [ZIP](https://en.wikipedia.org/wiki/Zip_(file_format)) file format and not available with [tar](https://en.wikipedia.org/wiki/Tar_(computing)).
 
 
+### Filtering records
+
+If the `-l` option (or `/l` on Windows) is given, the set of records found on the server will be filtered to keep only those whose last-modified date/time stamp is no older than the given date/time description.  Valid descriptors are those accepted by the Python [dateparser](https://pypi.org/project/dateparser/) library.  Make sure to enclose date descriptions within single or double quotes.  Examples:
+
+```
+eprints2bags -l "2 weeks ago" -a ....
+eprints2bags -l "2014-08-29"  -a ....
+eprints2bags -l "12 Dec 2014" -a ....
+eprints2bags -l "July 4, 2013" -a ....
+```
+
+If the `-s` option (or `/s` on Windows) is given, the records will also be filtered to include only those whose `<eprint_status>` element value is one of the listed status codes.  Comparisons are done in a case-insensitive manner.  Putting a caret character (`^`) in front of the status negates the sense, so that `eprints2bags` will only keep those records whose `<eprint_status>` value is _**not**_ among those given.  The status can be given as a list of status values separated by commas.  (Note: do not include spaces in the list, or if you do, enclose the entire list in quotes.)  Examples:
+
+```
+eprints2bags -s archive -a ...
+eprints2bags -s ^inbox,buffer,deletion -a ...
+eprints2bags -s ^"inbox, buffer" -a ...
+```
+
+Both last-modification and status filering are done after the `-i` argument is processed.
+
+
 ### Login credentials
 
 Downloading documents usually requires supplying a user login and password to the EPrints server.  By default, this program uses the operating system's keyring/keychain functionality to get a user name and password.  If the information does not exist from a previous run of `eprints2bags`, it will query the user interactively for the user name and password, and unless the `-K` argument (`/K` on Windows) is given, store them in the user's keyring/keychain so that it does not have to ask again in the future.  It is also possible to supply the information directly on the command line using the `-u` and `-p` options (or `/u` and `/p` on Windows), but this is discouraged because it is insecure on multiuser computer systems.
@@ -114,7 +136,7 @@ If a given EPrints server does not require a user name and password, do not use 
 To reset the user name and password (e.g., if a mistake was made the last time and the wrong credentials were stored in the keyring/keychain system), add the `-R` (or `/R` on Windows) command-line argument to a command.  When `eprints2bags` is run with this option, it will query for the user name and password again even if an entry already exists in the keyring or keychain.
 
 
-### Examples
+### Basic usage examples
 
 Running `eprints2bags` then consists of invoking the program like any other program on your system.  The following is a simple example showing how to get a single record (#85447) from Caltech's [CODA](https://libguides.caltech.edu/CODA) EPrints server (with user name and password blanked out here for security reasons):
 
@@ -211,6 +233,7 @@ We thank the following people for suggestions and ideas that led to improvements
 
 * [bagit](https://github.com/LibraryOfCongress/bagit-python) &ndash; Python library for working with [BagIt](https://tools.ietf.org/html/draft-kunze-bagit-17) style packages
 * [colorama](https://github.com/tartley/colorama) &ndash; makes ANSI escape character sequences work under MS Windows terminals
+* [dateparser](https://pypi.org/project/dateparser/) &ndash; parse dates in almost any string format
 * [humanize](https://github.com/jmoiron/humanize) &ndash; helps write large numbers in a more human-readable form
 * [ipdb](https://github.com/gotcha/ipdb) &ndash; the IPython debugger
 * [keyring](https://github.com/jaraco/keyring) &ndash; access the system keyring service from Python
