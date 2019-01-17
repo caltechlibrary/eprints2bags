@@ -494,7 +494,7 @@ def file_comments(bag):
     text += '\n'
     text += 'About this ZIP archive file:\n'
     text += '\n'
-    text += 'This archive contains a directory of files organized in BagIt v1.0 format.\n'
+    text += 'This archive contains a directory of files organized in BagIt v{} format.\n'.format(bag.version)
     text += 'The data files in the bag are the contents of the EPrints record located at\n'
     text += bag.info['External-Identifier']
     text += '\n\n'
