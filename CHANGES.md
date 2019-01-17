@@ -5,6 +5,8 @@ Version 1.7.0
 -------------
 
 * Add new `--status` command-line option
+* Fix comments in ZIP file to use correct BagIt format version
+* Update help strings and text in README
 
 
 Version 1.6.0
