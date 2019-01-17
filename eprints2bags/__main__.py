@@ -492,10 +492,10 @@ def update_bag_info(bag, xml):
 def file_comments(bag):
     text = '~ '*35
     text += '\n'
-    text += 'About this archive file:\n'
+    text += 'About this ZIP archive file:\n'
     text += '\n'
-    text += 'This is an archive of a file directory organized in BagIt v1.0 format.\n'
-    text += 'The data in the bag are the contents of the EPrints record located at\n'
+    text += 'This archive contains a directory of files organized in BagIt v1.0 format.\n'
+    text += 'The data files in the bag are the contents of the EPrints record located at\n'
     text += bag.info['External-Identifier']
     text += '\n\n'
     text += 'The software used to create this archive file was:\n'
