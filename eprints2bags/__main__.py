@@ -133,10 +133,10 @@ single or double quotes.  Examples:
   eprints2bags -l "July 4, 2013" -a ....
 
 If the -s option (or /s on Windows) is given, the records will also be filtered
-to include only those whose eprint_status field value is one of the listed
+to include only those whose eprint_status element value is one of the listed
 status codes.  Comparisons are done in a case-insensitive manner.  Putting a
 caret character ("^") in front of the status (or status list) negates the
-sense, so that eprints2bags only keeps those records whose eprints_status
+sense, so that eprints2bags will only keep those records whose eprint_status
 value is *not* among those given.  Examples:
 
   eprints2bags -s archive -a ...
@@ -144,9 +144,16 @@ value is *not* among those given.  Examples:
 
 Both lastmod and status filering are done after the -i argument is processed.
 
-By default, if a record requested or implied by the argument to -i is missing
-from the server, this will count as an error and stop execution of the program.
-If the option -m (or /m on Windows) is given, missing records will be ignored.
+By default, if an error occurs when requesting a record from the EPrints
+server, it stops execution of eprints2bags.  Common causes of errors include
+missing records implied by the arguments to -i, missing files associated with
+a given record, and files inaccessible due to permissions errors.  If the
+option -m (or /m on Windows) is given, missing records will be ignored instead.
+Option -m is particularly useful when giving a range of numbers with the
+-i option, as it is common for EPrints records to be updated or deleted and
+gaps to be left in the numbering.  (Running without -i will skip over gaps
+and errors won't result for missing records, but errors may still result from
+permissions errors or other causes.)
 
 This program writes its output in subdirectories under the directory given by
 the command-line option -o (or /o on Windows).  If the directory does not
