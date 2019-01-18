@@ -1,6 +1,14 @@
 Change log for eprints2bags
 ===========================
 
+Version 1.8.0
+-------------
+
+* Default behavior changed to create a final, single top-level bag out of all the output it produces
+* New command-line options `-b`, `-e` and `-t`
+* Renamed previous option `-b` to `-n` and `-m` to `-k`
+* Removed option `-B` (because it's now subsumed by other options)
+
 Version 1.7.0
 -------------
 
