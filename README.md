@@ -9,13 +9,15 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.7.0-b44e88.svg?style=flat-square)](http://shields.io)
+[![Latest release](https://img.shields.io/badge/Latest_release-1.8.0-b44e88.svg?style=flat-square)](http://shields.io)
+<!--
 [![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1156-blue.svg?style=flat-square)](https://data.caltech.edu/records/1156)
+-->
 
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.7.0_: The new command-line option `--status` (`-s` for short) allows you to specify values of the `<eprint_status>` field that should be used to filter candidate records.  When this option is given, `eprints2bags` will only keep those records having a status value that appears in the comma-separated argument to `-s`.  Putting a caret character (`^`) in front of the status (or status list) negates the sense, so that `eprints2bags` will only keep those records whose `<eprints_status>` field value is *not* among those given.  Examples: `eprints2bags -s archive -a ...` or `eprints2bags -s ^inbox,buffer,deletion -a ...`.
+_Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, by default, `eprints2bags` now creates a top-level bag containing the archived bags it creates.  This top-level bag itself is also put into a single-file archive.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  Along with these changes, several existing command-line arguments have changed names and abbreviations.  Please see the help text for the new names.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -57,25 +59,47 @@ sudo python3 -m pip install . --upgrade
 
 On Linux and macOS systems, assuming that the installation proceeds normally, you should end up with a program called `eprints2bags` in a location normally searched by your terminal shell for commands.
 
+
 ▶︎ Using Eprints2bags
 ---------------------
 
 `eprints2bags` contacts an EPrints REST server whose network API is accessible at the URL given by the command-line option `-a` (or `/a` on Windows).  A typical EPrints server URL has the form `https://somename.yourinstitution.edu/rest`.  **This program will automatically add `/eprint` to the URL path given**, so omit that part of the URL in the value given to `-a`.  The `-a` (or `/a`) option is required; the program cannot infer the server address on its own.
 
-The EPrints records to be written will be limited to the list of numerical EPrints identifiers found in the file given by the option `-i` (or `/i` on Windows).  If no `-i` option is given, `eprints2bags` will download all the contents available at the given EPrints server.  The value of `-i` can also be one or more integers separated by commas (e.g., `-i 54602,54604`), or a range of numbers separated by a dash (e.g., `-i 1-100`, which is interpreted as the list of numbers 1, 2, ..., 100 inclusive), or some combination thereof.
 
-By default, if an error occurs when requesting a record from the EPrints server, it **stops execution of `eprints2bags`**.  Common causes of errors include missing records implied by the arguments to `-i`, authentication errors, and missing files associated with a given record.  If the option `-m` (or `/m` on Windows) is given, missing records will be ignored instead.  Option `-m` is particularly useful when giving a range of numbers with the `-i` option, as it is common for EPrints records to be updated or deleted and gaps to be left in the numbering.  (Running without `-i` will skip over gaps and errors won't result for missing records, but errors may still result from permissions errors or other causes.)
+### _Specifying which records to get_
 
-`eprints2bags` writes its output in subdirectories under the directory given by the command-line option `-o` (or `/o` on Windows).  If the directory does not exist, this program will create it.  If no `-o` is given, the current directory where `eprints2bags` is running is used.  Whatever the destination is, `eprints2bags` will create subdirectories in the destination, with each subdirectory named according to the EPrints record number (e.g., `/path/to/output/430`, `/path/to/output/431`, `/path/to/output/432`, ...).  If the `-b` option (`/b` on Windows) is given, the subdirectory names are changed to have the form _BASENAME-NUMBER_ where _BASENAME_ is the text string provided with the `-b` option and the _NUMBER_ is the EPrints number for a given entry (meaning, `/path/to/output/BASENAME-430`, `/path/to/output/BASENAME-431`, `/path/to/output/BASENAME-432`, ...).
+The EPrints records to be written will be limited to the list of EPrints numbers found in the file given by the option `-i` (or `/i` on Windows).  If no `-i` option is given, this program will download all the contents available at the given EPrints server.  The value of `-i` can also be one or more integers separated by commas (e.g., `-i 54602,54604`), or a range of numbers separated by a dash (e.g., `-i 1-100`, which is interpreted as the list of numbers 1, 2, ..., 100 inclusive), or some combination thereof.  In those cases, the records written will be limited to those numbered.
+
+If the `-l` option (or `/l` on Windows) is given, the records will be additionally filtered to return only those whose last-modified date/time stamp is no older than the given date/time description.  Valid descriptors are those accepted by the Python [dateparser](https://pypi.org/project/dateparser/) library.  Make sure to enclose descriptions within single or double quotes.  Examples:
+
+```
+eprints2bags -l "2 weeks ago" -a ....
+eprints2bags -l "2014-08-29"  -a ....
+eprints2bags -l "12 Dec 2014" -a ....
+eprints2bags -l "July 4, 2013" -a ....
+```
+
+If the `-s` option (or `/s` on Windows) is given, the records will also be filtered to include only those whose `<eprint_status>` element value is one of the listed status codes.  Comparisons are done in a case-insensitive manner.  Putting a caret character (`^`) in front of the status (or status list) negates the sense, so that `eprints2bags` will only keep those records whose `<eprint_status>` value is _not_ among those given.  Examples:
+
+```
+eprints2bags -s archive -a ...
+eprints2bags -s ^inbox,buffer,deletion -a ...
+```
+
+Both lastmod and status filering are done after the `-i` argument is processed.
+
+By default, if an error occurs when requesting a record from the EPrints server, it stops execution of `eprints2bags`.  Common causes of errors include missing records implied by the arguments to `-i`, missing files associated with a given record, and files inaccessible due to permissions errors.  If the option `-k` (or `/k` on Windows) is given, `eprints2bags` will attempt to keep going upon encountering missing records, or missing files within records, or similar errors.  Option `-k` is particularly useful when giving a range of numbers with the `-i` option, as it is common for EPrints records to be updated or deleted and gaps to be left in the numbering.  (Running without `-i` will skip over gaps in the numbering because the available record numbers will be obtained directly from the server, which is unlike the user providing a list of record numbers that may or may not exist on the server.  However, even without `-i`, errors may still result from permissions errors or other causes.)
 
 
-### Contents gathered and output produced
+### _Specifying what to do with the records_
 
-Each directory created by `eprints2bags` will contain an [EPrints XML](https://wiki.eprints.org/w/XML_Export_Format) file and additional document file(s) associated with the EPrints record in question.  The list of documents for each record is determined from the EPrints XML file, in the `<documents>` element.  Certain EPrints internal documents such as `indexcodes.txt` and `preview.png` are ignored.
+This program writes its output in subdirectories under the directory given by the command-line option `-o` (or `/o` on Windows).  If the directory does not exist, this program will create it.  If no `-o` is given, the current directory where `eprints2bags` is running is used.  Whatever the destination is, `eprints2bags` will create subdirectories in the destination, with each subdirectory named according to the EPrints record number (e.g., `/path/to/output/43`, `/path/to/output/44`, `/path/to/output/45`, ...).  If the `-n` option (`/n` on Windows) is given, the subdirectory names are changed to have the form _NAME-NUMBER__ where _NAME_ is the text string provided to the `-n` option and the _NUMBER_ is the EPrints number for a given entry (meaning, `/path/to/output/NAME-43`, `/path/to/output/NAME-44`, `/path/to/output/NAME-45`, ...).
 
-After downloading a complete record from EPrints, this program creates [BagIt](https://en.wikipedia.org/wiki/BagIt) bags from the contents of the subdirectory created for the record.  This is done by default, after the documents are downloaded for each record, unless the `-B` option (`/B` on Windows) is given.  Note that creating bags is a destructive operation: it replaces the individual directories of each record with a restructured directory corresponding to the BagIt format.  The `-B` option prevents that, and can be useful when trying to debug problems or when bags are not needed.
+Each directory will contain an [EPrints XML](https://wiki.eprints.org/w/XML_Export_Format) file and additional document file(s) associated with the EPrints record in question.  Documents associated with each record will be fetched over the network.  The list of documents for each record is determined from XML file, in the `<documents>` element.  Certain EPrints internal documents such as `indexcodes.txt` and preview images are ignored.
 
-The final step after creating each bag is to create a single-file archive of the bag contents.  By default, this is done in uncompressed [ZIP](https://en.wikipedia.org/wiki/Zip_(file_format)) format.  The option `-f` (or `/f` on Windows) can be used to change the archive format.  If given the value `none`, the bags are not put into an archive file and are instead left as-is.  Other possible values are: `compressed-zip`, `uncompressed-zip`, `compressed-tar`, and `uncompressed-tar`.  The default is `uncompressed-zip` (used if no `-f` option is given).  [ZIP](https://en.wikipedia.org/wiki/Zip_(file_format)) is the default because it is more widely recognized and supported than [tar](https://en.wikipedia.org/wiki/Tar_(computing)) format, and _uncompressed_ ZIP is used because file corruption is generally more damaging to a compressed archive than an uncompressed one.  Since the main use case for `eprints2bags` is to archive contents for long-term storage, avoiding compression seems safer even though it means the results take up more space.
+By default, each record and associated files downloaded from EPrints will be placed in a directory structure that follows the [BagIt](https://en.wikipedia.org/wiki/BagIt) specification, and then this bag will then be put into its own single-file archive.  The default archive file format is [ZIP](https://en.wikipedia.org/wiki/Zip_(file_format)) with compression turned off (see next paragraph).  Option `-b` (`/b` on Windows) can be used to change this behavior.  This option takes a keyword value; possible values are `none`, `bag` and `bag-and-archive`, with the last being the default.  Value `none` will cause `eprints2bags` to leave the downloaded record content in individual directories without bagging or archiving, and value `bag` will cause `eprints2bags` to create BagIt bags but not single-file archives from the results.  Everything will be left in the output directory (the location given by the `-o` or `/o` option).  Note that creating bags is a destructive operation: it replaces the individual directories of each record with a restructured directory corresponding to the BagIt format.
+
+The type of archive made when `bag-and-archive` mode is used for the `-b` option can be changed using the option `-t` (or `/t` on Windows).  The possible values are: `compressed-zip`, `uncompressed-zip`, `compressed-tar`, and `uncompressed-tar`.  As mentioned above, the default is `uncompressed-zip` (used if no `-t` option is given).  [ZIP](https://en.wikipedia.org/wiki/Zip_(file_format)) is the default because it is more widely recognized and supported than [tar](https://en.wikipedia.org/wiki/Tar_(computing)) format, and _uncompressed_ ZIP is used because file corruption is generally more damaging to a compressed archive than an uncompressed one.  Since the main use case for `eprints2bags` is to archive contents for long-term storage, avoiding compression seems safer.
 
 The ZIP archive file will be written with a text comment describing the contents of the archive.  This comment can be viewed by ZIP utilities (e.g., using `zipinfo -z` on Unix/Linux and macOS).  The following is an example of a comment and the information it contains:
 
@@ -102,30 +126,24 @@ Payload-Oxum: 4646541.2
 
 Archive comments are a feature of the [ZIP](https://en.wikipedia.org/wiki/Zip_(file_format)) file format and not available with [tar](https://en.wikipedia.org/wiki/Tar_(computing)).
 
+Finally, the overall collection of EPrints records (whether the records are bagged and archived, or just bagged, or left as-is) will itself be put into one top-level bag in a ZIP archive.  Thus, the default action is to create a ZIP archive of a bag whose data directory contains other ZIP archives of bags.  This behavior can be changed with the option `-e` (`/e` on Windows).  Like -b, this option takes the possible values `none`, `bag`, and `bag-and-archive`.  If `none` is used, a top-level bag is not created.  If `bag` is used, the top-level bag is created but left without putting it into a single-file archive.
 
-### Filtering records
-
-If the `-l` option (or `/l` on Windows) is given, the set of records found on the server will be filtered to keep only those whose last-modified date/time stamp is no older than the given date/time description.  Valid descriptors are those accepted by the Python [dateparser](https://pypi.org/project/dateparser/) library.  Make sure to enclose date descriptions within single or double quotes.  Examples:
-
-```
-eprints2bags -l "2 weeks ago" -a ....
-eprints2bags -l "2014-08-29"  -a ....
-eprints2bags -l "12 Dec 2014" -a ....
-eprints2bags -l "July 4, 2013" -a ....
-```
-
-If the `-s` option (or `/s` on Windows) is given, the records will also be filtered to include only those whose `<eprint_status>` element value is one of the listed status codes.  Comparisons are done in a case-insensitive manner.  Putting a caret character (`^`) in front of the status negates the sense, so that `eprints2bags` will only keep those records whose `<eprint_status>` value is _**not**_ among those given.  The status can be given as a list of status values separated by commas.  (Note: do not include spaces in the list, or if you do, enclose the entire list in quotes.)  Examples:
+The use of separate options for the different stages provides some flexibility in choosing the final output.  For example,
 
 ```
-eprints2bags -s archive -a ...
-eprints2bags -s ^inbox,buffer,deletion -a ...
-eprints2bags -s ^"inbox, buffer" -a ...
+eprints2bags --bag-action none --end-action bag-and-archive
 ```
 
-Both last-modification and status filering are done after the `-i` argument is processed.
+will create a single bag archive file containing, in the data directory, the (unbagged) EPrints records, which may be a preferrable file organization in some situations.  To take another example,
+
+```
+eprints2bags --bag-action none --end-action none
+```
+
+can be useful for inspecting the records that `eprings2bags` downloads or your intention to use the records immediately after downloading them.
 
 
-### Login credentials
+### _Server credentials_
 
 Downloading documents usually requires supplying a user login and password to the EPrints server.  By default, this program uses the operating system's keyring/keychain functionality to get a user name and password.  If the information does not exist from a previous run of `eprints2bags`, it will query the user interactively for the user name and password, and unless the `-K` argument (`/K` on Windows) is given, store them in the user's keyring/keychain so that it does not have to ask again in the future.  It is also possible to supply the information directly on the command line using the `-u` and `-p` options (or `/u` and `/p` on Windows), but this is discouraged because it is insecure on multiuser computer systems.
 
@@ -134,7 +152,7 @@ If a given EPrints server does not require a user name and password, do not use 
 To reset the user name and password (e.g., if a mistake was made the last time and the wrong credentials were stored in the keyring/keychain system), add the `-R` (or `/R` on Windows) command-line argument to a command.  When `eprints2bags` is run with this option, it will query for the user name and password again even if an entry already exists in the keyring or keychain.
 
 
-### Basic usage examples
+### _Basic usage examples_
 
 Running `eprints2bags` then consists of invoking the program like any other program on your system.  The following is a simple example showing how to get a single record (#85447) from Caltech's [CODA](https://libguides.caltech.edu/CODA) EPrints server (with user name and password blanked out here for security reasons):
 
@@ -160,32 +178,35 @@ The following is a screen cast to give a sense for what it's like to run `eprint
 </p>
 
 
-### Summary of command-line options
+### _Summary of command-line options_
 
 The following table summarizes all the command line options available. (Note: on Windows computers, `/` must be used as the prefix character instead of `-`):
 
 | Short   | Long&nbsp;form&nbsp;opt | Meaning | Default |  |
 |---------|-------------------|----------------------|---------|---|
 | `-a`_A_ | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
-| `-b`_B_ | `--base-name`_B_  | Name the records with the template _B_-n | Use only the record id number, n  | |
-| `-f`_F_ | `--final-fmt`_F_  | Create single-file archive in format _F_ | Uncompressed ZIP archive | |
+| `-b`_B_ | `--bag-action`_B_ | Do _B_ with each record directory | Bag and archive  | ✦ |
+| `-e`_E_ | `--end-action`_E_ | Do _E_ with the entire set of records | Bag and archive | ✦ |
 | `-i`_I_ | `--id-list`_I_    | List of records to get (can be a file name) | Fetch all records from the server | |
+| `-k`    | `--keep-going`    | Don't count missing records as an error | Stop if missing record encountered | |
 | `-l`_L_ | `--lastmod`_L_    | Filter by last-modified date/time | Don't filter by date/time | |
-| `-s`_S_ | `--status`_S_     | Filter by status(s) in _S_ | Don't filter by status | |
-| `-m`    | `--missing-ok`    | Don't count missing records as an error | Stop if missing record encountered | |
+| `-n`_N_ | `--name-base`_N_  | Prefix directory names with _N_ | Use record number only | |
 | `-o`_O_ | `--output-dir`_O_ | Write outputs in the directory _O_ | Write in the current directory |  |
+| `-q`    | `--quiet`         | Don't print info messages while working | Be chatty while working | |
+| `-s`_S_ | `--status`_S_     | Filter by status(s) in _S_ | Don't filter by status | |
 | `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
 | `-p`_P_ | `--password`_U_   | Password for EPrints proxy login | |
+| `-t`_T_ | `--arch-type`_T_  | Use archive type _T_ | Use uncompressed ZIP | ♢ |
 | `-y`_Y_ | `--delay`_Y_      | Pause _Y_ ms between getting records | 100 milliseconds | |
-| `-q`    | `--quiet`         | Don't print info messages while working | Be chatty while working | |
-| `-B`    | `--no-bags`       | Don't create bags or archives | Do create bags & archives | |
 | `-C`    | `--no-color`      | Don't color-code the output | Use colors in the terminal output | |
 | `-K`    | `--no-keyring`    | Don't use a keyring/keychain | Store login info in keyring | |
 | `-R`    | `--reset`         | Reset user login & password used | Reuse previously-used credentials |
 | `-V`    | `--version`       | Print program version info and exit | Do other actions instead | |
 | `-Z`    | `--debug`         | Debugging mode | Normal mode | |
 
- ⚑ &nbsp; Required argument.
+ ⚑ &nbsp; Required argument.<br>
+✦ &nbsp; Possible values: `none`, `bag`, `bag-and-archive`.<br>
+♢ &nbsp; Possible values: `uncompressed-zip`, `compressed-zip`, `uncompressed-tar`, `compressed-tar`.
 
 
 ### Additional notes and considerations
