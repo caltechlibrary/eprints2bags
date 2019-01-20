@@ -17,7 +17,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, by default, `eprints2bags` is now able to create a top-level bag containing the archived bags it creates.  This top-level bag itself can also be put into a single-file archive if desired.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  (The default is not to create an overall bag or archive.)
+_Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, `eprints2bags` is now able to create a top-level bag containing the archived bags it creates.  This top-level bag itself can also be put into a single-file archive if desired.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  (The default behavior remains _not_ to create an overall bag or archive.)
 
 Along with these changes, several existing command-line arguments have changed names and abbreviations.  Please see the help text for the new names.
 
