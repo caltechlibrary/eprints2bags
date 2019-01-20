@@ -264,7 +264,7 @@ We thank the following people for suggestions and ideas that led to improvements
 ☮︎ Copyright and license
 ---------------------
 
-Copyright (C) 2018, Caltech.  This software is freely distributed under a BSD/MIT type license.  Please see the [LICENSE](LICENSE) file for more information.
+Copyright (C) 2019, Caltech.  This software is freely distributed under a BSD/MIT type license.  Please see the [LICENSE](LICENSE) file for more information.
     
 <div align="center">
   <a href="https://www.caltech.edu">

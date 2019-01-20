@@ -17,7 +17,7 @@ subdirectory in the repo at https://github.com/caltechlibrary/eprints2bags/
 Copyright
 ---------
 
-Copyright (c) 2018 by the California Institute of Technology.  This code is
+Copyright (c) 2019 by the California Institute of Technology.  This code is
 open-source software released under a 3-clause BSD license.  Please see the
 file "LICENSE" for more information.
 '''
