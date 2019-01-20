@@ -57,6 +57,7 @@ from   eprints2bags.network import network_available, download_files, url_host
 from   eprints2bags.files import readable, writable, make_dir
 from   eprints2bags.files import fs_type, KNOWN_SUBDIR_LIMITS
 from   eprints2bags.files import create_archive, verify_archive, archive_extension
+from   eprints2bags.processes import available_cpus
 from   eprints2bags.eprints import *
 
 
@@ -83,6 +84,7 @@ with datetime.strftime().'''
 @plac.annotations(
     api_url    = ('the URL for the REST API of the EPrints server',         'option', 'a'),
     bag_action = ('bag, bag & archive, or none? (default: bag & archive)',  'option', 'b'),
+    processes  = ('num. processes to use when bagging (default: #cores/2)', 'option', 'c'),
     end_action = ('final action over whole set of records (default: none)', 'option', 'e'),
     id_list    = ('list of records to get (can be a file)',                 'option', 'i'),
     keep_going = ('do not stop if missing records or errors encountered',   'flag',   'k'),
@@ -102,11 +104,11 @@ with datetime.strftime().'''
     debug      = ('turn on debugging',                                      'flag',   'Z'),
 )
 
-def main(api_url = 'A', bag_action = 'B', end_action = 'E', id_list = 'I',
-         keep_going = False, lastmod = 'L', name_base = 'N', output_dir = 'O',
-         quiet = False, status = 'S', user = 'U', password = 'P',
-         arch_type = 'T', delay = 100, no_color = False, no_keyring = False,
-         reset_keys = False, version = False, debug = False):
+def main(api_url = 'A', bag_action = 'B', processes = 'C', end_action = 'E',
+         id_list = 'I', keep_going = False, lastmod = 'L', name_base = 'N',
+         output_dir = 'O', quiet = False, status = 'S', user = 'U',
+         password = 'P', arch_type = 'T', delay = 100, no_color = False,
+         no_keyring = False, reset_keys = False, version = False, debug = False):
     '''eprints2bags bags up EPrints content as BagIt bags.
 
 This program contacts an EPrints REST server whose network API is accessible
@@ -267,6 +269,11 @@ problems for your terminal emulator.
 Additional notes
 ~~~~~~~~~~~~~~~~
 
+Generating checksum values can be a time-consuming operation for large bags.
+By default, during the bagging step, eprints2bags will use a number of
+processes equal to one-half of the available CPUs on the computer.  The number
+of processes can be changed using the option -c (or /c on Windows).
+
 Beware that some file systems have limitations on the number of
 subdirectories that can be created, which directly impacts how many record
 subdirectories can be created by this program.  eprints2bags attempts to
@@ -359,9 +366,10 @@ Command-line options summary
         status[0] = status[0][1:]
 
     delay = int(delay)
+    procs = int(max(1, available_cpus()/2 if processes == 'C' else processes))
     user = None if user == 'U' else user
     password = None if password == 'P' else password
-    name_prefix = '' if name_base == 'N' else name_base + '-'
+    prefix = '' if name_base == 'N' else name_base + '-'
 
     # Do the real work --------------------------------------------------------
 
@@ -407,17 +415,17 @@ Command-line options summary
                 continue
 
             # Good so far.  Create the directory and write the XML out.
-            record_dir = path.join(output_dir, name_prefix + str(number))
+            record_dir = path.join(output_dir, prefix + str(number))
             say.info('Creating {}', record_dir)
             make_dir(record_dir)
-            write_record(number, xml, name_prefix, record_dir)
+            write_record(number, xml, prefix, record_dir)
 
             # Download any documents referenced in the XML record.
             docs = eprints_documents(xml)
             download_files(docs, user, password, record_dir, keep_going, say)
 
             # Bag it and archive it, depending on user choice.
-            bag_and_archive(record_dir, bag_action, archive_fmt, xml, api_url, say)
+            bag_and_archive(record_dir, bag_action, archive_fmt, procs, xml, api_url, say)
 
             if wanted and number in wanted:
                 missing.remove(number)
@@ -431,7 +439,7 @@ Command-line options summary
             say.warn('The following records were not found: '+ ', '.join(missing) + '.')
 
         # Bag the whole result and archive it, depending on user choice.
-        bag_and_archive(output_dir, end_action, archive_fmt, None, api_url, say)
+        bag_and_archive(output_dir, end_action, archive_fmt, procs, None, api_url, say)
 
     except KeyboardInterrupt as ex:
         exit(say.msg('Quitting.', 'error'))
@@ -526,11 +534,11 @@ def password(prompt):
         return sys.stdin.readline().rstrip()
 
 
-def bag_and_archive(directory, bag_action, archive_fmt, xml, api_url, say):
+def bag_and_archive(directory, action, archive_fmt, procs, xml, api_url, say):
     # If xml != None, we're dealing with a record, else the top-level directory.
-    if bag_action != 'none':
+    if action != 'none':
         say.info('Making bag out of {}', directory)
-        bag = bagit.make_bag(directory, checksums = _BAG_CHECKSUMS)
+        bag = bagit.make_bag(directory, checksums = _BAG_CHECKSUMS, processes = procs)
         if xml != None:
             # The official_url field is not always present in the record.
             # Try to get it, and default to using the eprints record id.
@@ -548,7 +556,7 @@ def bag_and_archive(directory, bag_action, archive_fmt, xml, api_url, say):
         if __debug__: log('Verifying bag {}', bag.path)
         bag.validate()
 
-        if bag_action == 'bag-and-archive':
+        if action == 'bag-and-archive':
             archive_file = directory + archive_extension(archive_fmt)
             say.info('Making archive file {}', archive_file)
             comments = file_comments(bag) if xml != None else dir_comments(bag, api_url)
