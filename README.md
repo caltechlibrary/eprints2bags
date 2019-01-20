@@ -17,7 +17,9 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, by default, `eprints2bags` now creates a top-level bag containing the archived bags it creates.  This top-level bag itself is also put into a single-file archive.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  Along with these changes, several existing command-line arguments have changed names and abbreviations.  Please see the help text for the new names.
+_Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, by default, `eprints2bags` is now able to create a top-level bag containing the archived bags it creates.  This top-level bag itself can also be put into a single-file archive if desired.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  (The default is not to create an overall bag or archive.)
+
+Along with these changes, several existing command-line arguments have changed names and abbreviations.  Please see the help text for the new names.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -126,7 +128,7 @@ Payload-Oxum: 4646541.2
 
 Archive comments are a feature of the [ZIP](https://en.wikipedia.org/wiki/Zip_(file_format)) file format and not available with [tar](https://en.wikipedia.org/wiki/Tar_(computing)).
 
-Finally, the overall collection of EPrints records (whether the records are bagged and archived, or just bagged, or left as-is) will itself be put into one top-level bag in a ZIP archive.  Thus, the default action is to create a ZIP archive of a bag whose data directory contains other ZIP archives of bags.  This behavior can be changed with the option `-e` (`/e` on Windows).  Like -b, this option takes the possible values `none`, `bag`, and `bag-and-archive`.  If `none` is used, a top-level bag is not created.  If `bag` is used, the top-level bag is created but left without putting it into a single-file archive.
+Finally, the overall collection of EPrints records (whether the records are bagged and archived, or just bagged, or left as-is) can optionally be itself put into a bag and/or put in a ZIP archive.  This behavior can be changed with the option `-e` (`/e` on Windows).  Like `-b`, this option takes the possible values `none`, `bag`, and `bag-and-archive`.  The default is `none`.  If the value `bag` is used, a top-level bag containing the individual EPrints bags is created out of the output directory (the location given by the `-o` option); if the value `bag-and-archive` is used, the bag is also put into a single-file archive.  (In other words, the result will be a ZIP archive of a bag whose data directory contains other ZIP archives of bags.)  For safety, `eprints2bags` will refuse to do `bag` or `bag-and-archive` unless a separate output directory is given via the `-o` option; otherwise, this would restructure the current directory where `eprints2bags` is running &ndash; with potentially unexpected or even catastrophic results.  (Imagine if the current directory were the user's home directory!)
 
 The use of separate options for the different stages provides some flexibility in choosing the final output.  For example,
 
@@ -134,13 +136,7 @@ The use of separate options for the different stages provides some flexibility i
 eprints2bags --bag-action none --end-action bag-and-archive
 ```
 
-will create a single bag archive file containing, in the data directory, the (unbagged) EPrints records, which may be a preferrable file organization in some situations.  To take another example,
-
-```
-eprints2bags --bag-action none --end-action none
-```
-
-can be useful for inspecting the records that `eprings2bags` downloads or your intention to use the records immediately after downloading them.
+will create a ZIP archive containing a single bag directory whose `data/` subdirectory contains the set of (unbagged) EPrints records retrieved by `eprints2bags` from the server.
 
 
 ### _Server credentials_
@@ -186,7 +182,7 @@ The following table summarizes all the command line options available. (Note: on
 |---------|-------------------|----------------------|---------|---|
 | `-a`_A_ | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
 | `-b`_B_ | `--bag-action`_B_ | Do _B_ with each record directory | Bag and archive  | ✦ |
-| `-e`_E_ | `--end-action`_E_ | Do _E_ with the entire set of records | Bag and archive | ✦ |
+| `-e`_E_ | `--end-action`_E_ | Do _E_ with the entire set of records | Nothing | ✦ |
 | `-i`_I_ | `--id-list`_I_    | List of records to get (can be a file name) | Fetch all records from the server | |
 | `-k`    | `--keep-going`    | Don't count missing records as an error | Stop if missing record encountered | |
 | `-l`_L_ | `--lastmod`_L_    | Filter by last-modified date/time | Don't filter by date/time | |
@@ -196,7 +192,7 @@ The following table summarizes all the command line options available. (Note: on
 | `-s`_S_ | `--status`_S_     | Filter by status(s) in _S_ | Don't filter by status | |
 | `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
 | `-p`_P_ | `--password`_U_   | Password for EPrints proxy login | |
-| `-t`_T_ | `--arch-type`_T_  | Use archive type _T_ | Use uncompressed ZIP | ♢ |
+| `-t`_T_ | `--arch-type`_T_  | Use archive type _T_ | Uncompressed ZIP | ♢ |
 | `-y`_Y_ | `--delay`_Y_      | Pause _Y_ ms between getting records | 100 milliseconds | |
 | `-C`    | `--no-color`      | Don't color-code the output | Use colors in the terminal output | |
 | `-K`    | `--no-keyring`    | Don't use a keyring/keychain | Store login info in keyring | |
