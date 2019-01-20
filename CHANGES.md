@@ -4,8 +4,9 @@ Change log for eprints2bags
 Version 1.8.0
 -------------
 
-* New feature: the ability to create a final, single top-level bag out of all the output it produces
-* New command-line options `-b`, `-e` and `-t`
+* New feature: provide the option to create a final, single top-level bag out of all the output (option `-e`)
+* New feature: use multiple processes for bag creation and provide option `-c` for adjusting the number
+* New command-line options `-b`, `-c`, `-e` and `-t`
 * Previous option `-b` renamed to `-n`, and `-m` to `-k`
 * Option `-B` removed (because it's now subsumed by other options)
 * Slightly changed (again) the comment block written to the ZIP archives

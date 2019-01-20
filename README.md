@@ -17,9 +17,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, `eprints2bags` is now able to create a top-level bag containing the archived bags it creates.  This top-level bag itself can also be put into a single-file archive if desired.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  (The default behavior remains _not_ to create an overall bag or archive.)
-
-Along with these changes, several existing command-line arguments have changed names and abbreviations.  Please see the help text for the new names.
+_Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, if desired, `eprints2bags` can now create a top-level bag containing the archived bags it creates.  This top-level bag itself can also be put into a single-file archive if desired.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  (The default behavior remains _not_ to create an overall bag or archive.)  Along with these changes, several existing command-line arguments have changed names and abbreviations.  Please see the help text for the new names.  Finally, a new option `-c` is available for changing the number of processes used during the bagging step to calculate checksums, and `eprints2bags` now uses multiple processes for that step by default.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -130,6 +128,8 @@ Archive comments are a feature of the [ZIP](https://en.wikipedia.org/wiki/Zip_(f
 
 Finally, the overall collection of EPrints records (whether the records are bagged and archived, or just bagged, or left as-is) can optionally be itself put into a bag and/or put in a ZIP archive.  This behavior can be changed with the option `-e` (`/e` on Windows).  Like `-b`, this option takes the possible values `none`, `bag`, and `bag-and-archive`.  The default is `none`.  If the value `bag` is used, a top-level bag containing the individual EPrints bags is created out of the output directory (the location given by the `-o` option); if the value `bag-and-archive` is used, the bag is also put into a single-file archive.  (In other words, the result will be a ZIP archive of a bag whose data directory contains other ZIP archives of bags.)  For safety, `eprints2bags` will refuse to do `bag` or `bag-and-archive` unless a separate output directory is given via the `-o` option; otherwise, this would restructure the current directory where `eprints2bags` is running &ndash; with potentially unexpected or even catastrophic results.  (Imagine if the current directory were the user's home directory!)
 
+Generating checksum values can be a time-consuming operation for large bags.  By default, during the bagging step, `eprints2bags` will use a number of processes equal to one-half of the available CPUs on the computer.  The number of processes can be changed using the option `-c` (or `/c` on Windows).
+
 The use of separate options for the different stages provides some flexibility in choosing the final output.  For example,
 
 ```
@@ -137,7 +137,6 @@ eprints2bags --bag-action none --end-action bag-and-archive
 ```
 
 will create a ZIP archive containing a single bag directory whose `data/` subdirectory contains the set of (unbagged) EPrints records retrieved by `eprints2bags` from the server.
-
 
 ### _Server credentials_
 
@@ -182,6 +181,7 @@ The following table summarizes all the command line options available. (Note: on
 |---------|-------------------|----------------------|---------|---|
 | `-a`_A_ | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
 | `-b`_B_ | `--bag-action`_B_ | Do _B_ with each record directory | Bag and archive  | ✦ |
+| `-c`_C_ | `--processes`_C_  | Number of processes during bag creation | &frac12; the number of CPUs | |
 | `-e`_E_ | `--end-action`_E_ | Do _E_ with the entire set of records | Nothing | ✦ |
 | `-i`_I_ | `--id-list`_I_    | List of records to get (can be a file name) | Fetch all records from the server | |
 | `-k`    | `--keep-going`    | Don't count missing records as an error | Stop if missing record encountered | |
