@@ -63,8 +63,10 @@ from   eprints2bags.eprints import *
 # Constants.
 # ......................................................................
 
-_RECOGNIZED_ARCHIVE_FORMATS = ['none', 'compressed-zip', 'uncompressed-zip',
-                               'compressed-tar', 'uncompressed-tar']
+_RECOGNIZED_ACTIONS = ['none', 'bag', 'bag-and-archive', 'bag+archive']
+
+_RECOGNIZED_ARCHIVE_TYPES = ['compressed-zip', 'uncompressed-zip',
+                             'compressed-tar', 'uncompressed-tar']
 '''List of values recognized for the final archive file format.'''
 
 _BAG_CHECKSUMS = ["sha256", "sha512", "md5"]
@@ -79,30 +81,31 @@ with datetime.strftime().'''
 # ......................................................................
 
 @plac.annotations(
-    api_url    = ('the URL for the REST API of the EPrints server',   'option', 'a'),
-    base_name  = ('use base name "B" for subdirectory names',         'option', 'b'),
-    final_fmt  = ('create single-file archive of bag in format "F"',  'option', 'f'),
-    id_list    = ('list of records to get (can be a file name)',      'option', 'i'),
-    lastmod    = ('only get records modified after given date/time',  'option', 'l'),
-    missing_ok = ('do not count missing records as an error',         'flag',   'm'),
-    output_dir = ('write output to directory "O"',                    'option', 'o'),
-    password   = ('EPrints server user password',                     'option', 'p'),
-    user       = ('EPrints server user login name',                   'option', 'u'),
-    status     = ('only get records whose status is in the list "S"', 'option', 's'),
-    quiet      = ('do not print info messages while working',         'flag',   'q'),
-    delay      = ('wait time between fetches (default: 100 ms)',      'option', 'y'),
-    no_bags    = ('do not create bags; just leave the content',       'flag',   'B'),
-    no_color   = ('do not color-code terminal output',                'flag',   'C'),
-    no_keyring = ('do not store credentials in a keyring service',    'flag',   'K'),
-    reset_keys = ('reset user and password used',                     'flag',   'R'),
-    version    = ('print version info and exit',                      'flag',   'V'),
-    debug      = ('turn on debugging',                                'flag',   'Z'),
+    api_url    = ('the URL for the REST API of the EPrints server',         'option', 'a'),
+    bag_action = ('bag, bag & archive, or none? (default: bag & archive)',  'option', 'b'),
+    end_action = ('final action over whole set of records (default: none)', 'option', 'e'),
+    id_list    = ('list of records to get (can be a file)',                 'option', 'i'),
+    keep_going = ('do not stop if missing records or errors encountered',   'flag',   'k'),
+    lastmod    = ('only get records modified after given date/time',        'option', 'l'),
+    name_base  = ('prefix names with "N-" when naming record directories',  'option', 'n'),
+    output_dir = ('write output to directory "O"',                          'option', 'o'),
+    quiet      = ('do not print informational messages while working',      'flag',   'q'),
+    status     = ('only get records whose status is in the list "S"',       'option', 's'),
+    user       = ('EPrints server user login name "U"',                     'option', 'u'),
+    password   = ('EPrints server user password "P"',                       'option', 'p'),
+    arch_type  = ('use archive type "T" (default: "uncompressed-zip")',     'option', 't'),
+    delay      = ('wait time between fetches (default: 100 ms)',            'option', 'y'),
+    no_color   = ('do not color-code terminal output',                      'flag',   'C'),
+    no_keyring = ('do not store credentials in a keyring service',          'flag',   'K'),
+    reset_keys = ('reset user and password used',                           'flag',   'R'),
+    version    = ('print version info and exit',                            'flag',   'V'),
+    debug      = ('turn on debugging',                                      'flag',   'Z'),
 )
 
-def main(api_url = 'A', base_name = 'B', final_fmt = 'F',  id_list = 'I',
-         lastmod = 'L', status = 'S', missing_ok = False, output_dir = 'O',
-         user = 'U', password = 'P', quiet = False, delay = 100,
-         no_bags = False, no_color = False, no_keyring = False,
+def main(api_url = 'A', bag_action = 'B', end_action = 'E', id_list = 'I',
+         keep_going = False, lastmod = 'L', name_base = 'N', output_dir = 'O',
+         quiet = False, status = 'S', user = 'U', password = 'P',
+         arch_type = 'T', delay = 100, no_color = False, no_keyring = False,
          reset_keys = False, version = False, debug = False):
     '''eprints2bags bags up EPrints content as BagIt bags.
 
@@ -111,6 +114,9 @@ at the URL given by the command-line option -a (or /a on Windows).  A typical
 EPrints server URL has the form "https://server.institution.edu/rest".  This
 program will automatically add "/eprint" to the URL path, so omit that part
 of the URL in the value given to -a.
+
+Specifying which records to get
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The EPrints records to be written will be limited to the list of EPrints
 numbers found in the file given by the option -i (or /i on Windows).  If no
@@ -148,12 +154,18 @@ By default, if an error occurs when requesting a record from the EPrints
 server, it stops execution of eprints2bags.  Common causes of errors include
 missing records implied by the arguments to -i, missing files associated with
 a given record, and files inaccessible due to permissions errors.  If the
-option -m (or /m on Windows) is given, missing records will be ignored instead.
-Option -m is particularly useful when giving a range of numbers with the
--i option, as it is common for EPrints records to be updated or deleted and
-gaps to be left in the numbering.  (Running without -i will skip over gaps
-and errors won't result for missing records, but errors may still result from
-permissions errors or other causes.)
+option -k (or /k on Windows) is given, eprints2bags will attempt to keep going
+upon encountering missing records, or missing files within records, or similar
+errors.  Option -k is particularly useful when giving a range of numbers with
+the -i option, as it is common for EPrints records to be updated or deleted and
+gaps to be left in the numbering.  (Running without -i will skip over gaps in
+the numbering because the available record numbers will be obtained directly
+from the server, which is unlike the user providing a list of record numbers
+that may or may not exist on the server.  However, even without -i, errors may
+still result from permissions errors or other causes.)
+
+Specifying what to do with the output
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This program writes its output in subdirectories under the directory given by
 the command-line option -o (or /o on Windows).  If the directory does not
@@ -161,38 +173,70 @@ exist, this program will create it.  If no -o is given, the current directory
 where eprints2bags is running is used.  Whatever the destination is,
 eprints2bags will create subdirectories in the destination, with each
 subdirectory named according to the EPrints record number (e.g.,
-/path/to/output/430, /path/to/output/431, /path/to/output/432, ...).  If the
--b option (/b on Windows) is given, the subdirectory names are changed to
-have the form _BASENAME-NUMBER_ where _BASENAME_ is the text string provided
-with the -b option and the _NUMBER_ is the EPrints number for a given entry
-(meaning, /path/to/output/BASENAME-430, /path/to/output/BASENAME-431,
-/path/to/output/BASENAME-432, ...).
+/path/to/output/43, /path/to/output/44, /path/to/output/45, ...).  If the
+-n option (/n on Windows) is given, the subdirectory names are changed to
+have the form NAME-NUMBER_ where NAME is the text string provided to the -n
+option and the NUMBER is the EPrints number for a given entry (meaning,
+/path/to/output/NAME-43, /path/to/output/NAME-44, /path/to/output/NAME-45, ...).
 
 Each directory will contain an EP3XML XML file and additional document
 file(s) associated with the EPrints record in question.  Documents associated
 with each record will be fetched over the network.  The list of documents for
 each record is determined from XML file, in the <documents> element.  Certain
-EPrints internal documents such as "indexcodes.txt" are ignored.
+EPrints internal documents such as "indexcodes.txt" and preview images
+will be ignored.
 
-The records downloaded from EPrints will be placed in BagIt style packages
-unless the -B option (/B on Windows) is given.  Note that creating bags is a
-destructive operation: it replaces the individual directories of each record
-with a restructured directory corresponding to the BagIt format.  If the -B
-(/B on Windows) is given, bags will not be created and the content
+Each record downloaded from EPrints will be placed in a BagIt style directory
+and each bag will also be put into a single-file archive by default.  The
+default archive file format is ZIP with compression turned off (see next
+paragraph).  Option -b (/b on Windows) can be used to change this behavior.
+This option takes a keyword value; possible values are "none", "bag" and
+"bag-and-archive", with the last being the default.  Value "none" will cause
+eprints2bags to leave the downloaded record content in individual directories
+without bagging or archiving, and value "bag" will cause eprints2bags to
+create BagIt bags but not single-file archives from the results.  The content
 directories will be left in the output directory (the location given by the
--o or /o option).
+-o or /o option).  Note that creating bags is a destructive operation: it
+replaces the individual directories of each record with a restructured
+directory corresponding to the BagIt format.
 
-Each bag directory will also be put into a single-file archive by default.
-The archive file format will be ZIP with compression turned off.  The option
--f (or /f on Windows) can be used to change the archive format.  If given the
-value "none", the bags are not put into an archive file and are instead left
-as-is.  Other possible values are: "compressed-zip", "uncompressed-zip",
-"compressed-tar", and "uncompressed-tar".  The default is "uncompressed-zip"
-(used if no -f option is given).  ZIP is the default because it is more widely
-recognized and supported than tar format, and uncompressed ZIP is used because
-file corruption is generally more damaging to a compressed archive than an
-uncompressed one.  Since the main use case for eprints2bags is to archive
-contents for long-term storage, avoiding compression seems safer.
+The type of archive made when "bag-and-archive" mode is used for the -b
+option can be changed using the option -t (or /t on Windows).  The possible
+values are: "compressed-zip", "uncompressed-zip", "compressed-tar", and
+"uncompressed-tar".  As mentioned above, the default is "uncompressed-zip"
+(used if no -t option is given).  ZIP is the default because it is more
+widely recognized and supported than tar format, and uncompressed ZIP is used
+because file corruption is generally more damaging to a compressed archive
+than an uncompressed one.  Since the main use case for eprints2bags is to
+archive contents for long-term storage, avoiding compression seems safer.
+
+Finally, the overall collection of EPrints records (whether the records are
+bagged and archived, or just bagged, or left as-is) can optionally be itself
+put into a bag and/or put in a ZIP archive.  This behavior can be changed with
+the option -e (/e on Windows).  Like -b, this option takes the possible values
+"none", "bag", and "bag-and-archive".  The default is "none".  If the value
+"bag" is used, a top-level bag containing the individual EPrints bags is
+created out of the output directory (the location given by the -o option);
+if the value "bag-and-archive" is used, the bag is also put into a single-file
+archive.  (In other words, the result will be a ZIP archive of a bag whose
+data directory contains other ZIP archives of bags.)  For safety, eprints2bags
+will refuse to do "bag" or "bag-and-archive" unless a separate output directory
+is given via the -o option; otherwise, this would restructure the current
+directory where eprints2bags is running -- with potentially unexpected or even
+catastrophic results.  (Imagine if the current directory were the user's home
+directory!)
+
+The use of separate options for the different stages provides some flexibility
+in choosing the final output.  For example,
+
+  eprints2bags --bag-action none --end-action bag-and-archive
+
+will create a ZIP archive containing a single bag directory whose `data/`
+subdirectory contains the set of (unbagged) EPrints records retrieved by
+`eprints2bags` from the server.
+
+Server credentials
+~~~~~~~~~~~~~~~~~~
 
 Downloading documents usually requires supplying a user login and password to
 the EPrints server.  By default, this program uses the operating system's
@@ -211,14 +255,17 @@ values.)
 To reset the user name and password (e.g., if a mistake was made the last
 time and the wrong credentials were stored in the keyring/keychain system),
 add the -R (or /R on Windows) command-line argument to a command.  When
-`eprints2bags` is run with this option, it will query for the user name and
+eprints2bags is run with this option, it will query for the user name and
 password again even if an entry already exists in the keyring or keychain.
 
-This program will print messages as it works.  To reduce the number of messages
-to warnings and errors, use the option -q (or /q on Windows).  Also, output
-is color-coded by default unless the -C option (or /C on Windows) is given;
-this option can be helpful if the color control signals create problems for
-your terminal emulator.
+eprints2bags will print messages as it works.  To reduce the number of
+messages to warnings and errors, use the option -q (or /q on Windows).  Also,
+output is color-coded by default unless the -C option (or /C on Windows) is
+given; this option can be helpful if the color control signals create
+problems for your terminal emulator.
+
+Additional notes
+~~~~~~~~~~~~~~~~
 
 Beware that some file systems have limitations on the number of
 subdirectories that can be created, which directly impacts how many record
@@ -241,6 +288,9 @@ administrators.  By default, this program inserts a small delay between
 record fetches (adjustable using the -y command-line option), which may be
 too short in some cases.  Setting the value to 0 is also possible, but might
 get you blocked or banned from an institution's servers.
+
+Command-line options summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 '''
     # Initial setup -----------------------------------------------------------
 
@@ -268,7 +318,7 @@ get you blocked or banned from an institution's servers.
     if id_list == 'I':
         wanted = []
     else:
-        wanted = list(parsed_id_list(id_list))
+        wanted = list(parsed_id_list(id_list, say))
 
     if lastmod == 'L':
         lastmod = None
@@ -280,6 +330,7 @@ get you blocked or banned from an institution's servers.
         except Exception as ex:
             exit(say.fatal_text('Unable to parse lastmod value: {}', str(ex)))
 
+    given_output_dir = not (output_dir == 'O')
     if output_dir == 'O':
         output_dir = os.getcwd()
     if not path.isabs(output_dir):
@@ -288,9 +339,19 @@ get you blocked or banned from an institution's servers.
         if not writable(output_dir):
             exit(say.fatal_text('Directory not writable: {}', output_dir))
 
-    archive_fmt = "uncompressed-zip" if final_fmt == 'F' else final_fmt.lower()
-    if archive_fmt and archive_fmt not in _RECOGNIZED_ARCHIVE_FORMATS:
-        exit(say.fatal_text('Value of {}f option not recognized. {}', prefix, hint))
+    bag_action = 'bag-and-archive' if bag_action == 'B' else bag_action.lower()
+    if bag_action not in _RECOGNIZED_ACTIONS:
+        exit(say.fatal_text('Value of {}b option not recognized. {}', prefix, hint))
+
+    end_action = 'bag-and-archive' if end_action == 'E' else end_action.lower()
+    if end_action not in _RECOGNIZED_ACTIONS:
+        exit(say.fatal_text('Value of {}b option not recognized. {}', prefix, hint))
+    if end_action != "none" and not given_output_dir:
+        exit(say.fatal_text('Please specify an output directory when using -e "{}"', end_action))
+
+    archive_fmt = 'uncompressed-zip' if arch_type == 'T' else arch_type.lower()
+    if archive_fmt not in _RECOGNIZED_ARCHIVE_TYPES:
+        exit(say.fatal_text('Value of {}t option not recognized. {}', prefix, hint))
 
     status = None if status == 'S' else status.split(',')
     status_negation = (status and status[0].startswith('^'))
@@ -300,7 +361,7 @@ get you blocked or banned from an institution's servers.
     delay = int(delay)
     user = None if user == 'U' else user
     password = None if password == 'P' else password
-    name_prefix = '' if base_name == 'B' else base_name + '-'
+    name_prefix = '' if name_base == 'N' else name_base + '-'
 
     # Do the real work --------------------------------------------------------
 
@@ -333,7 +394,7 @@ get you blocked or banned from an institution's servers.
             # Start by getting the full record in EP3 XML format.  A failure
             # here will either cause an exit or moving to the next record.
             say.msg('Getting record with id {}'.format(number), 'white')
-            xml = eprints_xml(number, api_url, user, password, missing_ok, say)
+            xml = eprints_xml(number, api_url, user, password, keep_going, say)
             if xml == None:
                 continue
             if lastmod and eprints_lastmod(xml) < lastmod:
@@ -353,38 +414,25 @@ get you blocked or banned from an institution's servers.
 
             # Download any documents referenced in the XML record.
             docs = eprints_documents(xml)
-            download_files(docs, user, password, record_dir, missing_ok, say)
+            download_files(docs, user, password, record_dir, keep_going, say)
 
-            # Bag up the directory by default.
-            if not no_bags:
-                say.info('Making bag out of {}', record_dir)
-                bag = bagit.make_bag(record_dir, checksums = _BAG_CHECKSUMS)
-                update_bag_info(bag, xml)
-                bag.save()
-                if __debug__: log('Verifying bag {}', bag.path)
-                bag.validate()
+            # Bag it and archive it, depending on user choice.
+            bag_and_archive(record_dir, bag_action, archive_fmt, xml, api_url, say)
 
-                # Create single-file archives of the bags by default.
-                if archive_fmt != 'none':
-                    dest = record_dir + archive_extension(archive_fmt)
-                    say.info('Creating archive file {}', dest)
-                    create_archive(dest, archive_fmt, record_dir, file_comments(bag))
-                    if __debug__: log('Verifying archive file {}', dest)
-                    verify_archive(dest, archive_fmt)
-                    if __debug__: log('Deleting directory {}', record_dir)
-                    shutil.rmtree(record_dir)
-
-            # Track what we've done so far.
             if wanted and number in wanted:
                 missing.remove(number)
             sleep(delay/1000)
 
         say.msg('='*70, 'dark')
         count = len(wanted) - len(missing)
-        say.info('Done. Wrote {} EPrints record{} to {}/.', intcomma(count),
+        say.info('Wrote {} EPrints record{} to {}/.', intcomma(count),
                  's' if count > 1 else '', output_dir)
         if len(missing) > 0:
             say.warn('The following records were not found: '+ ', '.join(missing) + '.')
+
+        # Bag the whole result and archive it, depending on user choice.
+        bag_and_archive(output_dir, end_action, archive_fmt, None, api_url, say)
+
     except KeyboardInterrupt as ex:
         exit(say.msg('Quitting.', 'error'))
     except CorruptedContent as ex:
@@ -397,7 +445,6 @@ get you blocked or banned from an institution's servers.
             import pdb; pdb.set_trace()
         else:
             exit(say.error_text('{}', str(ex)))
-
 
 # If this is windows, we want the command-line args to use slash intead
 # of hyphen.
@@ -416,7 +463,7 @@ def print_version():
     print('License: {}'.format(eprints2bags.__license__))
 
 
-def parsed_id_list(id_list):
+def parsed_id_list(id_list, say):
     # If it's a single digit, asssume it's not a file and return the number.
     if id_list.isdigit():
         return [id_list]
@@ -479,41 +526,94 @@ def password(prompt):
         return sys.stdin.readline().rstrip()
 
 
-def update_bag_info(bag, xml):
-    # The official_url field is not always present.  We try to get it if we
-    # can, and default to using the eprints record id if we can't.
-    official_url = eprints_official_url(xml)
-    record_id = eprints_record_id(xml)
-    bag.info['Internal-Sender-Identifier'] = record_id
-    bag.info['External-Identifier'] = official_url if official_url else record_id
-    bag.info['External-Description'] = 'Archive of EPrints record and document files'
+def bag_and_archive(directory, bag_action, archive_fmt, xml, api_url, say):
+    # If xml != None, we're dealing with a record, else the top-level directory.
+    if bag_action != 'none':
+        say.info('Making bag out of {}', directory)
+        bag = bagit.make_bag(directory, checksums = _BAG_CHECKSUMS)
+        if xml != None:
+            # The official_url field is not always present in the record.
+            # Try to get it, and default to using the eprints record id.
+            official_url = eprints_official_url(xml)
+            record_id = eprints_record_id(xml)
+            extern_id = official_url if official_url else record_id
+            bag.info['Internal-Sender-Identifier'] = record_id
+            bag.info['External-Identifier'] = extern_id
+            bag.info['External-Description'] = 'Single EPrints record and associated document files'
+        else:
+            # Case: the overall bag for the whole directory
+            bag.info['External-Identifier'] = api_url
+            bag.info['External-Description'] = 'Collection of EPrints records and their associated document files'
+        bag.save()
+        if __debug__: log('Verifying bag {}', bag.path)
+        bag.validate()
+
+        if bag_action == 'bag-and-archive':
+            archive_file = directory + archive_extension(archive_fmt)
+            say.info('Making archive file {}', archive_file)
+            comments = file_comments(bag) if xml != None else dir_comments(bag, api_url)
+            create_archive(archive_file, archive_fmt, directory, comments)
+            if __debug__: log('Verifying archive file {}', archive_file)
+            verify_archive(archive_file, archive_fmt)
+            if __debug__: log('Deleting directory {}', directory)
+            shutil.rmtree(directory)
 
 
 def file_comments(bag):
-    text = '~ '*35
+    text  = '~ '*35
     text += '\n'
     text += 'About this ZIP archive file:\n'
     text += '\n'
     text += 'This archive contains a directory of files organized in BagIt v{} format.\n'.format(bag.version)
     text += 'The data files in the bag are the contents of the EPrints record located at\n'
     text += bag.info['External-Identifier']
-    text += '\n\n'
-    text += 'The software used to create this archive file was:\n'
-    text += '{} version {} <{}>'.format(
-        eprints2bags.__title__, eprints2bags.__version__, eprints2bags.__url__)
-    text += '\n\n'
-    text += 'The following is the metadata contained in bag-info.txt:\n'
-    text += '\n'.join('{}: {}'.format(k, v) for k, v in sorted(bag.info.items()))
+    text += '\n'
+    text += software_comments()
+    text += '\n'
+    text += bag_comments(bag)
     text += '\n'
     text += '~ '*35
     text += '\n'
     return text
 
 
+def dir_comments(bag, api_url):
+    text  = '~ '*35
+    text += '\n'
+    text += 'About this ZIP archive file:\n'
+    text += '\n'
+    text += 'This archive contains a directory of files organized in BagIt v{} format.\n'.format(bag.version)
+    text += 'The data files are the contents of EPrints records obtained from\n'
+    text += api_url
+    text += '\n'
+    text += software_comments()
+    text += '\n'
+    text += bag_comments(bag)
+    text += '\n'
+    text += '~ '*35
+    text += '\n'
+    return text
+
+
+def software_comments():
+    text  = '\n'
+    text += 'The software used to create this archive file was:\n'
+    text += '{} version {} <{}>'.format(
+        eprints2bags.__title__, eprints2bags.__version__, eprints2bags.__url__)
+    return text
+
+
+def bag_comments(bag):
+    text  = '\n'
+    text += 'The following is the metadata contained in bag-info.txt:\n'
+    text += '\n'.join('{}: {}'.format(k, v) for k, v in sorted(bag.info.items()))
+    return text
+
+
 def fmt_statuses(status_list, negated):
     as_list = ['"' + x + '"' for x in status_list]
     if len(as_list) > 1:
-        and_or = ' and ' if not negated else ' or '
+        and_or = ' or ' if negated else ' and '
         return ', '.join(as_list[:-1]) + and_or + as_list[-1]
     else:
         return as_list[0]
