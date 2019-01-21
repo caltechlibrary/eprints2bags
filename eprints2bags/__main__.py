@@ -366,7 +366,7 @@ Command-line options summary
         status[0] = status[0][1:]
 
     delay = int(delay)
-    procs = int(max(1, available_cpus()/2 if processes == 'C' else processes))
+    procs = int(max(1, available_cpus()/2 if processes == 'C' else int(processes)))
     user = None if user == 'U' else user
     password = None if password == 'P' else password
     prefix = '' if name_base == 'N' else name_base + '-'
