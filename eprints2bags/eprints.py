@@ -55,10 +55,10 @@ def eprints_api(url, op, user, password):
 def eprints_raw_list(base_url, user, password):
     url = eprints_api(base_url, '/eprint', user, password)
     (response, error) = net('get', url)
-    if not error and response and response.content:
-        return response.content
-    else:
-        return None
+    if not error and response and response.text:
+        if response.text.startswith('<?xml'):
+            return response.content
+    return None
 
 
 def eprints_records_list(raw_list):
