@@ -376,9 +376,14 @@ Command-line options summary
     try:
         if not user or not password:
             user, password = credentials(api_url, user, password, use_keyring, reset_keys)
+        if __debug__: log('Testing given server URL')
+        raw_list = eprints_raw_list(api_url, user, password)
+        if raw_list == None:
+            text = 'Did not get an EPrints server response from "{}"'.format(api_url)
+            exit(say.fatal_text(text))
         if not wanted:
             say.info('Fetching records list from {}', api_url)
-            wanted = eprints_records_list(api_url, user, password)
+            wanted = eprints_records_list(raw_list)
         fs = fs_type(output_dir)
         if __debug__: log('Destination file system is {}', fs)
         if fs in KNOWN_SUBDIR_LIMITS and len(wanted) > KNOWN_SUBDIR_LIMITS[fs]:
