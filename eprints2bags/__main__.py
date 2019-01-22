@@ -350,7 +350,7 @@ Command-line options summary
     if bag_action not in _RECOGNIZED_ACTIONS:
         exit(say.fatal_text('Value of {}b option not recognized. {}', prefix, hint))
 
-    end_action = 'bag-and-archive' if end_action == 'E' else end_action.lower()
+    end_action = 'none' if end_action == 'E' else end_action.lower()
     if end_action not in _RECOGNIZED_ACTIONS:
         exit(say.fatal_text('Value of {}b option not recognized. {}', prefix, hint))
     if end_action != "none" and not given_output_dir:
