@@ -52,14 +52,20 @@ def eprints_api(url, op, user, password):
         return url[:start + 2] + url[start + 2:] + op
 
 
-def eprints_records_list(base_url, user, password):
+def eprints_raw_list(base_url, user, password):
     url = eprints_api(base_url, '/eprint', user, password)
     (response, error) = net('get', url)
-    if error:
-        raise error
-    if not response or not response.content:
-        raise ServiceFailure('Failed to get a list back from server')
-    xml = etree.fromstring(response.content)
+    if not error and response and response.content:
+        return response.content
+    else:
+        return None
+
+
+def eprints_records_list(raw_list):
+    if not raw_list:
+        # This shouldn't happen.
+        raise InternalError('Internal error processing server response')
+    xml = etree.fromstring(raw_list)
     # The content from this call is in XHTML format.  It looks like this, and
     # the following loop extracts the numbers from the <li> elements:
     #
