@@ -20,6 +20,7 @@ from   os import path
 import requests
 from   requests.packages.urllib3.exceptions import InsecureRequestWarning
 from   time import sleep
+import shutil
 import ssl
 import urllib
 from   urllib import request
@@ -142,11 +143,9 @@ def download(url, user, password, local_destination, recursing = 0):
         download(url, user, password, local_destination, recursing)
     elif 200 <= code < 400:
         # The following originally started out as the code here:
-        # https://stackoverflow.com/a/16696317/743730
+        # https://stackoverflow.com/a/39217788/743730
         with open(local_destination, 'wb') as f:
-            for chunk in req.iter_content(chunk_size = 1024):
-                if chunk:
-                    f.write(chunk)
+            shutil.copyfileobj(req.raw, f)
         req.close()
     elif code in [401, 402, 403, 407, 451, 511]:
         raise AuthenticationFailure(addurl('Access is forbidden'))
