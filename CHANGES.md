@@ -10,6 +10,7 @@ Version 1.8.0
 * Previous option `-b` renamed to `-n`, and `-m` to `-k`
 * Option `-B` removed (because it's now subsumed by other options)
 * Slightly changed (again) the comment block written to the ZIP archives
+* Fixed some bugs
 * Updated help strings and text in README
 
 Version 1.7.0
