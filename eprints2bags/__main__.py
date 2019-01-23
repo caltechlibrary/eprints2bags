@@ -539,10 +539,18 @@ def password(prompt):
         return sys.stdin.readline().rstrip()
 
 
-def bag_and_archive(directory, action, archive_fmt, procs, xml, api_url, say):
+def bag_and_archive(directory, action, archive_fmt, processes, xml, url, say):
     # If xml != None, we're dealing with a record, else the top-level directory.
     if action != 'none':
         say.info('Making bag out of {}', directory)
+        # Don't use large # of processes b/c creating the process pool is
+        # expensive.  If procs = 32 and most of our records have only 1-2
+        # files, make_bag() will still create a pool of 32 each time.  The
+        # following tries to balance things out for the most common case.
+        # Note: this uses listdir to avoid walking down the directory tree,
+        # but if a given entry is the root of a large subdirectory, then this
+        # may fail to use multiple processes when it would be good to do so.
+        procs = 1 if len(os.listdir(directory)) < processes else processes
         bag = bagit.make_bag(directory, checksums = _BAG_CHECKSUMS, processes = procs)
         if xml != None:
             # The official_url field is not always present in the record.
@@ -555,7 +563,7 @@ def bag_and_archive(directory, action, archive_fmt, procs, xml, api_url, say):
             bag.info['External-Description'] = 'Single EPrints record and associated document files'
         else:
             # Case: the overall bag for the whole directory
-            bag.info['External-Identifier'] = api_url
+            bag.info['External-Identifier'] = url
             bag.info['External-Description'] = 'Collection of EPrints records and their associated document files'
         bag.save()
         if __debug__: log('Verifying bag {}', bag.path)
@@ -564,7 +572,7 @@ def bag_and_archive(directory, action, archive_fmt, procs, xml, api_url, say):
         if action == 'bag-and-archive':
             archive_file = directory + archive_extension(archive_fmt)
             say.info('Making archive file {}', archive_file)
-            comments = file_comments(bag) if xml != None else dir_comments(bag, api_url)
+            comments = file_comments(bag) if xml != None else dir_comments(bag, url)
             create_archive(archive_file, archive_fmt, directory, comments)
             if __debug__: log('Verifying archive file {}', archive_file)
             verify_archive(archive_file, archive_fmt)
@@ -590,14 +598,14 @@ def file_comments(bag):
     return text
 
 
-def dir_comments(bag, api_url):
+def dir_comments(bag, url):
     text  = '~ '*35
     text += '\n'
     text += 'About this ZIP archive file:\n'
     text += '\n'
     text += 'This archive contains a directory of files organized in BagIt v{} format.\n'.format(bag.version)
     text += 'The data files are the contents of EPrints records obtained from\n'
-    text += api_url
+    text += url
     text += '\n'
     text += software_comments()
     text += '\n'
