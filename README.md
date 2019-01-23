@@ -10,11 +10,15 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
 [![Latest release](https://img.shields.io/badge/Latest_release-1.8.0-b44e88.svg?style=flat-square)](http://shields.io)
+<!--
 [![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1157-blue.svg?style=flat-square)](https://data.caltech.edu/records/1157)
+-->
 
 
 🏁 Log of recent changes
 -----------------------
+
+_Version 1.8.1_: This minor release fixes a performance issue related to how multiple processes were used.  The program is much faster now.
 
 _Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, if desired, `eprints2bags` can now create a top-level bag containing the archived bags it creates.  This top-level bag itself can also be put into a single-file archive if desired.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  (The default behavior remains _not_ to create an overall bag or archive.)  Along with these changes, several existing command-line arguments have changed names and abbreviations.  Please see the help text for the new names.  Finally, a new option `-c` is available for changing the number of processes used during the bagging step to calculate checksums, and `eprints2bags` now uses multiple processes for that step by default.
 

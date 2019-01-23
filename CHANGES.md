@@ -1,6 +1,12 @@
 Change log for eprints2bags
 ===========================
 
+Version 1.8.1
+-------------
+
+* Significant performance improvement due to using multiple processes more efficiently
+
+
 Version 1.8.0
 -------------
 
