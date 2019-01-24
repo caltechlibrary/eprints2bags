@@ -66,6 +66,8 @@ On Linux and macOS systems, assuming that the installation proceeds normally, yo
 ▶︎ Using Eprints2bags
 ---------------------
 
+For help with usage at any time, run `eprints2bags` with the option `-h` (or `/h` on Windows).
+
 `eprints2bags` contacts an EPrints REST server whose network API is accessible at the URL given by the command-line option `-a` (or `/a` on Windows).  A typical EPrints server URL has the form `https://somename.yourinstitution.edu/rest`.  **This program will automatically add `/eprint` to the URL path given**, so omit that part of the URL in the value given to `-a`.  The `-a` (or `/a`) option is required; the program cannot infer the server address on its own.
 
 
