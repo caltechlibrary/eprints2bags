@@ -1,6 +1,12 @@
 Change log for eprints2bags
 ===========================
 
+Version 1.8.2
+-------------
+
+* Improved handling of network and server connectivity issues (fixes issue #6)
+
+
 Version 1.8.1
 -------------
 
