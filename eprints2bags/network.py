@@ -41,6 +41,13 @@ _MAX_RECURSIVE_CALLS = 5
 '''How many times can certain network functions call themselves upcon
 encountering a network error before they stop and give up.'''
 
+_MAX_FAILURES = 5
+'''Maximum number of network failures before we give up.'''
+
+_MAX_RETRIES = 5
+'''Maximum number of times we back off and try again.  This also affects the
+maximum wait time that will be reached after repeated retries.'''
+
 
 # Main functions.
 # .............................................................................
@@ -75,28 +82,72 @@ def timed_request(get_or_post, url, **kwargs):
     # Wrap requests.get() with a timeout.
     # 'verify' means whether to perform HTTPS certificate verification.
     http_method = requests.get if get_or_post == 'get' else requests.post
-    with warnings.catch_warnings():
-        # When verify = True, the underlying urllib3 library used by the
-        # Python requests module will issue a warning about unverified HTTPS
-        # requests.  If we don't care, then the warnings are a constant
-        # annoyance.  See also this for a discussion:
-        # https://github.com/kennethreitz/requests/issues/2214
-        warnings.simplefilter("ignore", InsecureRequestWarning)
-        return http_method(url, timeout = 10, verify = False, **kwargs)
+    failures = 0
+    retries = 0
+    retry = True
+    error = None
+    while retry and failures < _MAX_FAILURES:
+        retry = False
+        try:
+            with warnings.catch_warnings():
+                # When verify = True, the underlying urllib3 library used by
+                # the Python requests module will issue a warning about
+                # unverified HTTPS requests.  Since we don't care, the
+                # warnings are an annoyance.  See also this for a discussion:
+                # https://github.com/kennethreitz/requests/issues/2214
+                warnings.simplefilter("ignore", InsecureRequestWarning)
+                return http_method(url, timeout = 10, verify = False, **kwargs)
+        except Exception as ex:
+            # Problem might be transient.  Don't quit right away.
+            if __debug__: log('timed_request() exception: {}', str(ex))
+            failures += 1
+            retry = True
+            # Record the first error we get, not the subsequent ones, because
+            # in the case of network outages, the subsequent ones will be
+            # about being unable to connect and not the original problem.
+            if not error:
+                error = ex
+        if failures >= _MAX_FAILURES:
+            # Try pause & continue, in case of transient network issues.
+            if retries < _MAX_RETRIES:
+                retries += 1
+                if __debug__: log('Pausing because of consecutive failures')
+                sleep(60 * retries)
+                failures = 0
+                retry = True
+            else:
+                # We've already paused & restarted once.
+                raise error
 
 
 def download_files(downloads_list, user, pswd, output_dir, missing_ok, say):
     for item in downloads_list:
         file = path.realpath(path.join(output_dir, path.basename(item)))
         say.info('Downloading {}', item)
-        try:
-            download(item, user, pswd, file)
-        except (NoContent, ServiceFailure, AuthenticationFailure) as ex:
-            if missing_ok:
-                say.error(str(ex))
-                continue
-            else:
-                raise
+        failures = 0
+        retry = True
+        while retry and failures < _MAX_FAILURES:
+            # Don't retry unless the problem may be transient.
+            retry = False
+            error = None
+            try:
+                download(item, user, pswd, file)
+            except (NoContent, ServiceFailure, AuthenticationFailure) as ex:
+                if missing_ok:
+                    say.error(str(ex))
+                    failures = 0
+                else:
+                    error = ex
+            except Exception as ex:
+                # Something unexpected.  Don't retry this entry, but count
+                # this failure in case we're up against a roadblock.
+                if __debug__: log('Download exception: {}', str(ex))
+                error = ex
+                failures += 1
+                retry = True
+        if error:
+            raise error
+        continue
 
 
 def download(url, user, password, local_destination, recursing = 0):
@@ -111,7 +162,11 @@ def download(url, user, password, local_destination, recursing = 0):
             raise NetworkFailure(addurl('Too many connection errors'))
         arg0 = ex.args[0]
         if isinstance(arg0, urllib3.exceptions.MaxRetryError):
-            if network_available():
+            if __debug__: log(str(arg0))
+            original = unwrapped_urllib3_exception(arg0)
+            if isinstance(original, str) and 'unreacheable' in original:
+                return (req, NetworkFailure(addurl('Unable to connect to server')))
+            elif network_available():
                 raise NetworkFailure(addurl('Unable to resolve host'))
             else:
                 raise NetworkFailure(addurl('Lost network connection with server'))
@@ -188,7 +243,14 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
             return (req, NetworkFailure(addurl('Too many connection errors')))
         arg0 = ex.args[0]
         if isinstance(arg0, urllib3.exceptions.MaxRetryError):
-            return (req, NetworkFailure(addurl('Unable to resolve host')))
+            if __debug__: log(str(arg0))
+            original = unwrapped_urllib3_exception(arg0)
+            if isinstance(original, str) and 'unreacheable' in original:
+                return (req, NetworkFailure(addurl('Unable to connect to server')))
+            elif network_available():
+                raise NetworkFailure(addurl('Unable to resolve host'))
+            else:
+                raise NetworkFailure(addurl('Lost network connection with server'))
         elif (isinstance(arg0, urllib3.exceptions.ProtocolError)
               and arg0.args and isinstance(args0.args[1], ConnectionResetError)):
             if __debug__: log('net() got ConnectionResetError; will recurse')
@@ -227,3 +289,10 @@ def net(get_or_post, url, polling = False, recursing = 0, **kwargs):
     elif not (200 <= code < 400):
         error = NetworkFailure("Unable to resolve {}".format(url))
     return (req, error)
+
+
+def unwrapped_urllib3_exception(ex):
+    if hasattr(ex, 'args') and isinstance(ex.args, tuple):
+        return unwrapped_urllib3_exception(ex.args[0])
+    else:
+        return ex
