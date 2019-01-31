@@ -1,38 +1,25 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us improve eprints2bags
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+### Description of the bug:
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+_Please provide a clear and concise description of the bug. Include an explanation of what you expected the behavior to be and how it differs from the behavior you experienced._
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+### How to reproduce the bug:
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+_Please explain the steps required to reproduce the behavior._
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+### Operating system and environment (please complete the following information):
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+- OS: [e.g. Linux version XYZ]
+- Shell: [e.g., bash or csh]
+- Python version: [what does `python --version` report?]
 
-**Additional context**
-Add any other context about the problem here.
+
+
