@@ -470,10 +470,11 @@ if ON_WINDOWS:
 # ......................................................................
 
 def print_version():
-    print('{} version {}'.format(eprints2bags.__title__, eprints2bags.__version__))
-    print('Author: {}'.format(eprints2bags.__author__))
-    print('URL: {}'.format(eprints2bags.__url__))
-    print('License: {}'.format(eprints2bags.__license__))
+    this_module = sys.modules[__package__]
+    print('{} version {}'.format(this_module.__name__, this_module.__version__))
+    print('Author: {}'.format(this_module.__author__))
+    print('URL: {}'.format(this_module.__url__))
+    print('License: {}'.format(this_module.__license__))
 
 
 def parsed_id_list(id_list, say):
