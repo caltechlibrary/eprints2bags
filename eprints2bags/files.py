@@ -102,7 +102,8 @@ def create_archive(archive_file, type, source_dir, comment = None):
         format = ZIP_STORED if type.startswith('uncompress') else ZIP_DEFLATED
         current_dir = os.getcwd()
         try:
-            os.chdir(root_dir)
+            if root_dir != '':
+                os.chdir(root_dir)
             with zipfile.ZipFile(archive_file, 'w', format) as zf:
                 for root, dirs, files in os.walk(base_dir):
                     for file in files:
