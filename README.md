@@ -9,7 +9,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.8.2-b44e88.svg?style=flat-square)](http://shields.io)
+[![Latest release](https://img.shields.io/github/v/release/caltechlibrary/eprints2bags.svg?style=flat-square&color=b44e88)](https://github.com/caltechlibrary/eprints2bags/releases)
 [![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1159-blue.svg?style=flat-square)](https://data.caltech.edu/records/1159)
 
 
