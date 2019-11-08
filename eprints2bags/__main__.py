@@ -42,13 +42,13 @@ import sys
 import tarfile
 from   time import sleep
 from   timeit import default_timer as timer
-import traceback
 
 if sys.platform.startswith('win'):
     import keyring.backends
     from keyring.backends.Windows import WinVaultKeyring
 
 import eprints2bags
+from   eprints2bags import print_version
 from   eprints2bags.constants import ON_WINDOWS, KEYRING_PREFIX
 from   eprints2bags.data_helpers import flatten, expand_range, parse_datetime
 from   eprints2bags.debug import set_debug, log
@@ -101,14 +101,14 @@ with datetime.strftime().'''
     no_keyring = ('do not store credentials in a keyring service',          'flag',   'K'),
     reset_keys = ('reset user and password used',                           'flag',   'R'),
     version    = ('print version info and exit',                            'flag',   'V'),
-    debug      = ('turn on debugging',                                      'flag',   'Z'),
+    debug      = ('write detailed trace to "OUT" ("-" means console)',      'option', '@'),
 )
 
 def main(api_url = 'A', bag_action = 'B', processes = 'C', end_action = 'E',
          id_list = 'I', keep_going = False, lastmod = 'L', name_base = 'N',
          output_dir = 'O', quiet = False, status = 'S', user = 'U',
          password = 'P', arch_type = 'T', delay = 100, no_color = False,
-         no_keyring = False, reset_keys = False, version = False, debug = False):
+         no_keyring = False, reset_keys = False, version = False, debug = 'OUT'):
     '''eprints2bags bags up EPrints content as BagIt bags.
 
 This program contacts an EPrints REST server whose network API is accessible
@@ -231,7 +231,7 @@ directory!)
 The use of separate options for the different stages provides some flexibility
 in choosing the final output.  For example,
 
-  eprints2bags --bag-action none --end-action bag-and-archive
+  eprints2bags  --bag-action  none  --end-action  bag-and-archive
 
 will create a ZIP archive containing a single bag directory whose `data/`
 subdirectory contains the set of (unbagged) EPrints records retrieved by
@@ -260,19 +260,31 @@ add the -R (or /R on Windows) command-line argument to a command.  When
 eprints2bags is run with this option, it will query for the user name and
 password again even if an entry already exists in the keyring or keychain.
 
+Other command-line arguments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generating checksum values can be a time-consuming operation for large bags.
+By default, during the bagging step, eprints2bags will use a number of
+processes equal to one-half of the available CPUs on the computer.  The number
+of processes can be changed using the option -c (or /c on Windows).
+
 eprints2bags will print messages as it works.  To reduce the number of
 messages to warnings and errors, use the option -q (or /q on Windows).  Also,
 output is color-coded by default unless the -C option (or /C on Windows) is
 given; this option can be helpful if the color control signals create
 problems for your terminal emulator.
 
+If given the -@ argument (/@ on Windows), this program will output a detailed
+trace of what it is doing, and will also drop into a debugger upon the
+occurrence of any errors.  The debug trace will be written to the given
+destination, which can be a dash character (-) to indicate console output, or
+a file path.
+
+If given the -V option (/V on Windows), this program will print the version
+and other information, and exit without doing anything else.
+
 Additional notes
 ~~~~~~~~~~~~~~~~
-
-Generating checksum values can be a time-consuming operation for large bags.
-By default, during the bagging step, eprints2bags will use a number of
-processes equal to one-half of the available CPUs on the computer.  The number
-of processes can be changed using the option -c (or /c on Windows).
 
 Beware that some file systems have limitations on the number of
 subdirectories that can be created, which directly impacts how many record
@@ -302,14 +314,17 @@ Command-line options summary
     # Initial setup -----------------------------------------------------------
 
     use_keyring = not no_keyring   # Avoid double negative, for readability.
+    debugging = debug != 'OUT'
     say = MessageHandler(not no_color, quiet)
     prefix = '/' if ON_WINDOWS else '-'
     hint = '(Hint: use {}h for help.)'.format(prefix)
 
     # Process arguments -------------------------------------------------------
 
-    if debug:
-        set_debug(True)
+    if debugging:
+        set_debug(True, debug)
+        import faulthandler
+        faulthandler.enable()
     if version:
         print_version()
         exit()
@@ -453,11 +468,12 @@ Command-line options summary
     except bagit.BagValidationError as ex:
         exit(say.fatal_text('Bag validation failure: {}'.format(str(ex))))
     except Exception as ex:
-        if debug:
+        import traceback
+        if debugging:
             say.error('{}\n{}', str(ex), traceback.format_exc())
             import pdb; pdb.set_trace()
         else:
-            exit(say.error_text('{}', str(ex)))
+            exit(say.error_text('Fatal error: {}', str(ex)))
 
 # If this is windows, we want the command-line args to use slash intead
 # of hyphen.
@@ -468,14 +484,6 @@ if ON_WINDOWS:
 
 # Helper functions.
 # ......................................................................
-
-def print_version():
-    this_module = sys.modules[__package__]
-    print('{} version {}'.format(this_module.__name__, this_module.__version__))
-    print('Authors: {}'.format(this_module.__author__))
-    print('URL: {}'.format(this_module.__url__))
-    print('License: {}'.format(this_module.__license__))
-
 
 def parsed_id_list(id_list, say):
     # If it's a single digit, asssume it's not a file and return the number.
@@ -621,7 +629,7 @@ def software_comments():
     text  = '\n'
     text += 'The software used to create this archive file was:\n'
     text += '{} version {} <{}>'.format(
-        eprints2bags.__title__, eprints2bags.__version__, eprints2bags.__url__)
+        __package__, eprints2bags.__version__, eprints2bags.__url__)
     return text
 
 
