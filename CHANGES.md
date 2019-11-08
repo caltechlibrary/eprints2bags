@@ -1,6 +1,17 @@
 Change log for eprints2bags
 ===========================
 
+Version 1.9.0
+-------------
+
+* Change the debug option `-@` to accept an argument for where to send the debug output trace. The behavior change of `-@` is not backward compatible.
+* Internally, package metadata is now stored in `setup.cfg`.  Also, there is no `eprints2bags/__version__.py` anymore, and instead, some special code in `eprints2bags/__init__.py` extracts package-level variables directly from the installation created by `pip`.
+* Redesigned the icon for `eprints2bags` to tie into Eprints a little bit better.
+* Changed Caltech logo used on the bottom of the README.md file.  The previous logo is only approved by Caltech for use in certain official contexts.
+* Fixed various small errors in the README.md file.
+* Released on PyPI.
+
+
 Version 1.8.2
 -------------
 
