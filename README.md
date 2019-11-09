@@ -16,7 +16,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.9.0_: This minor release changes the setup process to use `setup.cfg` and a new way to get package metadata. It also changes the debug flag letter to be `-@` and changes the behavior; these changes are not backward-compatible.  Finally, this version is being made available from [PyPI](https://pypi.org/project/eprints2bags).
+_Version 1.9.0_: This release fixes a couple of minor bugs.  It also changes the debug flag letter to be `-@` and changes the behavior of the flag; these changes are not backward-compatible.  Internally, it changes the setup process to use `setup.cfg` and uses a new way to get package metadata.  Finally, this version is being made available from [PyPI](https://pypi.org/project/eprints2bags).
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
