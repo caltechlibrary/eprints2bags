@@ -1,4 +1,4 @@
-eprints2bags<img width="100px" align="right" src=".graphics/noun_bag_1002779.svg">
+eprints2bags<img width="100px" align="right" src=".graphics/eprints2bags.svg">
 =========
 
 A program for downloading records from an EPrints server and creating [BagIt](https://en.wikipedia.org/wiki/BagIt) packages out of them.
@@ -9,18 +9,14 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
-[![Latest release](https://img.shields.io/badge/Latest_release-1.8.2-b44e88.svg?style=flat-square)](http://shields.io)
+[![Latest release](https://img.shields.io/github/v/release/caltechlibrary/eprints2bags.svg?style=flat-square&color=b44e88)](https://github.com/caltechlibrary/eprints2bags/releases)
 [![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1159-blue.svg?style=flat-square)](https://data.caltech.edu/records/1159)
-
+[![PyPI](https://img.shields.io/pypi/v/eprints2bags.svg?style=flat-square&color=red)](https://pypi.org/project/eprints2bags/)
 
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.8.2_: This minor release improves handling of server and network connectivity issues by pausing and retrying a few times before giving up completely.
-
-_Version 1.8.1_: This minor release fixes a performance issue related to how multiple processes were used.  The program is much faster now.
-
-_Version 1.8.0_: This release brings significant changes to the behavior and user interface.  First, if desired, `eprints2bags` can now create a top-level bag containing the archived bags it creates.  This top-level bag itself can also be put into a single-file archive if desired.  This behavior is controlled by the new option `-e` in combination with the (renamed) option `-b` and the new option `-t`.  (The default behavior remains _not_ to create an overall bag or archive.)  Along with these changes, several existing command-line arguments have changed names and abbreviations.  Please see the help text for the new names.  Finally, a new option `-c` is available for changing the number of processes used during the bagging step to calculate checksums, and `eprints2bags` now uses multiple processes for that step by default.
+_Version 1.9.0_: This minor release changes the setup process to use `setup.cfg` and a new way to get package metadata. It also changes the debug flag letter to be `-@` and changes the behavior; these changes are not backward-compatible.  Finally, this version is being made available from [PyPI](https://pypi.org/project/eprints2bags).
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -152,6 +148,15 @@ If a given EPrints server does not require a user name and password, do not use 
 To reset the user name and password (e.g., if a mistake was made the last time and the wrong credentials were stored in the keyring/keychain system), add the `-R` (or `/R` on Windows) command-line argument to a command.  When `eprints2bags` is run with this option, it will query for the user name and password again even if an entry already exists in the keyring or keychain.
 
 
+### _Other options_
+
+`eprints2bags` produces color-coded diagnostic output as it runs, by default.  However, some terminals or terminal configurations may make it hard to read the text with colors, so `eprints2bags` offers the `-C` option (`/C` on Windows) to turn off colored output.
+
+If given the `-@` argument (`/@` on Windows), this program will output a detailed trace of what it is doing, and will also drop into a debugger upon the occurrence of any errors.  The debug trace will be written to the given destination, which can be a dash character (`-`) to indicate console output, or a file path.
+
+If given the `-V` option (`/V` on Windows), this program will print the version and other information, and exit without doing anything else.
+
+
 ### _Basic usage examples_
 
 Running `eprints2bags` then consists of invoking the program like any other program on your system.  The following is a simple example showing how to get a single record (#85447) from Caltech's [CODA](https://libguides.caltech.edu/CODA) EPrints server (with user name and password blanked out here for security reasons):
@@ -182,14 +187,14 @@ The following is a screen cast to give a sense for what it's like to run `eprint
 
 The following table summarizes all the command line options available. (Note: on Windows computers, `/` must be used as the prefix character instead of `-`):
 
-| Short   | Long&nbsp;form&nbsp;opt | Meaning | Default |  |
+| Short&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   | Long&nbsp;form&nbsp;opt&nbsp;&nbsp; | Meaning | Default |  |
 |---------|-------------------|----------------------|---------|---|
 | `-a`_A_ | `--api-url`_A_    | Use _A_ as the server's REST API URL | | ⚑ |
 | `-b`_B_ | `--bag-action`_B_ | Do _B_ with each record directory | Bag and archive  | ✦ |
-| `-c`_C_ | `--processes`_C_  | Number of processes during bag creation | &frac12; the number of CPUs | |
+| `-c`_C_ | `--processes`_C_  | No. of processes during bag creation | &frac12; the number of CPUs | |
 | `-e`_E_ | `--end-action`_E_ | Do _E_ with the entire set of records | Nothing | ✦ |
-| `-i`_I_ | `--id-list`_I_    | List of records to get (can be a file name) | Fetch all records from the server | |
-| `-k`    | `--keep-going`    | Don't count missing records as an error | Stop if missing record encountered | |
+| `-i`_I_ | `--id-list`_I_    | Records to get (can be a file name) | Fetch all records from the server | |
+| `-k`    | `--keep-going`    | Don't count missing records as an error | Stop if encounter missing record | |
 | `-l`_L_ | `--lastmod`_L_    | Filter by last-modified date/time | Don't filter by date/time | |
 | `-n`_N_ | `--name-base`_N_  | Prefix directory names with _N_ | Use record number only | |
 | `-o`_O_ | `--output-dir`_O_ | Write outputs in the directory _O_ | Write in the current directory |  |
@@ -201,20 +206,20 @@ The following table summarizes all the command line options available. (Note: on
 | `-y`_Y_ | `--delay`_Y_      | Pause _Y_ ms between getting records | 100 milliseconds | |
 | `-C`    | `--no-color`      | Don't color-code the output | Use colors in the terminal output | |
 | `-K`    | `--no-keyring`    | Don't use a keyring/keychain | Store login info in keyring | |
-| `-R`    | `--reset`         | Reset user login & password used | Reuse previously-used credentials |
+| `-R`    | `--reset`         | Reset user login & password used | Reuse previous credentials |
 | `-V`    | `--version`       | Print program version info and exit | Do other actions instead | |
-| `-Z`    | `--debug`         | Debugging mode | Normal mode | |
+| `-@`_OUT_ | `--debug`_OUT_    | Debugging mode; write trace to _OUT_ | Normal mode | ♣ |
 
  ⚑ &nbsp; Required argument.<br>
 ✦ &nbsp; Possible values: `none`, `bag`, `bag-and-archive`.<br>
-♢ &nbsp; Possible values: `uncompressed-zip`, `compressed-zip`, `uncompressed-tar`, `compressed-tar`.
-
+♢ &nbsp; Possible values: `uncompressed-zip`, `compressed-zip`, `uncompressed-tar`, `compressed-tar`.<br>
+♣ &nbsp; To write to the console, use the character `-` as the value of _OUT_; otherwise, _OUT_ must be the name of a file where the output should be written.
 
 ### Additional notes and considerations
 
 Beware that some file systems have limitations on the number of subdirectories that can be created, which directly impacts how many record subdirectories can be created by this program.  `eprints2bags` attempts to guess the type of file system where the output is being written and warn the user if the number of records exceeds known maximums (e.g., 31,998 subdirectories for the [ext2](https://en.wikipedia.org/wiki/Ext2) and [ext3](https://en.wikipedia.org/wiki/Ext3) file systems in Linux), but its internal table does not include all possible file systems and it may not be able to warn users in all cases.  If you encounter file system limitations on the number of subdirectories that can be created, a simple solution is to manually create an intermediate level of subdirectories under the destination given to `-o`, then run `eprints2bags` multiple times, each time indicating a different subrange of records to the `-i` option and a different subdirectory to `-o`, such that the number of records written to each destination is below the file system's limit on total number of directories.
 
-It is also noteworthy that hitting a server for tens of thousands of records and documents in rapid succession is likely to draw suspicion from server administrators.  By default, this program inserts a small delay between record fetches (adjustable using the `-d` command-line option), which may be too short in some cases.  Setting the value to 0 is also possible, but might get you blocked or banned from an institution's servers.
+It is also noteworthy that hitting a server for tens of thousands of records and documents in rapid succession is likely to draw suspicion from server administrators.  By default, this program inserts a small delay between record fetches (adjustable using the `-y` command-line option), which may be too short in some cases.  Setting the value to 0 is also possible, but might get you blocked or banned from an institution's servers.
 
 
 ⁇ Getting help and support
@@ -227,7 +232,6 @@ If you find an issue, please submit it in [the GitHub issue tracker](https://git
 ------------------
 
 If you like this software, don't forget to give this repo a star on GitHub to show your support!
-
 
 
 ♬ Contributing &mdash; info for developers
@@ -263,6 +267,7 @@ We thank the following people for suggestions and ideas that led to improvements
 * [requests](http://docs.python-requests.org) &ndash; an HTTP library for Python
 * [setuptools](https://github.com/pypa/setuptools) &ndash; library for `setup.py`
 * [termcolor](https://pypi.org/project/termcolor/) &ndash; ANSI color formatting for output in terminal
+* [twine](https://github.com/pypa/twine/) &ndash; Twine is a utility for publishing Python packages on PyPI
 * [urllib3](https://urllib3.readthedocs.io/en/latest/) &ndash; HTTP client library for Python
 * [validators](https://github.com/kvesteri/validators) &ndash; data validation package for Python
 
@@ -273,6 +278,6 @@ Copyright (C) 2019, Caltech.  This software is freely distributed under a BSD/MI
     
 <div align="center">
   <a href="https://www.caltech.edu">
-    <img width="100" height="100" src=".graphics/caltech-round.svg">
+    <img width="100" height="100" src=".graphics/caltech-round.png">
   </a>
 </div>

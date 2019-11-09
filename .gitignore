@@ -60,3 +60,10 @@ TAGS
 
 *.pyc
 __pycache__
+.eggs
+
+
+# Project-specific things to ignore:
+# .............................................................................
+
+eprints2bags.egg-info
