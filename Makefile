@@ -18,7 +18,20 @@ ifeq ($(branch),master)
 	git tag -a v$(version) -m "Release $(version)"
 	git push -v --all
 	git push -v --tags
-	$(info Go to GitHub and fill out new release info)
+	$(info ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓)
+	$(info ┃ Next steps:                                                                                   ┃)
+	$(info ┃ 1. Go to GitHub and fill out new release info                                                 ┃)
+	$(info ┃ 2. Go to data.caltech.edu and get new Zenodo DOI                                              ┃)
+	$(info ┃ 3. Update DOI in README.md file                                                               ┃)
+	$(info ┃ 4. Push to GitHub again                                                                       ┃)
+	$(info ┃ 5. Push to test.pypi.org as follows:                                                          ┃)
+	$(info ┃    a. python3 setup.py sdist bdist_wheel                                                      ┃)
+	$(info ┃    b. python3 -m twine upload --verbose --repository-url https://test.pypi.org/legacy/ dist/* ┃)
+	$(info ┃ 6. Test installing from pypi test location                                                    ┃)
+	$(info ┃ 7. Double-check everything                                                                    ┃)
+	$(info ┃ 8. Push to pypi for real:                                                                     ┃)
+	$(info ┃    a. python3 -m twine upload --verbose dist/*                                                ┃)
+	$(info ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛)
 else
 	$(error Current git branch != master. Merge changes into master first)
 endif
