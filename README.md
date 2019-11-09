@@ -1,4 +1,4 @@
-eprints2bags<img width="100px" align="right" src=".graphics/eprints2bags.svg">
+eprints2bags<img width="100px" align="right" src="https://raw.githubusercontent.com/caltechlibrary/eprints2bags/master/.graphics/eprints2bags.png">
 =========
 
 A program for downloading records from an EPrints server and creating [BagIt](https://en.wikipedia.org/wiki/BagIt) packages out of them.
@@ -179,7 +179,7 @@ Done. Wrote 1 EPrints record to /tmp/eprints/.
 The following is a screen cast to give a sense for what it's like to run `eprints2bags`. Click on the following image:
 
 <p align="center">
-  <a href="https://asciinema.org/a/kUg8werG8YPobFKgPhsJnHwBi"><img width="80%" src=".graphics/eprints2bags-asciinema.png" alt="Screencast of simple eprints2bags demo"></a>
+  <a href="https://asciinema.org/a/kUg8werG8YPobFKgPhsJnHwBi"><img width="80%" src="https://raw.githubusercontent.com/caltechlibrary/eprints2bags/master/.graphics/eprints2bags-asciinema.png" alt="Screencast of simple eprints2bags demo"></a>
 </p>
 
 
@@ -278,6 +278,6 @@ Copyright (C) 2019, Caltech.  This software is freely distributed under a BSD/MI
     
 <div align="center">
   <a href="https://www.caltech.edu">
-    <img width="100" height="100" src=".graphics/caltech-round.png">
+    <img width="100" height="100" src="https://raw.githubusercontent.com/caltechlibrary/eprints2bags/master/.graphics/caltech-round.png">
   </a>
 </div>
