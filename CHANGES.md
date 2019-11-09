@@ -1,6 +1,14 @@
 Change log for eprints2bags
 ===========================
 
+Version 1.9.1
+-------------
+
+* Update installation instructions in README.md to explain how to install from PyPI, and make README file more compatible with displaying it on PyPI.
+* Fix PyPI-related issues in `setup.cfg`.
+* Fix configuration bug in `setup.py`.
+
+
 Version 1.9.0
 -------------
 

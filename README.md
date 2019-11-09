@@ -1,4 +1,4 @@
-eprints2bags<img width="100px" align="right" src=".graphics/eprints2bags.svg">
+eprints2bags<img width="100px" align="right" src="https://raw.githubusercontent.com/caltechlibrary/eprints2bags/master/.graphics/eprints2bags.png">
 =========
 
 A program for downloading records from an EPrints server and creating [BagIt](https://en.wikipedia.org/wiki/BagIt) packages out of them.
@@ -15,6 +15,8 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 
 🏁 Log of recent changes
 -----------------------
+
+_Version 1.9.1_: This release updates the README file to explain how to install from PyPI, and fixes some internal files related to producing releases on PyPI.
 
 _Version 1.9.0_: This release fixes a couple of minor bugs.  It also changes the debug flag letter to be `-@` and changes the behavior of the flag; these changes are not backward-compatible.  Internally, it changes the setup process to use `setup.cfg` and uses a new way to get package metadata.  Finally, this version is being made available from [PyPI](https://pypi.org/project/eprints2bags).
 
@@ -44,16 +46,21 @@ Materials in EPrints must be extracted before they can be moved to a long-term p
 ✺ Installation instructions
 ---------------------------
 
-The following is probably the simplest and most direct way to install this software on your computer, as well as update an existing copy if you have already installed `eprints2bags` and a new version has been released:
-```sh
-sudo python3 -m pip install git+https://github.com/caltechlibrary/eprints2bags.git --upgrade
+The instructions below assume you have a Python interpreter installed on your computer; if that's not the case, please first install Python and familiarize yourself with running Python programs on your system.
+
+On **Linux**, **macOS**, and **Windows** operating systems, you should be able to install `eprints2bags` with [pip](https://pip.pypa.io/en/stable/installing/).  If you don't have the `pip` package or are uncertain if you do, first run the following command in a terminal command line interpreter: 
+```
+sudo python3 -m ensurepip
 ```
 
-Alternatively, you can instead clone this GitHub repository and then run `setup.py` manually.  First, create a directory somewhere on your computer where you want to store the files, and cd to it from a terminal shell.  Next, execute the following commands:
+Then, to install `eprints2bags` from the Python package repository, run the following command:
+```
+python3 -m pip install eprints2bags --user --upgrade
+```
+
+As an alternative to getting it from PyPI, you can instruct `pip` to install `eprints2bags` directly from the GitHub repository:
 ```sh
-git clone https://github.com/caltechlibrary/eprints2bags.git
-cd eprints2bags
-sudo python3 -m pip install . --upgrade
+python3 -m pip install git+https@github.com:caltechlibrary/eprints2bags.git --user --upgrade
 ```
 
 On Linux and macOS systems, assuming that the installation proceeds normally, you should end up with a program called `eprints2bags` in a location normally searched by your terminal shell for commands.
@@ -179,7 +186,7 @@ Done. Wrote 1 EPrints record to /tmp/eprints/.
 The following is a screen cast to give a sense for what it's like to run `eprints2bags`. Click on the following image:
 
 <p align="center">
-  <a href="https://asciinema.org/a/kUg8werG8YPobFKgPhsJnHwBi"><img width="80%" src=".graphics/eprints2bags-asciinema.png" alt="Screencast of simple eprints2bags demo"></a>
+  <a href="https://asciinema.org/a/kUg8werG8YPobFKgPhsJnHwBi"><img width="80%" src="https://raw.githubusercontent.com/caltechlibrary/eprints2bags/master/.graphics/eprints2bags-asciinema.png" alt="Screencast of simple eprints2bags demo"></a>
 </p>
 
 
@@ -278,6 +285,6 @@ Copyright (C) 2019, Caltech.  This software is freely distributed under a BSD/MI
     
 <div align="center">
   <a href="https://www.caltech.edu">
-    <img width="100" height="100" src=".graphics/caltech-round.png">
+    <img width="100" height="100" src="https://raw.githubusercontent.com/caltechlibrary/eprints2bags/master/.graphics/caltech-round.png">
   </a>
 </div>
