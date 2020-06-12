@@ -60,7 +60,7 @@ python3 -m pip install eprints2bags --user --upgrade
 
 As an alternative to getting it from PyPI, you can instruct `pip` to install `eprints2bags` directly from the GitHub repository:
 ```sh
-python3 -m pip install git+https@github.com:caltechlibrary/eprints2bags.git --user --upgrade
+python3 -m pip install git+https://github.com/caltechlibrary/eprints2bags.git --user --upgrade
 ```
 
 On Linux and macOS systems, assuming that the installation proceeds normally, you should end up with a program called `eprints2bags` in a location normally searched by your terminal shell for commands.
