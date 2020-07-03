@@ -417,21 +417,25 @@ Command-line options summary
         make_dir(output_dir)
 
         say.msg('='*70, 'dark')
-        missing = wanted.copy()
+        missing = []
+        skipped = []
         for number in wanted:
             # Start by getting the full record in EP3 XML format.  A failure
             # here will either cause an exit or moving to the next record.
             say.msg('Getting record with id {}'.format(number), 'white')
             xml = eprints_xml(number, api_url, user, password, keep_going, say)
             if xml == None:
+                missing.append(number)
                 continue
             if lastmod and eprints_lastmod(xml) < lastmod:
                 say.info("{} hasn't been modified since {} -- skipping",
                          number, lastmod_str)
+                skipped.append(number)
                 continue
             if status and ((not status_negation and eprints_status(xml) not in status)
                            or (status_negation and eprints_status(xml) in status)):
                 say.info('{} has status "{}" -- skipping', number, eprints_status(xml))
+                skipped.append(number)
                 continue
 
             # Good so far.  Create the directory and write the XML out.
@@ -447,14 +451,15 @@ Command-line options summary
             # Bag it and archive it, depending on user choice.
             bag_and_archive(record_dir, bag_action, archive_fmt, procs, xml, api_url, say)
 
-            if wanted and number in wanted:
-                missing.remove(number)
+            # Be nice to the server.
             sleep(delay/1000)
 
         say.msg('='*70, 'dark')
-        count = len(wanted) - len(missing)
+        count = len(wanted) - len(missing) - len(skipped)
         say.info('Wrote {} EPrints record{} to {}/.', intcomma(count),
                  's' if count > 1 else '', output_dir)
+        if len(skipped) > 0:
+            say.info('The following records were skipped: '+ ', '.join(skipped) + '.')
         if len(missing) > 0:
             say.warn('The following records were not found: '+ ', '.join(missing) + '.')
 
