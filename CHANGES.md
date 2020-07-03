@@ -1,6 +1,12 @@
 Change log for eprints2bags
 ===========================
 
+Version 1.9.2
+-------------
+
+* Report missing and skipped records separately at the end, instead of calling everything "missing".
+
+
 Version 1.9.1
 -------------
 
