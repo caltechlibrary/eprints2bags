@@ -10,13 +10,13 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
 [![Latest release](https://img.shields.io/github/v/release/caltechlibrary/eprints2bags.svg?style=flat-square&color=b44e88)](https://github.com/caltechlibrary/eprints2bags/releases)
-[![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1310-blue.svg?style=flat-square)](https://data.caltech.edu/records/1310)
+[![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1450-blue.svg?style=flat-square)](https://data.caltech.edu/records/1450)
 [![PyPI](https://img.shields.io/pypi/v/eprints2bags.svg?style=flat-square&color=red)](https://pypi.org/project/eprints2bags/)
 
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.9.2_: This version contains a **critical fix** for a bug that caused `eprints2bags` to write zero-length data files when used with newer versions of Python.  **You should upgrade your copy of `eprints2bags` to this version**.  This version also reports skipped records separately from missing records, in the final summary at the end of a run.
+_Version 1.9.2_: **Critical fix** &ndash; this version fixes a bug that caused `eprints2bags` to write zero-length data files when used with newer versions of Python.  **You should upgrade your copy of `eprints2bags` to this version**.  This version also reports skipped records separately from missing records (in the final summary at the end of a run).
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
@@ -213,12 +213,12 @@ The following table summarizes all the command line options available. (Note: on
 | `-K`    | `--no-keyring`    | Don't use a keyring/keychain | Store login info in keyring | |
 | `-R`    | `--reset`         | Reset user login & password used | Reuse previous credentials |
 | `-V`    | `--version`       | Print program version info and exit | Do other actions instead | |
-| `-@`_OUT_ | `--debug`_OUT_    | Debugging mode; write trace to _OUT_ | Normal mode | ♣ |
+| `-@`_OUT_ | `--debug`_OUT_    | Debugging mode; write trace to _OUT_ | Normal mode | ⚐ |
 
  ⚑ &nbsp; Required argument.<br>
 ✦ &nbsp; Possible values: `none`, `bag`, `bag-and-archive`.<br>
 ♢ &nbsp; Possible values: `uncompressed-zip`, `compressed-zip`, `uncompressed-tar`, `compressed-tar`.<br>
-♣ &nbsp; To write to the console, use the character `-` as the value of _OUT_; otherwise, _OUT_ must be the name of a file where the output should be written.
+⚐ &nbsp; To write to the console, use the character `-` as the value of _OUT_; otherwise, _OUT_ must be the name of a file where the output should be written.
 
 ### Additional notes and considerations
 
