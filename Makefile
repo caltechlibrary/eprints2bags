@@ -29,7 +29,7 @@ print-reminder:;
 	$(info ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓)
 	$(info ┃ Next steps:                                                                                   ┃)
 	$(info ┃ 1. Go to GitHub and fill out new release info                                                 ┃)
-	$(info ┃ 2. Go to data.caltech.edu and get new Zenodo DOI                                              ┃)
+	$(info ┃ 2. Go to data.caltech.edu and get new DOI                                                     ┃)
 	$(info ┃ 3. Update DOI in README.md file                                                               ┃)
 	$(info ┃ 4. Push to GitHub again                                                                       ┃)
 	$(info ┃ 5. Push to test.pypi.org as follows:                                                          ┃)
