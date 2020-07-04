@@ -4,6 +4,7 @@ Change log for eprints2bags
 Version 1.9.2
 -------------
 
+* **Critical bug fix**: in a version of Python after 3.5, the behavior of getting raw data via the [requests](http://docs.python-requests.org) package changed in a way that caused `eprints2bags` to write zero-length data files to disk.  This version changes internal code to avoid the problem that causes this.
 * Report missing and skipped records separately at the end, instead of calling everything "missing".
 
 
