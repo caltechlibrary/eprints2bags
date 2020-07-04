@@ -16,11 +16,7 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 🏁 Log of recent changes
 -----------------------
 
-_Version 1.9.2_: This version reports skipped records separately from missing records, in the final summary at the end of a run.
-
-_Version 1.9.1_: This release updates the README file to explain how to install from PyPI, and fixes some internal files related to producing releases on PyPI.
-
-_Version 1.9.0_: This release fixes a couple of minor bugs.  It also changes the debug flag letter to be `-@` and changes the behavior of the flag; these changes are not backward-compatible.  Internally, it changes the setup process to use `setup.cfg` and uses a new way to get package metadata.  Finally, this version is being made available from [PyPI](https://pypi.org/project/eprints2bags).
+_Version 1.9.2_: This version contains a **critical fix** for a bug that caused `eprints2bags` to write zero-length data files when used with newer versions of Python.  **You should upgrade your copy of `eprints2bags` to this version**.  This version also reports skipped records separately from missing records, in the final summary at the end of a run.
 
 The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
 
