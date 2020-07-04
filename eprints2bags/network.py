@@ -16,7 +16,7 @@ file "LICENSE" for more information.
 
 import http.client
 from   http.client import responses as http_responses
-from   os import path
+from   os import path, stat
 import requests
 from   requests.packages.urllib3.exceptions import InsecureRequestWarning
 from   time import sleep
@@ -107,7 +107,7 @@ def timed_request(get_or_post, url, session = None, timeout = 20, **kwargs):
                 else:
                     method = requests.get if get_or_post == 'get' else requests.post
                 response = method(url, timeout = timeout, verify = False, **kwargs)
-                if __debug__: log('received {} bytes', len(response.content))
+                if __debug__: log('response received')
                 return response
         except Exception as ex:
             # Problem might be transient.  Don't quit right away.
@@ -204,14 +204,17 @@ def download(url, user, password, local_destination, recursing = 0):
         # Code 202 = Accepted, "received but not yet acted upon."
         sleep(1)                        # Sleep a short time and try again.
         recursing += 1
-        if __debug__: log('Calling download() recursively for http code 202')
+        if __debug__: log('calling download() recursively for http code 202')
         download(url, user, password, local_destination, recursing)
     elif 200 <= code < 400:
         # The following originally started out as the code here:
         # https://stackoverflow.com/a/39217788/743730
         with open(local_destination, 'wb') as f:
+            if __debug__: log('writing data to {}', local_destination)
             shutil.copyfileobj(req.raw, f)
         req.close()
+        size = stat(local_destination).st_size
+        if __debug__: log('wrote {} bytes to file {}', size, local_destination)
     elif code in [401, 402, 403, 407, 451, 511]:
         raise AuthenticationFailure(addurl('Access is forbidden'))
     elif code in [404, 410]:
