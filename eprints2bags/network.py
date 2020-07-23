@@ -42,7 +42,7 @@ _MAX_RECURSIVE_CALLS = 10
 encountering a network error before they stop and give up.'''
 
 _MAX_FAILURES = 3
-'''Maximum number of network failures before we give up.'''
+'''Maximum number of consecutive failures before pause and try another round.'''
 
 _MAX_RETRIES = 5
 '''Maximum number of times we back off and try again.  This also affects the
@@ -65,6 +65,7 @@ def network_available(address = "8.8.8.8", port = 53, timeout = 5):
         if __debug__: log('testing if we have a network connection')
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((address, port))
+        if __debug__: log('we have a network connection')
         return True
     except Exception:
         if __debug__: log('could not connect to https://www.google.com')
@@ -207,13 +208,14 @@ def download(url, user, password, local_destination, recursing = 0):
         if __debug__: log('calling download() recursively for http code 202')
         download(url, user, password, local_destination, recursing)
     elif 200 <= code < 400:
-        # The following originally started out as the code here:
-        # https://stackoverflow.com/a/39217788/743730
+        # This started as code in https://stackoverflow.com/a/13137873/743730
+        # Note: I couldn't get the shutil.copyfileobj approach to work; the
+        # file always ended up zero-length.  I couldn't figure out why.
         with open(local_destination, 'wb') as f:
-            if __debug__: log('writing data to {}', local_destination)
-            shutil.copyfileobj(req.raw, f)
+            for chunk in req.iter_content(1024):
+                f.write(chunk)
         req.close()
-        size = stat(local_destination).st_size
+        if __debug__: size = stat(local_destination).st_size
         if __debug__: log('wrote {} bytes to file {}', size, local_destination)
     elif code in [401, 402, 403, 407, 451, 511]:
         raise AuthenticationFailure(addurl('Access is forbidden'))
