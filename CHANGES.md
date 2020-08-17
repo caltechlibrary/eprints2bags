@@ -1,6 +1,13 @@
 Change log for eprints2bags
 ===========================
 
+Next
+-----
+
+* Renamed branch `master` to `main`.
+* Slightly improved and updated some internal code.
+
+
 Version 1.9.2
 -------------
 
