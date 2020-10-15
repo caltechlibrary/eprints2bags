@@ -386,6 +386,11 @@ Command-line options summary
     if path.isdir(output_dir):
         if not writable(output_dir):
             exit(say.fatal_text('Directory not writable: {}', output_dir))
+    fs = fs_type(output_dir)
+    if __debug__: log('Destination file system is {}', fs)
+    if fs in KNOWN_SUBDIR_LIMITS and len(wanted) > KNOWN_SUBDIR_LIMITS[fs]:
+        text = '{} is too many folders for the file system at "{}".'
+        exit(say.fatal_text(text.format(intcomma(num_wanted), output_dir)))
 
     previous_dir = diff_with if diff_with != 'D' else None
     if previous_dir and not path.isdir(previous_dir):
@@ -423,19 +428,14 @@ Command-line options summary
     try:
         if not user or not password:
             user, password = credentials(api_url, user, password, use_keyring, reset_keys)
-        if __debug__: log('Testing given server URL')
+        if __debug__: log('Testing server URL {}', api_url)
         raw_list = eprints_raw_list(api_url, user, password)
         if raw_list == None:
             text = 'Did not get an EPrints server response from "{}"'.format(api_url)
             exit(say.fatal_text(text))
         if not wanted:
-            say.info('Fetching records list from {}', api_url)
+            say.info('Fetching full records list from {}', api_url)
             wanted = eprints_records_list(raw_list)
-        fs = fs_type(output_dir)
-        if __debug__: log('Destination file system is {}', fs)
-        if fs in KNOWN_SUBDIR_LIMITS and len(wanted) > KNOWN_SUBDIR_LIMITS[fs]:
-            text = '{} is too many folders for the file system at "{}".'
-            exit(say.fatal_text(text.format(intcomma(num_wanted), output_dir)))
 
         say.info('Beginning to process {} EPrints {}', intcomma(len(wanted)),
                  'entries' if len(wanted) > 1 else 'entry')
@@ -447,6 +447,7 @@ Command-line options summary
                      fmt_statuses(status, status_negation))
         if previous_dir:
             say.info('Will only keep records that differ from those in {}', previous_dir)
+
         say.info('Output will be written under directory "{}"', output_dir)
         make_dir(output_dir)
 
