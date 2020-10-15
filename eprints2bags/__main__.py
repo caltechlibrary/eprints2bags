@@ -38,6 +38,7 @@ from   os import path
 import plac
 import requests
 import shutil
+import sidetrack
 import sys
 import tarfile
 from   time import sleep
@@ -51,13 +52,11 @@ import eprints2bags
 from   eprints2bags import print_version
 from   eprints2bags.constants import ON_WINDOWS, KEYRING_PREFIX
 from   eprints2bags.data_helpers import flatten, expand_range, parse_datetime
-from   eprints2bags.debug import set_debug, log
 from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files, url_host
 from   eprints2bags.files import readable, writable, make_dir
 from   eprints2bags.files import fs_type, KNOWN_SUBDIR_LIMITS
 from   eprints2bags.files import create_archive, verify_archive, archive_extension
-from   eprints2bags.processes import available_cpus
 from   eprints2bags.eprints import *
 
 
@@ -348,7 +347,7 @@ Command-line options summary
     # Process arguments -------------------------------------------------------
 
     if debugging:
-        set_debug(True, debug)
+        if __debug__: set_debug(True, debug)
         import faulthandler
         faulthandler.enable()
     if version:
@@ -514,12 +513,6 @@ Command-line options summary
             import pdb; pdb.set_trace()
         else:
             exit(say.error_text('Fatal error: {}', str(ex)))
-
-# If this is windows, we want the command-line args to use slash intead
-# of hyphen.
-
-if ON_WINDOWS:
-    main.prefix_chars = '/'
 
 
 # Helper functions.
@@ -691,8 +684,12 @@ def fmt_statuses(status_list, negated):
 
 # Main entry point.
 # ......................................................................
-# The following allows users to invoke this using "python3 -m eprints2bags".
 
+# On Windows, we want plac to use slash intead of hyphen for cmd-line options.
+if ON_WINDOWS:
+    main.prefix_chars = '/'
+
+# The following allows users to invoke this using "python3 -m eprints2bags".
 if __name__ == '__main__':
     plac.call(main)
 

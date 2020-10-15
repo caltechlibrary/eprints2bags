@@ -19,6 +19,7 @@ import os
 from   os import path
 from   psutil import disk_partitions
 import shutil
+import sidetrack
 import sys
 import tarfile
 import tempfile
@@ -26,7 +27,6 @@ import zipfile
 from   zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 
 import eprints2bags
-from   eprints2bags.debug import log
 from   eprints2bags.exceptions import *
 
 

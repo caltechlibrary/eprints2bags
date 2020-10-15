@@ -21,6 +21,7 @@ import requests
 from   requests.packages.urllib3.exceptions import InsecureRequestWarning
 from   time import sleep
 import shutil
+import sidetrack
 import socket
 import ssl
 import urllib
@@ -30,7 +31,6 @@ import validators
 import warnings
 
 import eprints2bags
-from   eprints2bags.debug import log
 from   eprints2bags.exceptions import *
 
 

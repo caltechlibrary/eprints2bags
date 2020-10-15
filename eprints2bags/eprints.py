@@ -20,10 +20,10 @@ from   lxml import etree
 import os
 from   os import path
 import shutil
+import sidetrack
 
 import eprints2bags
 from   eprints2bags.data_helpers import parse_datetime
-from   eprints2bags.debug import log
 from   eprints2bags.exceptions import *
 from   eprints2bags.network import net
 
