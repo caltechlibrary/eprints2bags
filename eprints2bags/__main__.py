@@ -38,7 +38,7 @@ from   os import path, cpu_count
 import plac
 import requests
 import shutil
-import sidetrack
+from   sidetrack import set_debug, log
 import sys
 import tarfile
 from   time import sleep

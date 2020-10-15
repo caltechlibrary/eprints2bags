@@ -20,7 +20,7 @@ from   lxml import etree
 import os
 from   os import path
 import shutil
-import sidetrack
+from   sidetrack import log
 
 import eprints2bags
 from   eprints2bags.data_helpers import parse_datetime

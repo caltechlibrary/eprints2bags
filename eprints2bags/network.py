@@ -21,7 +21,7 @@ import requests
 from   requests.packages.urllib3.exceptions import InsecureRequestWarning
 from   time import sleep
 import shutil
-import sidetrack
+from   sidetrack import log
 import socket
 import ssl
 import urllib

@@ -19,7 +19,7 @@ import os
 from   os import path
 from   psutil import disk_partitions
 import shutil
-import sidetrack
+from   sidetrack import log
 import sys
 import tarfile
 import tempfile
