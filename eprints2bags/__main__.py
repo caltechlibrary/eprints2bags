@@ -85,6 +85,7 @@ with datetime.strftime().'''
     api_url    = ('the URL for the REST API of the EPrints server',         'option', 'a'),
     bag_action = ('bag, bag & archive, or none? (default: bag & archive)',  'option', 'b'),
     processes  = ('num. processes to use when bagging (default: #cores/2)', 'option', 'c'),
+    diff_with  = ('compare new contents to previous bags in directory "D"', 'option', 'd'),
     end_action = ('final action over whole set of records (default: none)', 'option', 'e'),
     id_list    = ('list of identifiers of records to get (can be a file)',  'option', 'i'),
     keep_going = ('do not stop if encounter missing records or errors',     'flag',   'k'),
@@ -104,11 +105,12 @@ with datetime.strftime().'''
     debug      = ('write detailed trace to "OUT" ("-" means console)',      'option', '@'),
 )
 
-def main(api_url = 'A', bag_action = 'B', processes = 'C', end_action = 'E',
-         id_list = 'I', keep_going = False, lastmod = 'L', name_base = 'N',
-         output_dir = 'O', quiet = False, status = 'S', user = 'U',
-         password = 'P', arch_type = 'T', delay = 100, no_color = False,
-         no_keyring = False, reset_keys = False, version = False, debug = 'OUT'):
+def main(api_url = 'A', bag_action = 'B', processes = 'C', diff_with = 'D',
+         end_action = 'E', id_list = 'I', keep_going = False, lastmod = 'L',
+         name_base = 'N', output_dir = 'O', quiet = False, status = 'S',
+         user = 'U', password = 'P', arch_type = 'T', delay = 100,
+         no_color = False, no_keyring = False, reset_keys = False,
+         version = False, debug = 'OUT'):
     '''eprints2bags bags up EPrints content as BagIt bags.
 
 This program contacts an EPrints REST server whose network API is accessible
@@ -150,7 +152,31 @@ value is *not* among those given.  Examples:
   eprints2bags -s archive -a ...
   eprints2bags -s ^inbox,buffer,deletion -a ...
 
-Both lastmod and status filering are done after the -i argument is processed.
+If the option -d (or /d on Windows) is given, the records will be further
+filtered by comparing them to copies found at the location indicated by the
+directory given as the value to the -d option.  Only those records that are
+different in content will be kept.  The directory should contain archived
+EPrints records in the same form written by a prior run of eprints2bags.  As
+eprints2bags retrieves records from the EPrints server, it will check the -d
+directory for the existence of a bag with the same EPrints record number and
+named using the same the same value of the -n option (if the option is given);
+i.e., for a record N from the EPrints server, it will check for the existence
+of /path/to/directory/N, /path/to/directory/N.zip, /path/to/directory/N.tar,
+and /path/to/directory/N.tar.gz, or if the -n option is given with a value of
+NAME, for /path/to/directory/NAME-N, /path/to/directory/NAME-N.zip, and so on.
+If no such bag is found, eprints2bags proceeds normally to bag the entire
+contents of the EPrints record; on the other hand, if a previous bag is found
+in the -d directory, eprints2bags will compare its contents to the contents
+retrieved from the EPrints server, and only write the contents that are
+different.  To make it clear that the written bag may not be not complete,
+it will have "-diff" as part of the name.  Option -d is useful when running
+eprints2bags regularly: if you keep the output of a prior run on disk, you
+can re-run eprints2bags with the -d option to make it save only the records
+that have actually changed in content, which may reduce the number of records
+that need to be archived (assume you already archived the prior run).
+
+The lastmod, status, and diff-based filering are done after the -i argument
+is processed.
 
 By default, if an error occurs when requesting a record from the EPrints
 server, it stops execution of eprints2bags.  Common causes of errors include
@@ -361,6 +387,12 @@ Command-line options summary
         if not writable(output_dir):
             exit(say.fatal_text('Directory not writable: {}', output_dir))
 
+    previous_dir = diff_with if diff_with != 'D' else None
+    if previous_dir and not path.isdir(previous_dir):
+        exit(say.fatal_text('Value of {}d option is not a directory: {}', prefix, diff_with))
+    if previous_dir and not path.isabs(previous_dir):
+        previous_dir = path.realpath(path.join(os.getcwd(), previous_dir))
+
     bag_action = 'bag-and-archive' if bag_action == 'B' else bag_action.lower()
     if bag_action not in _RECOGNIZED_ACTIONS:
         exit(say.fatal_text('Value of {}b option not recognized. {}', prefix, hint))
@@ -413,6 +445,8 @@ Command-line options summary
             say.info('Will only keep records {} status {}',
                      'without' if status_negation else 'with',
                      fmt_statuses(status, status_negation))
+        if previous_dir:
+            say.info('Will only keep records that differ from those in {}', previous_dir)
         say.info('Output will be written under directory "{}"', output_dir)
         make_dir(output_dir)
 
