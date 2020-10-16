@@ -51,7 +51,7 @@ if sys.platform.startswith('win'):
 import eprints2bags
 from   eprints2bags import print_version
 from   eprints2bags.constants import ON_WINDOWS, KEYRING_PREFIX
-from   eprints2bags.data_helpers import flatten, expand_range, parse_datetime
+from   eprints2bags.data_helpers import flatten, expand_range, parse_datetime, plural
 from   eprints2bags.messages import msg, color, MessageHandler
 from   eprints2bags.network import network_available, download_files, url_host
 from   eprints2bags.files import readable, writable, make_dir
@@ -342,7 +342,7 @@ Command-line options summary
     debugging = debug != 'OUT'
     say = MessageHandler(not no_color, quiet)
     prefix = '/' if ON_WINDOWS else '-'
-    hint = '(Hint: use {}h for help.)'.format(prefix)
+    hint = f'(Hint: use {prefix}h for help.)'
 
     # Process arguments -------------------------------------------------------
 
@@ -357,9 +357,9 @@ Command-line options summary
         exit(say.fatal_text('No network.'))
 
     if api_url == 'A':
-        exit(say.fatal_text('Must provide an Eprints API URL. {}', hint))
+        exit(say.fatal_text(f'Must provide an Eprints API URL. {hint}'))
     elif not api_url.startswith('http'):
-        exit(say.fatal_text('Argument to {}a must be a full URL.', prefix))
+        exit(say.fatal_text(f'Argument to {prefix}a must be a full URL.'))
 
     # Wanted is a list of strings, not of ints, to avoid repeated conversions.
     if id_list == 'I':
@@ -373,9 +373,9 @@ Command-line options summary
         try:
             lastmod = parse_datetime(lastmod)
             lastmod_str = lastmod.strftime(_LASTMOD_PRINT_FORMAT)
-            if __debug__: log('Parsed lastmod as {}', lastmod_str)
+            if __debug__: log(f'parsed lastmod as {lastmod_str}')
         except Exception as ex:
-            exit(say.fatal_text('Unable to parse lastmod value: {}', str(ex)))
+            exit(say.fatal_text(f'Unable to parse lastmod value: {str(ex)}'))
 
     given_output_dir = not (output_dir == 'O')
     if output_dir == 'O':
@@ -384,32 +384,32 @@ Command-line options summary
         output_dir = path.realpath(path.join(os.getcwd(), output_dir))
     if path.isdir(output_dir):
         if not writable(output_dir):
-            exit(say.fatal_text('Directory not writable: {}', output_dir))
+            exit(say.fatal_text('Directory not writable: {output_dir}'))
     fs = fs_type(output_dir)
-    if __debug__: log('Destination file system is {}', fs)
+    if __debug__: log(f'destination file system is {fs}')
     if fs in KNOWN_SUBDIR_LIMITS and len(wanted) > KNOWN_SUBDIR_LIMITS[fs]:
-        text = '{} is too many folders for the file system at "{}".'
-        exit(say.fatal_text(text.format(intcomma(num_wanted), output_dir)))
+        text = f'{intcomma(num_wanted)} is too many subdirectories for the file system at "{output_dir}".'
+        exit(say.fatal_text(text))
 
     previous_dir = diff_with if diff_with != 'D' else None
     if previous_dir and not path.isdir(previous_dir):
-        exit(say.fatal_text('Value of {}d option is not a directory: {}', prefix, diff_with))
+        exit(say.fatal_text(f'Value of {prefix}d option is not a directory: {diff_with}'))
     if previous_dir and not path.isabs(previous_dir):
         previous_dir = path.realpath(path.join(os.getcwd(), previous_dir))
 
     bag_action = 'bag-and-archive' if bag_action == 'B' else bag_action.lower()
     if bag_action not in _RECOGNIZED_ACTIONS:
-        exit(say.fatal_text('Value of {}b option not recognized. {}', prefix, hint))
+        exit(say.fatal_text(f'Value of {prefix}b option not recognized. {hint}'))
 
     end_action = 'none' if end_action == 'E' else end_action.lower()
     if end_action not in _RECOGNIZED_ACTIONS:
-        exit(say.fatal_text('Value of {}b option not recognized. {}', prefix, hint))
+        exit(say.fatal_text(f'Value of {prefix}b option not recognized. {hint}'))
     if end_action != "none" and not given_output_dir:
-        exit(say.fatal_text('Please specify an output directory when using -e "{}"', end_action))
+        exit(say.fatal_text(f'Please specify an output directory when using -e "{end_action}"'))
 
     archive_fmt = 'uncompressed-zip' if arch_type == 'T' else arch_type.lower()
     if archive_fmt not in _RECOGNIZED_ARCHIVE_TYPES:
-        exit(say.fatal_text('Value of {}t option not recognized. {}', prefix, hint))
+        exit(say.fatal_text(f'Value of {prefix}t option not recognized. {hint}'))
 
     status = None if status == 'S' else status.split(',')
     status_negation = (status and status[0].startswith('^'))
@@ -427,27 +427,25 @@ Command-line options summary
     try:
         if not user or not password:
             user, password = credentials(api_url, user, password, use_keyring, reset_keys)
-        if __debug__: log('Testing server URL {}', api_url)
+        if __debug__: log(f'testing server URL {api_url}')
         raw_list = eprints_raw_list(api_url, user, password)
         if raw_list == None:
-            text = 'Did not get an EPrints server response from "{}"'.format(api_url)
-            exit(say.fatal_text(text))
+            exit(say.fatal_text(f'Did not get a server response from {api_url}'))
         if not wanted:
-            say.info('Fetching full records list from {}', api_url)
+            say.info(f'Fetching full records list from {api_url}')
             wanted = eprints_records_list(raw_list)
 
-        say.info('Beginning to process {} EPrints {}', intcomma(len(wanted)),
-                 'entries' if len(wanted) > 1 else 'entry')
+        say.info(f'Will process {intcomma(len(wanted))} EPrints {plural("record", wanted)}')
         if lastmod:
-            say.info('Will only keep records modified after {}', lastmod_str)
+            say.info(f'Will only keep records modified after {lastmod_str}')
         if status:
             say.info('Will only keep records {} status {}',
                      'without' if status_negation else 'with',
                      fmt_statuses(status, status_negation))
         if previous_dir:
-            say.info('Will only keep records that differ from those in {}', previous_dir)
+            say.info(f'Will only keep records that differ from those in {previous_dir}')
 
-        say.info('Output will be written under directory "{}"', output_dir)
+        say.info(f'Output will be written under directory {output_dir}')
         make_dir(output_dir)
 
         say.msg('='*70, 'dark')
@@ -456,25 +454,24 @@ Command-line options summary
         for number in wanted:
             # Start by getting the full record in EP3 XML format.  A failure
             # here will either cause an exit or moving to the next record.
-            say.msg('Getting record with id {}'.format(number), 'white')
+            say.msg(f'Getting record with id {number}', 'white')
             xml = eprints_xml(number, api_url, user, password, keep_going, say)
             if xml == None:
                 missing.append(number)
                 continue
             if lastmod and eprints_lastmod(xml) < lastmod:
-                say.info("{} hasn't been modified since {} -- skipping",
-                         number, lastmod_str)
+                say.info(f"{number} hasn't been modified since {lastmod_str} -- skipping")
                 skipped.append(number)
                 continue
             if status and ((not status_negation and eprints_status(xml) not in status)
                            or (status_negation and eprints_status(xml) in status)):
-                say.info('{} has status "{}" -- skipping', number, eprints_status(xml))
+                say.info(f'{number} has status "{eprints_status(xml)}" -- skipping')
                 skipped.append(number)
                 continue
 
             # Good so far.  Create the directory and write the XML out.
             record_dir = path.join(output_dir, prefix + str(number))
-            say.info('Creating {}', record_dir)
+            say.info(f'Creating {record_dir}')
             make_dir(record_dir)
             write_record(number, xml, prefix, record_dir)
 
@@ -490,8 +487,7 @@ Command-line options summary
 
         say.msg('='*70, 'dark')
         count = len(wanted) - len(missing) - len(skipped)
-        say.info('Wrote {} EPrints record{} to {}/.', intcomma(count),
-                 's' if count > 1 else '', output_dir)
+        say.info(f'Wrote {intcomma(count)} EPrints {plural("record", count)} to {output_dir}')
         if len(skipped) > 0:
             say.info('The following records were skipped: '+ ', '.join(skipped) + '.')
         if len(missing) > 0:
@@ -505,14 +501,14 @@ Command-line options summary
     except CorruptedContent as ex:
         exit(say.fatal_text(str(ex)))
     except bagit.BagValidationError as ex:
-        exit(say.fatal_text('Bag validation failure: {}'.format(str(ex))))
+        exit(say.fatal_text(f'Bag validation failure: {str(ex)}'))
     except Exception as ex:
         import traceback
         if debugging:
             say.error('{}\n{}', str(ex), traceback.format_exc())
             import pdb; pdb.set_trace()
         else:
-            exit(say.error_text('Fatal error: {}', str(ex)))
+            exit(say.error_text(f'Fatal error: {str(ex)}'))
 
 
 # Helper functions.
@@ -531,9 +527,9 @@ def parsed_id_list(id_list, say):
         candidate = path.realpath(path.join(os.getcwd(), candidate))
     if path.exists(candidate):
         if not readable(candidate):
-            exit(say.fatal_text('File not readable: {}', candidate))
+            exit(say.fatal_text(f'File not readable: {candidate}'))
         with open(candidate, 'r', encoding = 'utf-8-sig') as file:
-            if __debug__: log('Reading {}'.format(candidate))
+            if __debug__: log(f'reading {candidate}')
             return [id.strip() for id in file.readlines()]
 
     # Didn't find a file.  Try to parse as multiple numbers.
@@ -548,7 +544,7 @@ def credentials(api_url, user, pswd, use_keyring, reset = False):
     Empty user names and passwords are handled too.'''
     host = url_host(api_url)
     ringname = KEYRING_PREFIX + host
-    if __debug__: log('Ring name: {}', ringname)
+    if __debug__: log(f'ring name: {ringname}')
     NONE = '__EPRINTS2BAGS__NONE__'
     cur_user, cur_pswd = None, None
     if use_keyring and not reset:
@@ -558,13 +554,13 @@ def credentials(api_url, user, pswd, use_keyring, reset = False):
             cur_pswd = pswd or keyring.get_password(ringname, user or cur_user)
         elif cur_user == NONE:
             cur_pswd = NONE
-            if __debug__: log('Using empty user and password for {}', host)
+            if __debug__: log(f'using empty user and password for {host}')
     if reset or not cur_user:
-        cur_user = input('User name for {}: '.format(host)) or NONE
+        cur_user = input(f'User name for {host}: ') or NONE
     if reset or not cur_pswd:
-        cur_pswd = password('Password for {}: '.format(host)) or NONE
+        cur_pswd = password(f'Password for {host}: ') or NONE
     if use_keyring:
-        if __debug__: log('Saving credentials to keyring')
+        if __debug__: log('saving credentials to keyring')
         keyring.set_password(ringname, 'user', cur_user)
         keyring.set_password(ringname, cur_user, cur_pswd)
     return (None if cur_user == NONE else cur_user,
@@ -584,7 +580,7 @@ def password(prompt):
 def bag_and_archive(directory, action, archive_fmt, processes, xml, url, say):
     # If xml != None, we're dealing with a record, else the top-level directory.
     if action != 'none':
-        say.info('Making bag out of {}', directory)
+        say.info(f'Making bag out of {directory}')
         # Don't use large # of processes b/c creating the process pool is
         # expensive.  If procs = 32 and most of our records have only 1-2
         # files, make_bag() will still create a pool of 32 each time.  The
@@ -608,17 +604,17 @@ def bag_and_archive(directory, action, archive_fmt, processes, xml, url, say):
             bag.info['External-Identifier'] = url
             bag.info['External-Description'] = 'Collection of EPrints records and their associated document files'
         bag.save()
-        if __debug__: log('Verifying bag {}', bag.path)
+        if __debug__: log(f'verifying bag {bag.path}')
         bag.validate()
 
         if action == 'bag-and-archive':
             archive_file = directory + archive_extension(archive_fmt)
-            say.info('Making archive file {}', archive_file)
+            say.info(f'Making archive file {archive_file}')
             comments = file_comments(bag) if xml != None else dir_comments(bag, url)
             create_archive(archive_file, archive_fmt, directory, comments)
-            if __debug__: log('Verifying archive file {}', archive_file)
+            if __debug__: log(f'verifying archive file {archive_file}')
             verify_archive(archive_file, archive_fmt)
-            if __debug__: log('Deleting directory {}', directory)
+            if __debug__: log(f'deleting directory {directory}')
             shutil.rmtree(directory)
 
 
@@ -627,7 +623,7 @@ def file_comments(bag):
     text += '\n'
     text += 'About this ZIP archive file:\n'
     text += '\n'
-    text += 'This archive contains a directory of files organized in BagIt v{} format.\n'.format(bag.version)
+    text += f'This archive contains a directory of files organized in BagIt v{bag.version} format.\n'
     text += 'The data files in the bag are the contents of the EPrints record located at\n'
     text += bag.info['External-Identifier']
     text += '\n'
@@ -645,7 +641,7 @@ def dir_comments(bag, url):
     text += '\n'
     text += 'About this ZIP archive file:\n'
     text += '\n'
-    text += 'This archive contains a directory of files organized in BagIt v{} format.\n'.format(bag.version)
+    text += f'This archive contains a directory of files organized in BagIt v{bag.version} format.\n'
     text += 'The data files are the contents of EPrints records obtained from\n'
     text += url
     text += '\n'
@@ -661,8 +657,7 @@ def dir_comments(bag, url):
 def software_comments():
     text  = '\n'
     text += 'The software used to create this archive file was:\n'
-    text += '{} version {} <{}>'.format(
-        __package__, eprints2bags.__version__, eprints2bags.__url__)
+    text += f'{__package__} version {eprints2bags.__version__} <{eprints2bags.__url__}>'
     return text
 
 

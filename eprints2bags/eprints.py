@@ -43,7 +43,7 @@ def eprints_api(url, op, user, password):
     with an operation string given by 'op'.'''
     start = url.find('//')
     if start < 0:
-        raise BadURL('Unable to parse "{}" as a normal URL'.format(url))
+        raise BadURL(f'Unable to parse "{url}" as a normal URL')
     if user and password:
         return url[:start + 2] + user + ':' + password + '@' + url[start + 2:] + op
     elif user and not password:
@@ -95,12 +95,12 @@ def eprints_records_list(raw_list):
 
 
 def eprints_xml(number, base_url, user, password, missing_ok, say):
-    url = eprints_api(base_url, '/eprint/{}.xml'.format(number), user, password)
+    url = eprints_api(base_url, f'/eprint/{number}.xml', user, password)
     (response, error) = net('get', url)
     if error:
         if isinstance(error, NoContent):
             if missing_ok:
-                say.warn('Server has no contents for record number {}', number)
+                say.warn(f'Server has no contents for record number {number}')
                 return None
             else:
                 raise error
@@ -109,7 +109,7 @@ def eprints_xml(number, base_url, user, password, missing_ok, say):
             # specific records.  When ignoring missing entries, I guess it
             # makes sense to just flag them and move on.
             if missing_ok:
-                say.error(str(error) + ' for record number {}'.format(number))
+                say.error(str(error) + f' for record number {number}')
                 return None
             else:
                 raise error
@@ -136,12 +136,12 @@ def eprints_documents(xml):
         url = document.find('.//{' + _EPRINTS_XMLNS + '}url')
         if url == None:
             if hasattr(document, 'attrib'):
-                if __debug__: log('Ignoring doc with no file: {}', document.attrib['id'])
+                if __debug__: log(f"ignoring doc with no file: {document.attrib['id']}")
             else:
-                if __debug__: log('Ignoring document {}', document)
+                if __debug__: log(f'ignoring document {document}')
             continue
         if eprints_derived_file(document):
-            if __debug__: log('Ignoring derived file {}', url.text)
+            if __debug__: log(f'ignoring derived file {url.text}')
         else:
             files.append(url.text)
     return files
@@ -170,7 +170,7 @@ def write_record(number, xml, dir_prefix, dir_path):
     xml_file_name = dir_prefix + str(number) + '.xml'
     encoded = etree.tostring(xml, encoding = 'UTF-8', method = 'xml')
     file_path = path.join(dir_path, xml_file_name)
-    if __debug__: log('Writing file {}', file_path)
+    if __debug__: log(f'writing file {file_path}')
     with codecs.open(file_path, 'w', 'utf-8') as file:
         file.write("<?xml version='1.0' encoding='utf-8'?>\n")
         file.write(encoded.decode().rstrip() + '\n')

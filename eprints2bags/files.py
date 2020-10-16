@@ -99,10 +99,10 @@ def fs_type(p):
 def make_dir(dir_path):
     '''Creates directory 'dir_path' (including intermediate directories).'''
     if path.isdir(dir_path):
-        if __debug__: log('Reusing existing directory {}', dir_path)
+        if __debug__: log(f'reusing existing directory {dir_path}')
         return
     else:
-        if __debug__: log('Creating directory {}', dir_path)
+        if __debug__: log(f'creating directory {dir_path}')
         # If this gets an exception, let it bubble up to caller.
         os.makedirs(dir_path)
 
@@ -113,7 +113,7 @@ def archive_extension(type):
     elif type.endswith('tar'):
         return '.tar' if type.startswith('uncompressed') else '.tar.gz'
     else:
-        raise InternalError('Unrecognized archive format: {}'.format(type))
+        raise InternalError(f'Unrecognized archive format: {type}')
 
 
 def create_archive(archive_file, type, source_dir, comment = None):
@@ -145,7 +145,7 @@ def verify_archive(archive_file, type):
     if type.endswith('zip'):
         error = ZipFile(archive_file).testzip()
         if error:
-            raise CorruptedContent('Failed to verify file "{}"'.format(archive_file))
+            raise CorruptedContent(f'Failed to verify file "{archive_file}"')
     else:
         # Algorithm originally from https://stackoverflow.com/a/32312857/743730
         tfile = None
@@ -157,7 +157,7 @@ def verify_archive(archive_file, type):
                     for chunk in iter(lambda: content.read(1024), b''):
                         pass
         except Exception as ex:
-            raise CorruptedContent('Failed to verify file "{}"'.format(archive_file))
+            raise CorruptedContent(f'Failed to verify file "{archive_file}"')
         finally:
             if tfile:
                 tfile.close()
