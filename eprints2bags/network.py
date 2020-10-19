@@ -31,7 +31,8 @@ import validators
 import warnings
 
 import eprints2bags
-from   eprints2bags.exceptions import *
+from   .exceptions import *
+from   .ui import inform, warn, alert, alert_fatal
 
 
 # Constants.
@@ -131,10 +132,10 @@ def timed_request(get_or_post, url, session = None, timeout = 20, **kwargs):
                 raise error
 
 
-def download_files(downloads_list, user, pswd, output_dir, missing_ok, say):
+def download_files(downloads_list, user, pswd, output_dir, missing_ok):
     for item in downloads_list:
         file = path.realpath(path.join(output_dir, path.basename(item)))
-        say.info(f'Downloading {item}')
+        inform(f'Downloading {item}')
         failures = 0
         retry = True
         while retry and failures < _MAX_FAILURES:
@@ -145,7 +146,7 @@ def download_files(downloads_list, user, pswd, output_dir, missing_ok, say):
                 download(item, user, pswd, file)
             except (NoContent, ServiceFailure, AuthenticationFailure) as ex:
                 if missing_ok:
-                    say.error(str(ex))
+                    alert(str(ex))
                     failures = 0
                 else:
                     error = ex

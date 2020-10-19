@@ -23,9 +23,10 @@ import shutil
 from   sidetrack import log
 
 import eprints2bags
-from   eprints2bags.data_helpers import parse_datetime
-from   eprints2bags.exceptions import *
-from   eprints2bags.network import net
+from   .data_helpers import parse_datetime
+from   .exceptions import *
+from   .network import net
+from   .ui import inform, warn, alert, alert_fatal
 
 
 # Constants.
@@ -94,13 +95,13 @@ def eprints_records_list(raw_list):
     return numbers
 
 
-def eprints_xml(number, base_url, user, password, missing_ok, say):
+def eprints_xml(number, base_url, user, password, missing_ok):
     url = eprints_api(base_url, f'/eprint/{number}.xml', user, password)
     (response, error) = net('get', url)
     if error:
         if isinstance(error, NoContent):
             if missing_ok:
-                say.warn(f'Server has no contents for record number {number}')
+                warn(f'Server has no contents for record number {number}')
                 return None
             else:
                 raise error
@@ -109,7 +110,7 @@ def eprints_xml(number, base_url, user, password, missing_ok, say):
             # specific records.  When ignoring missing entries, I guess it
             # makes sense to just flag them and move on.
             if missing_ok:
-                say.error(str(error) + f' for record number {number}')
+                alert(str(error) + f' for record number {number}')
                 return None
             else:
                 raise error
