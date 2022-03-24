@@ -1,4 +1,6 @@
-bagit        >= 1.7.0
+bagit        >= 1.8.1
+bun          == 0.0.8
+commonpy     >= 1.9.1
 dateparser   >= 0.7.0
 humanize     >= 0.5.1
 keyring      >= 12.2.0
