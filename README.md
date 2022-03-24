@@ -46,7 +46,7 @@ Materials in EPrints must be extracted before they can be moved to a long-term p
 
 The instructions below assume you have a Python interpreter installed on your computer; if that's not the case, please first install Python and familiarize yourself with running Python programs on your system.
 
-On **Linux**, **macOS**, and **Windows** operating systems, you should be able to install `eprints2bags` with [pip](https://pip.pypa.io/en/stable/installing/).  If you don't have the `pip` package or are uncertain if you do, first run the following command in a terminal command line interpreter: 
+On **Linux**, **macOS**, and **Windows** operating systems, you should be able to install `eprints2bags` with [`pip`](https://pip.pypa.io/en/stable/installing/).  If you don't have the `pip` package or are uncertain if you do, first run the following command in a terminal command line interpreter: 
 ```
 sudo python3 -m ensurepip
 ```
@@ -208,7 +208,6 @@ The following table summarizes all the command line options available. (Note: on
 | `-u`_U_ | `--user`_U_       | User name for EPrints server login | |
 | `-p`_P_ | `--password`_U_   | Password for EPrints proxy login | |
 | `-t`_T_ | `--arch-type`_T_  | Use archive type _T_ | Uncompressed ZIP | ♢ |
-| `-y`_Y_ | `--delay`_Y_      | Pause _Y_ ms between getting records | 100 milliseconds | |
 | `-C`    | `--no-color`      | Don't color-code the output | Use colors in the terminal output | |
 | `-K`    | `--no-keyring`    | Don't use a keyring/keychain | Store login info in keyring | |
 | `-R`    | `--reset`         | Reset user login & password used | Reuse previous credentials |
@@ -224,7 +223,11 @@ The following table summarizes all the command line options available. (Note: on
 
 Beware that some file systems have limitations on the number of subdirectories that can be created, which directly impacts how many record subdirectories can be created by this program.  `eprints2bags` attempts to guess the type of file system where the output is being written and warn the user if the number of records exceeds known maximums (e.g., 31,998 subdirectories for the [ext2](https://en.wikipedia.org/wiki/Ext2) and [ext3](https://en.wikipedia.org/wiki/Ext3) file systems in Linux), but its internal table does not include all possible file systems and it may not be able to warn users in all cases.  If you encounter file system limitations on the number of subdirectories that can be created, a simple solution is to manually create an intermediate level of subdirectories under the destination given to `-o`, then run `eprints2bags` multiple times, each time indicating a different subrange of records to the `-i` option and a different subdirectory to `-o`, such that the number of records written to each destination is below the file system's limit on total number of directories.
 
-It is also noteworthy that hitting a server for tens of thousands of records and documents in rapid succession is likely to draw suspicion from server administrators.  By default, this program inserts a small delay between record fetches (adjustable using the `-y` command-line option), which may be too short in some cases.  Setting the value to 0 is also possible, but might get you blocked or banned from an institution's servers.
+For maximum performance, the debug logging code that implements option `-@` can be skipped completely at run-time by running Python with optimization turn on.  One way to do this is to run eprints2bags using an invocation such as the following:
+
+```
+python -O -m eprints2bags ...other arguments...
+```
 
 
 ⁇ Getting help and support
