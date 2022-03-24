@@ -29,7 +29,7 @@ import shutil
 import sys
 
 if __debug__:
-    from sidetrack import set_debug, log, logr
+    from sidetrack import set_debug, log, logf
 
 from .exceptions import *
 
@@ -264,7 +264,7 @@ class CLI(UIBase):
         if not self._be_quiet:
             self._print_or_queue(text.format(*args), 'info')
         else:
-            if __debug__: log(text, *args)
+            if __debug__: logf(text, *args)
 
 
     def warn(self, text, *args):
