@@ -16,6 +16,7 @@ file "LICENSE" for more information.
 
 import codecs
 from   collections import defaultdict
+from   commonpy.data_utils import parsed_datetime
 from   lxml import etree
 import os
 from   os import path
@@ -23,7 +24,6 @@ import shutil
 from   sidetrack import log
 
 import eprints2bags
-from   .data_helpers import parse_datetime
 from   .exceptions import *
 from   .network import net
 from   .ui import inform, warn, alert, alert_fatal
@@ -121,7 +121,7 @@ def eprints_xml(number, base_url, user, password, missing_ok):
 
 def eprints_lastmod(xml):
     lastmod_elem = xml.find('.//{' + _EPRINTS_XMLNS + '}lastmod')
-    return parse_datetime(lastmod_elem.text)
+    return parsed_datetime(lastmod_elem.text)
 
 
 def eprints_status(xml):

@@ -29,6 +29,7 @@ file "LICENSE" for more information.
 
 import bagit
 from   collections import defaultdict
+from   commonpy.data_utils import flattened, parsed_datetime, pluralized
 import getpass
 from   humanize import intcomma
 import keyring
@@ -51,7 +52,6 @@ if sys.platform.startswith('win'):
 import eprints2bags
 from   eprints2bags import print_version
 from   .constants import ON_WINDOWS, KEYRING_PREFIX
-from   .data_helpers import flatten, expand_range, parse_datetime, plural
 from   .eprints import *
 from   .exit_codes import ExitCode
 from   .files import create_archive, verify_archive, archive_extension
@@ -387,7 +387,7 @@ Command-line options summary
         lastmod = None
     else:
         try:
-            lastmod = parse_datetime(lastmod)
+            lastmod = parsed_datetime(lastmod)
             lastmod_str = lastmod.strftime(_LASTMOD_PRINT_FORMAT)
             if __debug__: log(f'parsed lastmod as {lastmod_str}')
         except Exception as ex:
@@ -458,7 +458,7 @@ Command-line options summary
             inform(f'Fetching full records list from {api_url}')
             wanted = eprints_records_list(raw_list)
 
-        inform(f'Will process {intcomma(len(wanted))} EPrints {plural("record", wanted)}.')
+        inform(f'Will process {pluralized("EPrints record", wanted, True)}.')
         if lastmod:
             inform(f'Will only keep records modified after {lastmod_str}.')
         if status:
@@ -508,7 +508,7 @@ Command-line options summary
 
         inform('─'*os.get_terminal_size(0)[0])
         count = len(wanted) - len(missing) - len(skipped)
-        inform(f'Wrote {intcomma(count)} EPrints {plural("record", count)} to {output_dir}')
+        inform(f'Wrote {pluralized("EPrints record", count, True)} to {output_dir}')
         if len(skipped) > 0:
             inform('The following records were skipped: '+ ', '.join(skipped) + '.')
         if len(missing) > 0:
@@ -561,7 +561,7 @@ def parsed_id_list(id_list):
     if ',' not in id_list and '-' not in id_list:
         alert_fatal('Unable to understand list of record identifiers')
         exit(int(ExitCode.bad_arg))
-    return flatten(expand_range(x) for x in id_list.split(','))
+    return flattened(expand_range(x) for x in id_list.split(','))
 
 
 def credentials(api_url, user, pswd, use_keyring, reset = False):
