@@ -14,6 +14,7 @@ open-source software released under a 3-clause BSD license.  Please see the
 file "LICENSE" for more information.
 '''
 
+from   bun import inform, warn, alert, alert_fatal
 import codecs
 from   collections import defaultdict
 from   commonpy.data_utils import parsed_datetime
@@ -26,7 +27,6 @@ from   sidetrack import log
 import eprints2bags
 from   .exceptions import *
 from   .network import net
-from   .ui import inform, warn, alert, alert_fatal
 
 
 # Constants.

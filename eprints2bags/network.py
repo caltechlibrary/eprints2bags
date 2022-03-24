@@ -14,6 +14,7 @@ open-source software released under a 3-clause BSD license.  Please see the
 file "LICENSE" for more information.
 '''
 
+from   bun import inform, warn, alert, alert_fatal
 import http.client
 from   http.client import responses as http_responses
 from   os import path, stat
@@ -32,7 +33,6 @@ import warnings
 
 import eprints2bags
 from   .exceptions import *
-from   .ui import inform, warn, alert, alert_fatal
 
 
 # Constants.
