@@ -12,7 +12,7 @@ repository-code: "https://github.com/caltechlibrary/eprints2bags"
 title: "Download EPrints content and save it in BagIt-format bags"
 date-released: 2022-04-04
 version: "1.10.0"
-doi: 10.22002/20058
+doi: 10.22002/20082
 keywords: 
   - EPrints
   - BagIt
