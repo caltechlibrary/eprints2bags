@@ -1,30 +1,33 @@
-Change log for eprints2bags
-===========================
+# Change log for eprints2bags
 
-Next
------
+## Version 1.10.0
 
+* Removed delay option `-y`. Servers should probably implement throttling if rates are a problem, and anyway, the default value was probably too short to be of any use, so it's unlikely this option was of any use anyway.
+* Switched to using `cpu_count()` from Python `os` package instead of our own custom code.
+* Switched to using [Sidetrack](https://github.com/caltechlibrary/sidetrack) instead of original internal debug logging code.
+* Switched to using [Bun](https://github.com/caltechlibrary/bun) for basic terminal output.
+* Switched to using [CommonPy](https://github.com/caltechlibrary/commonpy) for common utilities.
+* Internally, use different approach to recording version number and other metadata.
+* Updated and refactored `Makefile`.
+* Added `CITATION.cff` file.
+* Refactored and update internal code.
 * Renamed branch `master` to `main`.
-* Slightly improved and updated some internal code.
 
 
-Version 1.9.2
--------------
+## Version 1.9.2
 
 * **Critical bug fix**: in a version of Python after 3.5, the behavior of getting raw data via the [requests](http://docs.python-requests.org) package changed in a way that caused `eprints2bags` to write zero-length data files to disk.  This version changes internal code to avoid the problem that causes this.
 * Report missing and skipped records separately at the end, instead of calling everything "missing".
 
 
-Version 1.9.1
--------------
+## Version 1.9.1
 
 * Update installation instructions in README.md to explain how to install from PyPI, and make README file more compatible with displaying it on PyPI.
 * Fix PyPI-related issues in `setup.cfg`.
 * Fix configuration bug in `setup.py`.
 
 
-Version 1.9.0
--------------
+## Version 1.9.0
 
 * Fixed issue #9: out-of-order id lists are ignored.
 * Added fix by [Tom Morrell](https://github.com/tmorrell) to `files.py` for when output is in the current directory.
@@ -36,20 +39,17 @@ Version 1.9.0
 * Released on PyPI.
 
 
-Version 1.8.2
--------------
+## Version 1.8.2
 
 * Improved handling of network and server connectivity issues (fixes issue #6)
 
 
-Version 1.8.1
--------------
+## Version 1.8.1
 
 * Significant performance improvement due to using multiple processes more efficiently
 
 
-Version 1.8.0
--------------
+## Version 1.8.0
 
 * New feature: provide the option to create a final, single top-level bag out of all the output (option `-e`)
 * New feature: use multiple processes for bag creation and provide option `-c` for adjusting the number
@@ -60,16 +60,14 @@ Version 1.8.0
 * Fixed some bugs
 * Updated help strings and text in README
 
-Version 1.7.0
--------------
+## Version 1.7.0
 
 * Added new `--status` command-line option
 * Fixed comments in ZIP file to use correct BagIt format version
 * Updated help strings and text in README
 
 
-Version 1.6.0
--------------
+## Version 1.6.0
 
 * Added new `--lastmod` command-line option
 * Fixed failure to parse combinations of ranges passed as arguments to `-i` option
@@ -77,8 +75,7 @@ Version 1.6.0
 * Updated help strings and text in README
 
 
-Version 1.5.0
--------------
+## Version 1.5.0
 
 * Now stores login & password on a per-server basis, instead of (as previously) a single login & password for all servers
 * Accepts empty user names and passwords for EPrints servers that don't need them
@@ -89,8 +86,7 @@ Version 1.5.0
 * Other minor internal changes
 
 
-Version 1.4.0
--------------
+## Version 1.4.0
 
 * Fixed an important network handling bug that could cause incomplete records to be saved
 * Fixed bugs in handling network exceptions while downloading content from servers
@@ -104,7 +100,6 @@ Version 1.4.0
 * Minor internal code refactoring
 
 
-Version 1.3.0
--------------
+## Version 1.3.0
 
 Eprints2bags now generates uncompressed [ZIP](https://www.loc.gov/preservation/digital/formats/fdd/fdd000354.shtml) archives of bags by default, instead of using compressed [tar](https://en.wikipedia.org/wiki/Tar_(computing)) format.  This was done in the belief that ZIP format is more widely supported and because compressed archive file contents may be more difficult to recover if the archive file becomes corrupted.  Also, the program `eprints2bags` now uses the run-time environment's keychain/keyring services to store the user name and password between runs, for convenience when running the program repeatedly.  Finally, some of the the command-line options have been changed.
