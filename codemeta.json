@@ -6,7 +6,7 @@
   "codeRepository": "https://github.com/caltechlibrary/eprints2bags",
   "issueTracker": "https://github.com/caltechlibrary/eprints2bags/issues",
   "license": "https://github.com/caltechlibrary/eprints2bags/blob/master/LICENSE",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "author": [
     {
       "@type": "Person",
