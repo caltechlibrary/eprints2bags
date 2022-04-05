@@ -1,3 +1,4 @@
+aenum        >= 3.1.0
 bagit        >= 1.8.1
 bun          == 0.0.8
 commonpy     >= 1.9.1
