@@ -13,13 +13,6 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 [![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1450-blue.svg?style=flat-square)](https://data.caltech.edu/records/20082)
 [![PyPI](https://img.shields.io/pypi/v/eprints2bags.svg?style=flat-square&color=red)](https://pypi.org/project/eprints2bags/)
 
-🏁 Log of recent changes
------------------------
-
-_Version 1.9.2_: **Critical fix** &ndash; this version fixes a bug that caused `eprints2bags` to write zero-length data files when used with newer versions of Python.  **You should upgrade your copy of `eprints2bags` to this version**.  This version also reports skipped records separately from missing records (in the final summary at the end of a run).
-
-The file [CHANGES](CHANGES.md) contains a more complete change log that includes information about previous releases.
-
 
 Table of Contents
 -----------------
