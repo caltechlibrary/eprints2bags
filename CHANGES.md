@@ -1,5 +1,12 @@
 # Change log for eprints2bags
 
+## Version 1.10.1
+
+Changes in this version:
+* Fix reference to wrong exception name in network code.
+* Add missing import of `aenum` to `requirements.txt`
+
+
 ## Version 1.10.0
 
 * Removed delay option `-y`. Servers should probably implement throttling if rates are a problem, and anyway, the default value was probably too short to be of any use, so it's unlikely this option was of any use anyway.
