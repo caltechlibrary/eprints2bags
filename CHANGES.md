@@ -1,5 +1,10 @@
 # Change log for eprints2bags
 
+## Version 1.10.2
+
+This version only updates information in `CITATION.cff`, `codemeta.json`, and a few other files. There are no functional changes in this release.
+
+
 ## Version 1.10.1
 
 Changes in this version:
