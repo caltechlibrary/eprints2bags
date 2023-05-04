@@ -1,6 +1,6 @@
 cff-version: 1.2
 message: "If you use this software, please cite it using these metadata."
-title: "Download EPrints content and save it in BagIt format"
+title: "A program for downloading records from an EPrints server and creating BagIt packages out of them."
 authors:
   - family-names: Hucka
     given-names: Michael
@@ -10,7 +10,6 @@ version: "1.10.2"
 abstract: Download EPrints content and save it in BagIt-format bags.
 repository-code: "https://github.com/caltechlibrary/eprints2bags"
 type: software
-url: "https://caltechlibrary.github.io/eprints2bags"
 license-url: "https://github.com/caltechlibrary/eprints2bags/blob/main/LICENSE"
 keywords:
   - EPrints
