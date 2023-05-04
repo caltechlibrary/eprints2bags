@@ -1,20 +1,19 @@
-# YAML 1.2
----
-authors: 
-  -
-    affiliation: "Caltech Library"
-    given-names: Mike
-    family-names: Hucka
-    orcid: "0000-0001-9105-5960"
-cff-version: "1.1.0"
+cff-version: 1.2
 message: "If you use this software, please cite it using these metadata."
+title: "Download EPrints content and save it in BagIt format"
+authors:
+  - family-names: Hucka
+    given-names: Michael
+    affiliation: "Caltech Library"
+    orcid: "https://orid.org/0000-0001-9105-5960"
+version: "1.10.2"
+abstract: Download EPrints content and save it in BagIt-format bags.
 repository-code: "https://github.com/caltechlibrary/eprints2bags"
-title: "Download EPrints content and save it in BagIt-format bags"
-date-released: 2022-04-05
-version: "1.10.1"
-doi: 10.22002/20083
-keywords: 
+type: software
+url: "https://caltechlibrary.github.io/eprints2bags"
+license-url: "https://github.com/caltechlibrary/eprints2bags/blob/main/LICENSE"
+keywords:
   - EPrints
   - BagIt
   - archive
-...
+date-released: "2023-05-04"
