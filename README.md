@@ -10,7 +10,6 @@ A program for downloading records from an EPrints server and creating [BagIt](ht
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://choosealicense.com/licenses/bsd-3-clause)
 [![Python](https://img.shields.io/badge/Python-3.5+-brightgreen.svg?style=flat-square)](http://shields.io)
 [![Latest release](https://img.shields.io/github/v/release/caltechlibrary/eprints2bags.svg?style=flat-square&color=b44e88)](https://github.com/caltechlibrary/eprints2bags/releases)
-[![DOI](http://img.shields.io/badge/DOI-10.22002%20%2f%20D1.1450-blue.svg?style=flat-square)](https://data.caltech.edu/records/20083)
 [![PyPI](https://img.shields.io/pypi/v/eprints2bags.svg?style=flat-square&color=red)](https://pypi.org/project/eprints2bags/)
 
 
@@ -191,6 +190,7 @@ The following table summarizes all the command line options available. (Note: on
 | `-b`_B_ | `--bag-action`_B_ | Do _B_ with each record directory | Bag and archive  | ✦ |
 | `-c`_C_ | `--processes`_C_  | No. of processes during bag creation | &frac12; the number of CPUs | |
 | `-e`_E_ | `--end-action`_E_ | Do _E_ with the entire set of records | Nothing | ✦ |
+| `-h`    | `--help`          | Print help info and exit | | |
 | `-i`_I_ | `--id-list`_I_    | Records to get (can be a file name) | Fetch all records from the server | |
 | `-k`    | `--keep-going`    | Don't count missing records as an error | Stop if encounter missing record | |
 | `-l`_L_ | `--lastmod`_L_    | Filter by last-modified date/time | Don't filter by date/time | |
@@ -275,7 +275,7 @@ We thank the following people for suggestions and ideas that led to improvements
 ☮︎ Copyright and license
 ---------------------
 
-Copyright (C) 2019, Caltech.  This software is freely distributed under a BSD/MIT type license.  Please see the [LICENSE](LICENSE) file for more information.
+Copyright (C) 2019&ndash;2023, Caltech.  This software is freely distributed under a BSD/MIT type license.  Please see the [LICENSE](LICENSE) file for more information.
     
 <div align="center">
   <a href="https://www.caltech.edu">
