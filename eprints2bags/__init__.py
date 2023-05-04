@@ -29,7 +29,7 @@ file "LICENSE" for more information.
 #  |    by the Makefile. Manual changes to these values will be lost.      |
 #  ╰────────────────────── Notice ── Notice ── Notice ─────────────────────╯
 
-__version__     = '1.10.2'
+__version__     = '1.10.3'
 __description__ = 'Download EPrints content and save it in BagIt-format bags.'
 __url__         = 'https://github.com/caltechlibrary/eprints2bags'
 __author__      = 'Michael Hucka'
